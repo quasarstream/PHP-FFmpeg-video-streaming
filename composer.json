@@ -7,7 +7,9 @@
         "hls",
         "video",
         "chunk",
-        "AminYazdanpanah"
+        "AminYazdanpanah",
+        "httplivesteaming",
+        "http-live-steaming"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
 
