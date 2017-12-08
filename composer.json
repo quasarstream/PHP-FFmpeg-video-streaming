@@ -1,0 +1,43 @@
+{
+    "name": "aminyazdanpanah/php-ffmpeg-hls-conversion",
+    "description": "This package is for convert videos to HLS that uses PHP-FFMpeg",
+    "type": "library",
+    "keywords": [
+        "aminyAzdanpanah",
+        "ffmpeg-hls-exporter"
+    ],
+    "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
+
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Amin Yazdanpanah",
+            "email": "contact@aminyazdanpanah.com",
+            "homepage": "http://www.aminyazdanpanah.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "AminYazdanpanah\\HLSExporter\\": "src"
+        }
+    },
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AminYazdanpanah\\HLSExporter\\HLSExporterServiceProvider"
+            ],
+            "aliases": {
+                "HLSExporter": "AminYazdanpanah\\HLSExporter\\HLSExporterFacade"
+            }
+        }
+    },
+    "require": {
+        "php": "^5.6.4",
+        "php-ffmpeg/php-ffmpeg": "^0.11.0"
+    }
+}
