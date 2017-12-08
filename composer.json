@@ -3,8 +3,11 @@
     "description": "This package is for convert videos to HLS that uses PHP-FFMpeg",
     "type": "library",
     "keywords": [
-        "aminyAzdanpanah",
-        "ffmpeg-hls-exporter"
+        "AminYazdanpanah",
+        "ffmpeg-hls-exporter",
+        "hls",
+        "video",
+        "chunk"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
 
