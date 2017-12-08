@@ -6,7 +6,8 @@
         "ffmpeg-hls-exporter",
         "hls",
         "video",
-        "chunk"
+        "chunk",
+        "AminYazdanpanah"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
 
