@@ -1,15 +1,13 @@
 {
-    "name": "aminyazdanpanah/php-ffmpeg-hls-conversion",
-    "description": "This package is for convert videos to HLS that uses PHP-FFMpeg",
+    "name": "aminyazdanpanah/php-ffmpeg-dash",
+    "description": "This pakage is not ready to use",
     "type": "library",
     "keywords": [
-        "ffmpeg-hls-exporter",
-        "hls",
+        "dash",
         "video",
         "chunk",
         "AminYazdanpanah",
-        "httplivesteaming",
-        "http-live-steaming"
+        "DynamicAdaptiveStreamingOverHTTP"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
 
@@ -17,7 +15,6 @@
     "authors": [
         {
             "name": "Amin Yazdanpanah",
-            "email": "contact@aminyazdanpanah.com",
             "homepage": "http://www.aminyazdanpanah.com"
         }
     ],
@@ -32,7 +29,7 @@
     },
 
     "require": {
-        "php": "^5.6.4",
+        "php": "^7.2.1",
         "php-ffmpeg/php-ffmpeg": "^0.13.0"
     }
 }
