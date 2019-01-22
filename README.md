@@ -85,7 +85,7 @@ Soon!
 
 ## Demo and Documentation
 
-Please check out [my website](http://video.aminyazdanpanah.com) to see more examples and demos.
+Please check out [my website](http://video.aminyazdanpanah.com/?tk=github) to see more examples and demos.
 
 ## Contributing
 
