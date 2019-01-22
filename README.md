@@ -14,7 +14,7 @@ This version of the package is only compatible with php 7.1.0 and above.
 Install the package via composer:
 
 ``` bash
-composer require
+composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ```
 
 

@@ -1,6 +1,6 @@
 {
     "name": "aminyazdanpanah/php-ffmpeg-video-streaming",
-    "description": "This package is not ready to use",
+    "description": "📹📼 PHP FFMpeg - Video Streaming - DASH, HLS http://video.aminyazdanpanah.com",
     "type": "library",
     "keywords": [
         "dash",
