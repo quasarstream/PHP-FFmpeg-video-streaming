@@ -43,17 +43,17 @@ You can create an MPD playlist to do [DASH](https://en.wikipedia.org/wiki/Dynami
 
 ``` php
 try {
-$rep_1 = (new Representation())->setKiloBitrate(800);
-$rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
-$ffmpeg->open('/var/www/media/videos/test.mp4')
-->DASH()
-->X264()
-->addRepresentation($rep_1)
-->addRepresentation($rep_2)
-->setAdaption('id=0,streams=v id=1,streams=a')
-->save('/var/www/media/videos/test.mpd');
+    $rep_1 = (new Representation())->setKiloBitrate(800);
+    $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
+    $ffmpeg->open('/var/www/media/videos/test.mp4')
+        ->DASH()
+        ->X264()
+        ->addRepresentation($rep_1)
+        ->addRepresentation($rep_2)
+        ->setAdaption('id=0,streams=v id=1,streams=a')
+        ->save('/var/www/media/videos/test.mpd');
 } catch (Exception $e) {
-echo $e->getMassege();
+    echo $e->getMassege();
 }
 ```
 
@@ -63,19 +63,19 @@ Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Stre
 
 ``` php
 try {
-$rep_1 = (new Representation())->setKiloBitrate(1000);
-$rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
-$rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
-$ffmpeg->open('/var/www/media/videos/test.mp4')
-->HLS()
-->X264()
-->addRepresentation($rep_1)
-->addRepresentation($rep_2)
-->addRepresentation($rep_3)
-->setStreamMap('v:0,a:0 v:1,a:1')
-->save('/var/www/media/videos/test.m3u8');
+    $rep_1 = (new Representation())->setKiloBitrate(1000);
+    $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
+    $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
+    $ffmpeg->open('/var/www/media/videos/test.mp4')
+        ->HLS()
+        ->X264()
+        ->addRepresentation($rep_1)
+        ->addRepresentation($rep_2)
+        ->addRepresentation($rep_3)
+        ->setStreamMap('v:0,a:0 v:1,a:1')
+        ->save('/var/www/media/videos/test.m3u8');
 } catch (Exception $e) {
-echo $e->getMassege();
+    echo $e->getMassege();
 }
 ```
 
