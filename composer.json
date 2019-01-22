@@ -28,12 +28,12 @@
     },
     "autoload": {
         "psr-4": {
-            "AminYazdanpanah\\HLSExporter\\": "src"
+            "AYazdanpanah\\FFMpegStreaming\\": "src"
         }
     },
 
     "require": {
-        "php": "^7.2.1",
+        "php": "^7.1.0",
         "php-ffmpeg/php-ffmpeg": "^0.13.0"
     }
 }
