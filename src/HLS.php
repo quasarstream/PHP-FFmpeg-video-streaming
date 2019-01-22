@@ -2,27 +2,27 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
-class DASH extends Export
+class HLS extends Export
 {
 
     /** @var string */
-    protected $adaption;
+    protected $stream_map;
 
     /**
      * @return mixed
      */
-    public function getAdaption(): string
+    public function getStreamMap(): string
     {
-        return $this->adaption;
+        return $this->stream_map;
     }
 
     /**
      * @param mixed $adaption
-     * @return DASH
+     * @return HLS
      */
-    public function setAdaption(string $adaption): DASH
+    public function setStreamMap(string $adaption): HLS
     {
-        $this->adaption = $adaption;
+        $this->stream_map = $adaption;
         return $this;
     }
 

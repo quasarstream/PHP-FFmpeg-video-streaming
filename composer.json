@@ -1,15 +1,19 @@
 {
-    "name": "aminyazdanpanah/php-ffmpeg-dash",
+    "name": "aminyazdanpanah/php-ffmpeg-video-streaming",
     "description": "This package is not ready to use",
     "type": "library",
     "keywords": [
         "dash",
+        "hls",
         "video",
+        "videostreaming",
+        "streaming",
         "chunk",
+        "live",
         "AminYazdanpanah",
         "DynamicAdaptiveStreamingOverHTTP"
     ],
-    "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-HLS-Conversion",
+    "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming",
 
     "license": "MIT",
     "authors": [
