@@ -20,5 +20,3 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg
 
-script:
-  - phpunit
