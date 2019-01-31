@@ -2,24 +2,32 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use FFMpeg\FFProbe\DataMapping\Stream;
 use FFMpeg\Media\MediaTypeInterface;
 
 /**
  * @method mixed save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
  * @method mixed addFilter(\FFMpeg\Filters\FilterInterface $filter)
+ * @method mixed getStreams()
  */
 class Media
 {
 
     protected $media;
+    /**
+     * @var string
+     */
+    private $path;
 
     /**
      * Media constructor.
      * @param MediaTypeInterface $media
+     * @param string $path
      */
-    public function __construct(MediaTypeInterface $media)
+    public function __construct(MediaTypeInterface $media, string $path)
     {
         $this->media = $media;
+        $this->path = $path;
     }
 
     /**
@@ -65,5 +73,21 @@ class Media
         return $this->isInstanceofArgument(
             call_user_func_array([$this->media, $method], $parameters)
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstStream(): Stream
+    {
+        return $this->media->getStreams()->first();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return explode('.',$this->path)[0];
     }
 }

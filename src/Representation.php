@@ -56,7 +56,7 @@ class Representation
     public function setKiloBitrate($kiloBitrate)
     {
         if ($kiloBitrate < 1) {
-            throw new Exception('Wrong kiloBitrate value');
+            throw new Exception('Wrong kilo bit rate value');
         }
 
         $this->kiloBitrate = (int)$kiloBitrate;

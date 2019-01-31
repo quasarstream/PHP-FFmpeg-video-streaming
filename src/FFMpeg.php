@@ -25,7 +25,7 @@ class FFMpeg
      */
     public function open($path): Media
     {
-        return new Media($this->ffmpeg->open($path));
+        return new Media($this->ffmpeg->open($path), $path);
     }
 
     /**

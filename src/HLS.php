@@ -27,14 +27,6 @@ class HLS extends Export
     }
 
     /**
-     * @return array
-     */
-    public function getRepresentations(): array
-    {
-        return $this->representations;
-    }
-
-    /**
      * @return Filter
      */
     protected function getFilter(): Filter

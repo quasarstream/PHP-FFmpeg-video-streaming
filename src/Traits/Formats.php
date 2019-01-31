@@ -9,7 +9,7 @@ use AYazdanpanah\FFMpegStreaming\Format\X264;
 
 trait Formats
 {
-    /** @var Video */
+    /** @var object */
     protected $format;
 
     /**

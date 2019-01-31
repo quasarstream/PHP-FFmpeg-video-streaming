@@ -34,6 +34,6 @@
 
     "require": {
         "php": "^7.1.0",
-        "php-ffmpeg/php-ffmpeg": "^0.13.0"
+        "php-ffmpeg/php-ffmpeg": "^0.7.0@dev"
     }
 }

@@ -13,9 +13,6 @@ abstract class Export
     /** @var object */
     protected $media;
 
-    /** @var object */
-    protected $format;
-
     /** @var Filter */
     protected $filter;
 
@@ -34,6 +31,26 @@ abstract class Export
         }
 
         $this->representations[] = $representation;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRepresentations(): array
+    {
+        return $this->representations;
+    }
+
+    /**
+     * @return $this
+     * @throws Exception
+     */
+    public function autoGenerateRepresentations()
+    {
+        $this->representations = (new AutoRepresentations($this->media->getFirstStream()))
+            ->get();
+
         return $this;
     }
 
@@ -68,7 +85,7 @@ abstract class Export
      * @param string $path
      * @return Export
      */
-    public function save(string $path): Export
+    public function save(string $path = null): Export
     {
         $this->setFilter();
 
@@ -78,7 +95,7 @@ abstract class Export
 
         $this->media->save(
             $this->getFormat(),
-            $path
+            $this->getPath($path)
         );
 
         return $this;
@@ -89,10 +106,21 @@ abstract class Export
      */
     abstract protected function getFilter(): Filter;
 
-
     /**
      * @return mixed
      */
     abstract protected function setFilter();
 
+    private function getPath($path): string
+    {
+        if (null === $path) {
+            if ($this instanceof DASH) {
+                $path = $this->media->getPath() . '.mpd';
+            } elseif ($this instanceof HLS) {
+                $path = $this->media->getPath() . '.m3u8';
+            }
+        }
+
+        return $path;
+    }
 }
