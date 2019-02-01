@@ -5,7 +5,7 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
 ## Features
 * Easily converts most types of videos into DASH, HLS, and Live video streaming.
 * Super easy wrapper around [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg), including support for filters and other advanced features.
-* Automatically detects video size and bitrate and creates multi-representations mpd or m3u8 file.
+* Automatically detects video size and bitrate and creates multi-representations MPD or M3U8 file.
 * PHP > 7.1.0.
 
 ## Installation
@@ -40,7 +40,7 @@ $ffmpeg = new FFMpeg($config);
 ## DASH
 You can create an MPD playlist to do [DASH](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP).
 
-As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to generate multi-representations automatically based on original video size and bit rate:
+As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-representations MPD file automatically based on video size and bit rate:
 
 ``` php
 $ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
@@ -72,7 +72,7 @@ For more information about [FFMpeg](https://ffmpeg.org/) and its dash parameters
 
 Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming).
 
-As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to generate multi-representations automatically based on original video size and bit rate:
+As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-formats M3U8 file automatically based on original video size and bit rate:
 
 ``` php
 $ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
