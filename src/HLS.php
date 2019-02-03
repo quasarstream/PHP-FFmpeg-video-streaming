@@ -2,8 +2,11 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Traits\Representations;
+
 class HLS extends Export
 {
+    use Representations;
 
     /** @var string */
     protected $stream_map;
@@ -37,7 +40,7 @@ class HLS extends Export
     /**
      * @return mixed|void
      */
-    protected function setFilter()
+    protected function setFilter(): void
     {
         $this->filter = new Filter($this);
     }

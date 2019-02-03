@@ -4,8 +4,8 @@ namespace AYazdanpanah\FFMpegStreaming\Traits;
 
 
 use AYazdanpanah\FFMpegStreaming\Format\HEVC;
-use AYazdanpanah\FFMpegStreaming\Format\Video;
 use AYazdanpanah\FFMpegStreaming\Format\X264;
+use FFMpeg\Format\FormatInterface;
 
 trait Formats
 {
@@ -31,6 +31,24 @@ trait Formats
     public function HEVC($audioCodec = 'libmp3lame', $videoCodec = 'libx265')
     {
         $this->setFormat(new HEVC($audioCodec, $videoCodec));
+        return $this;
+    }
+
+    /**
+     * @return FormatInterface|mixed
+     */
+    private function getFormat(): FormatInterface
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param mixed $format
+     * @return mixed
+     */
+    protected function setFormat($format)
+    {
+        $this->format = $format;
         return $this;
     }
 }

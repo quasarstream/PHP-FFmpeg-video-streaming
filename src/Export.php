@@ -2,9 +2,7 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
-use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 use AYazdanpanah\FFMpegStreaming\Traits\Formats;
-use FFMpeg\Format\FormatInterface;
 
 abstract class Export
 {
@@ -16,44 +14,6 @@ abstract class Export
     /** @var Filter */
     protected $filter;
 
-    /** @var array */
-    protected $representations = [];
-
-    /**
-     * @param Representation $representation
-     * @return $this
-     * @throws Exception
-     */
-    public function addRepresentation(Representation $representation): Export
-    {
-        if (!$this->format) {
-            throw new Exception('Format has not been set');
-        }
-
-        $this->representations[] = $representation;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRepresentations(): array
-    {
-        return $this->representations;
-    }
-
-    /**
-     * @return $this
-     * @throws Exception
-     */
-    public function autoGenerateRepresentations()
-    {
-        $this->representations = (new AutoRepresentations($this->media->getFirstStream()))
-            ->get();
-
-        return $this;
-    }
-
     /**
      * Export constructor.
      * @param Media $media
@@ -61,24 +21,6 @@ abstract class Export
     public function __construct(Media $media)
     {
         $this->media = $media;
-    }
-
-    /**
-     * @return FormatInterface|mixed
-     */
-    private function getFormat(): FormatInterface
-    {
-        return $this->format;
-    }
-
-    /**
-     * @param mixed $format
-     * @return Export
-     */
-    protected function setFormat($format): Export
-    {
-        $this->format = $format;
-        return $this;
     }
 
     /**
@@ -109,7 +51,7 @@ abstract class Export
     /**
      * @return mixed
      */
-    abstract protected function setFilter();
+    abstract protected function setFilter(): void;
 
     private function getPath($path): string
     {

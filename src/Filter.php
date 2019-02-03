@@ -96,10 +96,12 @@ class Filter implements FilterInterface
                 $filter[] = "0";
                 $filter[] = "-b:v:" . $key;
                 $filter[] = $representation->getKiloBitrate() . "k";
+
                 if (null !== $representation->getResize()) {
                     $filter[] = "-s:v:" . $key;
                     $filter[] = $representation->getResize();
                 }
+
                 if ($key > 0) {
                     $filter[] = "-profile:v:" . $key;
                     $filter[] = "baseline";
@@ -132,10 +134,12 @@ class Filter implements FilterInterface
                 $filter[] = "0:v";
                 $filter[] = "-b:v:" . $key;
                 $filter[] = $representation->getKiloBitrate() . "k";
+
                 if (null !== $representation->getResize()) {
                     $filter[] = "-s:v:" . $key;
                     $filter[] = $representation->getResize();
                 }
+
             }
         }
 
