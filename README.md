@@ -37,7 +37,7 @@ As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added.
 
 ``` php
 FFMpeg::create()// it can pass the configuration and logger to method or it can be null
-    ->open(storage_path('/videos/test.mp4')) // the path to the video
+    ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
@@ -53,7 +53,7 @@ $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 
 
 FFMpeg::create()// it can pass the configuration and logger to method or it can be null
-    ->open(storage_path('/videos/test.mp4')) // the path to the video
+    ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->addRepresentation($rep_1) // add representation
@@ -72,7 +72,7 @@ As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added.
 
 ``` php
 FFMpeg::create()// it can pass the configuration and logger to method or it can be null
-    ->open(storage_path('/videos/test.mp4')) // the path to the video
+    ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
@@ -89,7 +89,7 @@ $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
 
 
 FFMpeg::create()// it can pass the configuration and logger to method or it can be null
-    ->open(storage_path('/videos/test.mp4')) // the path to the video
+    ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->addRepresentation($rep_1) // add representation
