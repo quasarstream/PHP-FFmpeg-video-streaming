@@ -1,6 +1,6 @@
 <?php
 
-namespace AYazdanpanah\FFMpegStreaming;
+namespace App\Dash;
 
 use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 use FFMpeg\Coordinate\Dimension;

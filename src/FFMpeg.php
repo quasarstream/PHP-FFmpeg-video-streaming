@@ -1,40 +1,19 @@
 <?php
 
-namespace AYazdanpanah\FFMpegStreaming;
+namespace App\Dash;
 
 use FFMpeg\FFMpeg as BFFMpeg;
 
 class FFMpeg
 {
 
-    protected $ffmpeg;
-
     /**
-     * FFMpeg constructor.
-     * @param $config
+     * @param array $config
      * @param null $logger
+     * @return FFMpegInstance
      */
-    public function __construct($config, $logger = null)
+    public static function create($config = array(), $logger = null)
     {
-        $this->ffmpeg = BFFMpeg::create($config, $logger);
-    }
-
-    /**
-     * @param $path
-     * @return Media
-     */
-    public function open($path): Media
-    {
-        return new Media($this->ffmpeg->open($path), $path);
-    }
-
-    /**
-     * @param $method
-     * @param $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array([$this->ffmpeg, $method], $parameters);
+        return new FFMpegInstance(BFFMpeg::create($config, $logger));
     }
 }

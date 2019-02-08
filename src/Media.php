@@ -1,6 +1,6 @@
 <?php
 
-namespace AYazdanpanah\FFMpegStreaming;
+namespace App\Dash;
 
 use FFMpeg\FFProbe\DataMapping\Stream;
 use FFMpeg\Media\MediaTypeInterface;

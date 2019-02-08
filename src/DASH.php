@@ -1,12 +1,9 @@
 <?php
 
-namespace AYazdanpanah\FFMpegStreaming;
-
-use AYazdanpanah\FFMpegStreaming\Traits\Representations;
+namespace App\Dash;
 
 class DASH extends Export
 {
-    use Representations;
 
     /** @var string */
     protected $adaption;
@@ -40,7 +37,7 @@ class DASH extends Export
     /**
      * @return mixed|void
      */
-    protected function setFilter(): void
+    protected function setFilter()
     {
         $this->filter = new Filter($this);
     }
