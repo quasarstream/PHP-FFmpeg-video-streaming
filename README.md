@@ -20,21 +20,14 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 
 ## Usage
 
-Use and initialize the FFMpeg:
+Use FFMpeg:
 
 ``` php
 use AYazdanpanah\FFMpegStreaming\FFMpeg
 ```
-
+or 
 ``` php
-$config = [
-    'ffmpeg.binaries' => '/usr/local/bin/ffmpeg', // the path to the FFMpeg binary
-    'ffprobe.binaries' => '/usr/local/bin/ffprobe', // the path to the FFProbe binary
-    'timeout' => 3600, // the timeout for the underlying process
-    'ffmpeg.threads' => 12, // the number of threads that FFMpeg should use
-];
-
-$ffmpeg = new FFMpeg($config);
+require 'vendor/autoload.php'; //use AYazdanpanah\FFMpegStreaming\FFMpeg class
 ```
 
 ## DASH
@@ -43,12 +36,13 @@ You can create an MPD playlist to do [DASH](https://en.wikipedia.org/wiki/Dynami
 As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-representations MPD file automatically based on video size and bit rate:
 
 ``` php
-$ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
+FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+    ->open(storage_path('/videos/test.mp4')) // the path to the video
     ->DASH()
-    ->X264()
-    ->autoGenerateRepresentations()
-    ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->save();
+    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->autoGenerateRepresentations() // auto generate representations
+    ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
+    ->save(); // it can pass a path to method or it can be null
 ```
 
 or you can add representation manually by using  ```addRepresentation``` method:
@@ -57,13 +51,15 @@ or you can add representation manually by using  ```addRepresentation``` method:
 $rep_1 = (new Representation())->setKiloBitrate(800);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 
-$ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
+
+FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+    ->open(storage_path('/videos/test.mp4')) // the path to the video
     ->DASH()
-    ->X264()
-    ->addRepresentation($rep_1)
-    ->addRepresentation($rep_2)
-    ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->save();
+    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->addRepresentation($rep_1) // add representation
+    ->addRepresentation($rep_2) // add representation
+    ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
+    ->save(); // it can pass a path to method or it can be null
 
 ```
 
@@ -75,12 +71,13 @@ Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Stre
 As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-formats M3U8 file automatically based on original video size and bit rate:
 
 ``` php
-$ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
+FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+    ->open(storage_path('/videos/test.mp4')) // the path to the video
     ->HLS()
-    ->X264()
-    ->autoGenerateRepresentations()
-    ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->save();
+    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->autoGenerateRepresentations() // auto generate representations
+    ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
+    ->save(); // it can pass a path to method or it can be null
 ```
 
 or you can add representation manually by using  ```addRepresentation``` method:
@@ -90,14 +87,16 @@ $rep_1 = (new Representation())->setKiloBitrate(1000);
 $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
 
-$ffmpeg->open('/var/www/media/videos/test.mp4') // the path to the video
+
+FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+    ->open(storage_path('/videos/test.mp4')) // the path to the video
     ->HLS()
-    ->X264()
-    ->addRepresentation($rep_1)
-    ->addRepresentation($rep_2)
-    ->addRepresentation($rep_3)
-    ->setStreamMap('v:0,a:0 v:1,a:1')
-    ->save();
+    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->addRepresentation($rep_1) // add representation
+    ->addRepresentation($rep_2) // add representation
+    ->addRepresentation($rep_3) // add representation
+    ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
+    ->save(); // it can pass a path to method or it can be null
 ```
 
 ## Live Streaming
