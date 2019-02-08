@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dash;
+namespace AYazdanpanah\FFMpegStreaming;
 
 class Live extends Export
 {

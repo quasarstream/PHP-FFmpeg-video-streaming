@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dash;
+namespace AYazdanpanah\FFMpegStreaming;
 
 use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 

@@ -6,7 +6,7 @@
  * Time: 1:56 AM
  */
 
-namespace App\Dash;
+namespace AYazdanpanah\FFMpegStreaming;
 
 use FFMpeg\FFMpeg as BFFMpeg;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dash;
+namespace AYazdanpanah\FFMpegStreaming;
 
 class HLS extends Export
 {
