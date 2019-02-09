@@ -1,6 +1,6 @@
 # PHP FFMPEG Video Streaming
 
-This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and exports well-known video streaming techniques such as DASH, HLS, and Live Streaming(DASH and HLS live streaming).
+This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and exports well-known video streaming techniques such as DASH, HLS, and Live Streaming(DASH and HLS live streaming).
 
 ## Features
 * Easily converts most types of videos into DASH, HLS, and Live video streaming.
@@ -10,7 +10,7 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
 
 ## Installation
 
-This version of the package is only compatible with php 7.1.0 and upper versions.
+This version of the package is only compatible with PHP 7.1.0 and upper versions.
 
 Install the package via composer:
 
@@ -23,20 +23,17 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 Use FFMpeg:
 
 ``` php
-use AYazdanpanah\FFMpegStreaming\FFMpeg
-```
-or 
-``` php
-require 'vendor/autoload.php'; //use AYazdanpanah\FFMpegStreaming\FFMpeg class
+require 'vendor/autoload.php'; // if you use frameworks that require autoload, it does not need to require it
+use AYazdanpanah\FFMpegStreaming\FFMpeg;
 ```
 
 ## DASH
 You can create an MPD playlist to do [DASH](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP).
 
-As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-representations MPD file automatically based on video size and bit rate:
+As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on video size and bit rate:
 
 ``` php
-FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
@@ -52,7 +49,7 @@ $rep_1 = (new Representation())->setKiloBitrate(800);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 
 
-FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
@@ -68,10 +65,10 @@ For more information about [FFMpeg](https://ffmpeg.org/) and its dash parameters
 
 Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming).
 
-As of version 1.1.0 the ```autoGenerateRepresentations``` method has been added. This method allows you to create multi-formats M3U8 file automatically based on original video size and bit rate:
+As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-formats M3U8 file automatically based on original video size and bit rate:
 
 ``` php
-FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
@@ -88,7 +85,7 @@ $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
 
 
-FFMpeg::create()// it can pass the configuration and logger to method or it can be null
+FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
@@ -117,7 +114,8 @@ Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-vid
 
 ## Security
 
-If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via contact [AT] aminyazdanpanah . com.
+If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
+contact [AT] aminyazdanpanah • com.
 ## Credits
 
 - [Amin Yazdanpanah](http://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)
