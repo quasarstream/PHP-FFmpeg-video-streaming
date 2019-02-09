@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: amin6
- * Date: 2/9/2019
- * Time: 1:56 AM
- */
-
 namespace AYazdanpanah\FFMpegStreaming;
 
 use FFMpeg\FFMpeg as BFFMpeg;
