@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * Copyright 2019 Amin Yazdanpanah<http://www.aminyazdanpanah.com>.
+ *
+ * Licensed under the MIT License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 namespace AYazdanpanah\FFMpegStreaming;
 
 use AYazdanpanah\FFMpegStreaming\Exception\Exception;
@@ -9,6 +25,10 @@ use FFMpeg\FFProbe\DataMapping\Stream;
 class AutoRepresentations
 {
     private $stream;
+
+    private $heights = [2160, 1080, 720, 480, 240, 144];
+
+    private $height;
 
     /**
      * AutoRepresentations constructor.
@@ -45,74 +65,64 @@ class AutoRepresentations
      */
     public function get(): array
     {
+
         $dimension = $this->getDimensions();
+        $this->height = $dimension->getHeight();
+        $ratio = $dimension->getRatio()->getValue();
+        $kilobitrate = $this->getKiloBitRate();
 
-        $width = $dimension->getWidth();
-        $height = $dimension->getHeight();
+        $representations[] = $this->addRepresentation($ratio, $kilobitrate, $this->height);
 
-        $param = [
-            'aspect_ratio' => $width / $height,
-            'bit_rate' => $this->getKiloBitRate(),
-        ];
+        $heights = array_filter($this->heights, function ($value) {
+            return $value < $this->height;
+        });
 
-        if ($height > 1050) {
-            $representations = [
-                $this->addRepresentation($param, 4, 240),
-                $this->addRepresentation($param, 2, 480),
-                $this->addRepresentation($param, 4 / 3, 720),
-                $this->addRepresentation($param, 1, $height)
-            ];
-        } elseif ($height > 700) {
-            $representations = [
-                $this->addRepresentation($param, 4, 240),
-                $this->addRepresentation($param, 2, 360),
-                $this->addRepresentation($param, 4 / 3, 480),
-                $this->addRepresentation($param, 1, $height)
-            ];
-        } elseif ($height > 450) {
-            $representations = [
-                $this->addRepresentation($param, 4, 144),
-                $this->addRepresentation($param, 2, 240),
-                $this->addRepresentation($param, 4 / 3, 360),
-                $this->addRepresentation($param, 1, $height)
-            ];
-        } elseif ($height > 330) {
-            $representations = [
-                $this->addRepresentation($param, 3, 144),
-                $this->addRepresentation($param, 3 / 2, 240),
-                $this->addRepresentation($param, 1, $height),
-                null
-            ];
-        } elseif ($height > 210) {
-            $representations = [
-                $this->addRepresentation($param, 2, 144),
-                $this->addRepresentation($param, 1, $height),
-            ];
-        } else {
-            $representations = [
-                $this->addRepresentation($param, 1, $height),
-            ];
+        if (count($heights) > 0) {
+            $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
+
+            foreach (array_values($heights) as $key => $height) {
+                $representations[] = $this->addRepresentation($ratio, $kilobitrates[$key], $height);
+            }
         }
 
-        return $representations;
+        return array_reverse($representations);
     }
 
     /**
-     * @param $param
-     * @param $divide
+     * @param $ratio
+     * @param $kilobitrate
      * @param $height
      * @return Representation
-     * @internal param $aspect_ratio
      * @throws Exception
      */
-    private function addRepresentation($param, $divide, $height): Representation
+    private function addRepresentation($ratio, $kilobitrate, $height): Representation
     {
-        $width = intval($height * $param['aspect_ratio']);
+        $width = (int)$height * $ratio;
 
         if ($width % 2 == 1) $width++;
 
-        return (new Representation())
-            ->setKiloBitrate(intval($param['bit_rate'] / $divide))
-            ->setResize($width, $height);
+        return (new Representation())->setKiloBitrate($kilobitrate)->setResize($width, $height);
+    }
+
+    /**
+     * @param $kilobitrate
+     * @param $count
+     * @return array
+     */
+    private function getKiloBitRates($kilobitrate, $count)
+    {
+        $divided_by = 1.3;
+        $kilobitrates = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $kbitrate = intval($kilobitrate / $divided_by);
+
+            if ($kbitrate < 100) $kbitrate = 100;
+
+            $kilobitrates[] = $kbitrate;
+            $divided_by += .3;
+        }
+
+        return $kilobitrates;
     }
 }

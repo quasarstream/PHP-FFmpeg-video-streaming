@@ -39,7 +39,7 @@ FFMpeg::create()// it can pass the configuration and logger to the method  or it
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
-    ->save(); // it can pass a path to method or it can be null
+    ->save(); // it can pass a path to the method or it can be null
 ```
 
 or you can add representation manually by using  ```addRepresentation``` method:
@@ -56,7 +56,7 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
-    ->save(); // it can pass a path to method or it can be null
+    ->save(); // it can pass a path to the method or it can be null
 
 ```
 
@@ -74,7 +74,7 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
     ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
-    ->save(); // it can pass a path to method or it can be null
+    ->save(); // it can pass a path to the method or it can be null
 ```
 
 or you can add representation manually by using  ```addRepresentation``` method:
@@ -93,7 +93,7 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
     ->addRepresentation($rep_2) // add representation
     ->addRepresentation($rep_3) // add representation
     ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
-    ->save(); // it can pass a path to method or it can be null
+    ->save(); // it can pass a path to the method or it can be null
 ```
 
 ## Live Streaming
