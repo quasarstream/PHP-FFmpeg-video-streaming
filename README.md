@@ -10,7 +10,7 @@ This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpe
 
 ## Installation
 
-This version of the package is only compatible with PHP 7.1.0 and upper versions.
+This version of the package is only compatible with PHP 7.1.0 or newer.
 
 Install the package via composer:
 
