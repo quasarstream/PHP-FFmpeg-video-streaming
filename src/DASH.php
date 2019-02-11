@@ -18,8 +18,11 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+
 class DASH extends Export
 {
+    use Representation;
 
     /** @var string */
     protected $adaption;
@@ -27,7 +30,7 @@ class DASH extends Export
     /**
      * @return mixed
      */
-    public function getAdaption(): string
+    public function getAdaption()
     {
         return $this->adaption;
     }

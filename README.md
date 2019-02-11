@@ -48,7 +48,6 @@ or you can add representation manually by using  ```addRepresentation``` method:
 $rep_1 = (new Representation())->setKiloBitrate(800);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 
-
 FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
@@ -60,7 +59,7 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
 
 ```
 
-For more information about [FFMpeg](https://ffmpeg.org/) and its dash parameters please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
+For more information about [FFMpeg](https://ffmpeg.org/) and its dash options please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
 ## HLS
 
 Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming).
@@ -73,17 +72,15 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
     ->HLS()
     ->X264() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
-    ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
     ->save(); // it can pass a path to the method or it can be null
 ```
 
 or you can add representation manually by using  ```addRepresentation``` method:
 
 ``` php
-$rep_1 = (new Representation())->setKiloBitrate(1000);
+$rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1080 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
-
 
 FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
@@ -92,9 +89,10 @@ FFMpeg::create()// it can pass the configuration and logger to the method or it 
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->addRepresentation($rep_3) // add representation
-    ->setStreamMap('v:0,a:0 v:1,a:1') // set the StreamMap.
+    ->setStreamMap('v:0 v:1 v:2') // set the StreamMap.
     ->save(); // it can pass a path to the method or it can be null
 ```
+For more information about `setStreamMap` method and its input and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
 
 ## Live Streaming
 

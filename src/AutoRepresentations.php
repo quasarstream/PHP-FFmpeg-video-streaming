@@ -65,7 +65,6 @@ class AutoRepresentations
      */
     public function get(): array
     {
-
         $dimension = $this->getDimensions();
         $this->height = $dimension->getHeight();
         $ratio = $dimension->getRatio()->getValue();

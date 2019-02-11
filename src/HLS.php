@@ -18,8 +18,11 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+
 class HLS extends Export
 {
+    use Representation;
 
     /** @var string */
     protected $stream_map;
@@ -27,7 +30,7 @@ class HLS extends Export
     /**
      * @return mixed
      */
-    public function getStreamMap(): string
+    public function getStreamMap()
     {
         return $this->stream_map;
     }
