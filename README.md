@@ -29,7 +29,7 @@ dash($path);// auto create dash MPD file based on original video
 hls($path);// auto create HLS M3U8 file based on original video
 ```
 
-##Documentation
+## Documentation
 
 ### UML Diagram
 This is how it works:
