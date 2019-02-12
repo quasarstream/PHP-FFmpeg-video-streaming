@@ -104,6 +104,6 @@ class Media
      */
     public function getPath(): string
     {
-        return explode('.',$this->path)[0];
+        return str_replace('\\', '/', explode('.', $this->path)[0]);
     }
 }

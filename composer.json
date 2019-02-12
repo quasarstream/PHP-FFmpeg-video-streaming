@@ -27,6 +27,9 @@
         "sort-packages": true
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "AYazdanpanah\\FFMpegStreaming\\": "src"
         }
