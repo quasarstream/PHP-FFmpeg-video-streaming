@@ -34,7 +34,7 @@ hls($path);// auto create HLS M3U8 file based on original video
 This is how it works:
 
 
-![UML](/doc/uml-class.png?raw=true "UML")
+![UML](/docs/uml-class.png?raw=true "UML")
 
 
 ### DASH
