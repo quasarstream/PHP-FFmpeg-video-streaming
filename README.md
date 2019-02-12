@@ -23,7 +23,7 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ``` php
 require 'vendor/autoload.php'; // if you use frameworks that require autoload, you do not need to require it
 
-$path = ''/var/www/media/videos/test.mp4'';// the path to the video
+$path = '/var/www/media/videos/test.mp4';// the path to the video
 
 dash($path);// auto create dash MPD file based on original video
 hls($path);// auto create HLS M3U8 file based on original video
@@ -39,8 +39,11 @@ This is how it works:
 
 
 ### DASH
-You can create an MPD playlist to do [DASH](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP).
+**[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
+To create an MPD file use `DASH` method and export video into Dash.
+
+ 
 As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on the video size and bit rate:
 
 ``` php
@@ -53,7 +56,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->save(); // it can pass a path to the method or it can be null
 ```
 
-or you can add representation manually by using  ```addRepresentation``` method:
+Also you can add representation manually by using  ```addRepresentation``` method:
 
 ``` php
 $rep_1 = (new Representation())->setKiloBitrate(800);
@@ -73,7 +76,9 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
 For more information about [FFMpeg](https://ffmpeg.org/) and its dash options please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
 ### HLS
 
-Create an M3U8 playlist to do [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming).
+**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based media streaming communications protocol implemented by [Apple Inc](https://www.apple.com/).
+
+To create an M3U8 playlist to do HLS, just use `HLS` method.
 
 As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-formats M3U8 file automatically based on original video size and bit rate:
 
