@@ -67,3 +67,16 @@ if (! function_exists('hls')) {
         }
     }
 }
+
+if (! function_exists('round_to_even')) {
+    /**
+     * Round a number to nearest even number
+     *
+     * @param float $number
+     * @return int
+     */
+    function round_to_even(float $number): int
+    {
+        return (($number = intval($number)) % 2 == 0) ? $number : $number + 1;
+    }
+}

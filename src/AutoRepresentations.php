@@ -66,11 +66,14 @@ class AutoRepresentations
     public function get(): array
     {
         $dimension = $this->getDimensions();
+
         $this->height = $dimension->getHeight();
+        $width = $dimension->getWidth();
         $ratio = $dimension->getRatio()->getValue();
+
         $kilobitrate = $this->getKiloBitRate();
 
-        $representations[] = $this->addRepresentation($ratio, $kilobitrate, $this->height);
+        $representations[] = $this->addRepresentation($kilobitrate, $width, $this->height);
 
         $heights = array_filter($this->heights, function ($value) {
             return $value < $this->height;
@@ -80,7 +83,7 @@ class AutoRepresentations
             $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
 
             foreach (array_values($heights) as $key => $height) {
-                $representations[] = $this->addRepresentation($ratio, $kilobitrates[$key], $height);
+                $representations[] = $this->addRepresentation($kilobitrates[$key], round_to_even($ratio * $height), $height);
             }
         }
 
@@ -88,18 +91,14 @@ class AutoRepresentations
     }
 
     /**
-     * @param $ratio
+     * @param $width
      * @param $kilobitrate
      * @param $height
      * @return Representation
      * @throws Exception
      */
-    private function addRepresentation($ratio, $kilobitrate, $height): Representation
+    private function addRepresentation($kilobitrate, $width, $height)
     {
-        $width = (int)$height * $ratio;
-
-        if ($width % 2 == 1) $width++;
-
         return (new Representation())->setKiloBitrate($kilobitrate)->setResize($width, $height);
     }
 
@@ -111,15 +110,12 @@ class AutoRepresentations
     private function getKiloBitRates($kilobitrate, $count)
     {
         $divided_by = 1.3;
-        $kilobitrates = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        while ($count) {
             $kbitrate = intval($kilobitrate / $divided_by);
-
-            if ($kbitrate < 100) $kbitrate = 100;
-
-            $kilobitrates[] = $kbitrate;
+            $kilobitrates[] = ($kbitrate < 100) ? 100 : $kbitrate;
             $divided_by += .3;
+            $count--;
         }
 
         return $kilobitrates;
