@@ -99,7 +99,6 @@ class AutoRepresentations
      */
     private function addRepresentation($kilobitrate, $width, $height): Representation
     {
-        var_dump("kilobitrate: $kilobitrate", "width: $width", "height: $height\n\n");
         return (new Representation())->setKiloBitrate($kilobitrate)->setResize($width, $height);
     }
 
