@@ -34,7 +34,14 @@
             "AYazdanpanah\\FFMpegStreaming\\": "src"
         }
     },
-
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\FFMpegStreaming\\": "tests"
+        }
+    },
     "require": {
         "php": "^7.1.0",
         "php-ffmpeg/php-ffmpeg": "^0.7.0@dev"

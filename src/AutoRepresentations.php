@@ -19,16 +19,15 @@
 namespace AYazdanpanah\FFMpegStreaming;
 
 use AYazdanpanah\FFMpegStreaming\Exception\Exception;
-use FFMpeg\Coordinate\Dimension;
 use FFMpeg\FFProbe\DataMapping\Stream;
 
 class AutoRepresentations
 {
+    /** @var Stream $stream */
     private $stream;
 
-    private $heights = [2160, 1080, 720, 480, 240, 144];
-
-    private $height;
+    /** @Const regular video's heights */
+    private const heights = [2160, 1080, 720, 480, 240, 144];
 
     /**
      * AutoRepresentations constructor.
@@ -40,11 +39,16 @@ class AutoRepresentations
     }
 
     /**
-     * @return Dimension
+     * @return array
      */
-    private function getDimensions(): Dimension
+    private function getDimensions(): array
     {
-        return $this->stream->getDimensions();
+        $dimension = $this->stream->getDimensions();
+        $width = $dimension->getWidth();
+        $height = $dimension->getHeight();
+        $ratio = $dimension->getRatio()->getValue();
+
+        return [$width, $height, $ratio];
     }
 
     /**
@@ -65,21 +69,17 @@ class AutoRepresentations
      */
     public function get(): array
     {
-        $dimension = $this->getDimensions();
-
-        $this->height = $dimension->getHeight();
-        $width = $dimension->getWidth();
-        $ratio = $dimension->getRatio()->getValue();
-
+        //get video's info
+        list($width, $height, $ratio) = $this->getDimensions();
         $kilobitrate = $this->getKiloBitRate();
 
-        $representations[] = $this->addRepresentation($kilobitrate, $width, $this->height);
+        $representations[] = $this->addRepresentation($kilobitrate, $width, $height);
 
-        $heights = array_filter($this->heights, function ($value) {
-            return $value < $this->height;
+        $heights = array_filter(static::heights, function ($value) use ($height) {
+            return $value < $height;
         });
 
-        if (count($heights) > 0) {
+        if ($heights) {
             $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
 
             foreach (array_values($heights) as $key => $height) {
@@ -97,8 +97,9 @@ class AutoRepresentations
      * @return Representation
      * @throws Exception
      */
-    private function addRepresentation($kilobitrate, $width, $height)
+    private function addRepresentation($kilobitrate, $width, $height): Representation
     {
+        var_dump("kilobitrate: $kilobitrate", "width: $width", "height: $height\n\n");
         return (new Representation())->setKiloBitrate($kilobitrate)->setResize($width, $height);
     }
 
