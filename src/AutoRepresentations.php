@@ -43,12 +43,10 @@ class AutoRepresentations
      */
     private function getDimensions(): array
     {
-        $dimension = $this->stream->getDimensions();
-        $width = $dimension->getWidth();
-        $height = $dimension->getHeight();
-        $ratio = $dimension->getRatio()->getValue();
+        $width = $this->stream->get('width');
+        $height = $this->stream->get('height');
 
-        return [$width, $height, $ratio];
+        return [$width, $height, $width / $height];
     }
 
     /**
@@ -69,9 +67,8 @@ class AutoRepresentations
      */
     public function get(): array
     {
-        //get video's info
-        list($width, $height, $ratio) = $this->getDimensions();
         $kilobitrate = $this->getKiloBitRate();
+        list($width, $height, $ratio) = $this->getDimensions();
 
         $representations[] = $this->addRepresentation($kilobitrate, $width, $height);
 
@@ -112,8 +109,7 @@ class AutoRepresentations
         $divided_by = 1.3;
 
         while ($count) {
-            $kbitrate = intval($kilobitrate / $divided_by);
-            $kilobitrates[] = ($kbitrate < 100) ? 100 : $kbitrate;
+            $kilobitrates[] = ($kbitrate = intval($kilobitrate / $divided_by) < 100) ? 100 : $kbitrate;
             $divided_by += .3;
             $count--;
         }
