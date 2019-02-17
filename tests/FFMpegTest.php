@@ -19,7 +19,13 @@
 namespace Tests\FFMpegStreaming;
 
 
+use Mockery;
+
 class FFMpegTest extends TestCase
 {
-
+    public function test()
+    {
+        $this->assertEquals("a", "a");
+        $this->assertFalse(1<0);
+    }
 }

@@ -137,8 +137,8 @@ class Filter implements FilterInterface
     private function HLSFilter(HLS $media)
     {
         $filter = [
-            "-hls_segment_filename",
-            "'file_%v_%03d.ts'"
+            "-f",
+            "hls"
         ];
 
         foreach ($media->getRepresentations() as $key => $representation) {

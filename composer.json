@@ -43,11 +43,11 @@
             "Tests\\FFMpegStreaming\\": "tests"
         }
     },
+    "require": {
+        "php": "^7.1",
+        "php-ffmpeg/php-ffmpeg": "^0.13"
+    },
     "scripts": {
         "test": "vendor/bin/phpunit"
-    },
-    "require": {
-        "php": "^7.1.0",
-        "php-ffmpeg/php-ffmpeg": "^0.7.0@dev"
     }
 }
