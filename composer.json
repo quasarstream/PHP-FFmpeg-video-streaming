@@ -19,6 +19,7 @@
     "authors": [
         {
             "name": "Amin Yazdanpanah",
+            "email": "contact@aminyazdanpanah.com",
             "homepage": "http://www.aminyazdanpanah.com"
         }
     ],
@@ -49,5 +50,9 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
+    },
+    "suggest": {
+        "php-ffmpeg/php-ffmpeg": "php-ffmpeg/php-ffmpeg is required for video support.",
+        "aminyazdanpanah/save-uploaded-files": "aminyazdanpanah/save-uploaded-files is suggested for uploading and validating a new video."
     }
 }
