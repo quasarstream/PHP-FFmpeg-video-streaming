@@ -17,10 +17,10 @@ environment:
     ANSICON: 121x90 (121x90) # Console colors
 
   matrix:
-    - PHP_VERSION: 5.6
+    - PHP_VERSION: 7.1
       COMPOSER_OPTS: --prefer-lowest
 
-    - PHP_VERSION: 5.6
+    - PHP_VERSION: 7.1
       COMPOSER_OPTS:
 
     - PHP_VERSION: 7.2
