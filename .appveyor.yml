@@ -57,5 +57,4 @@ install:
 
 test_script:
   - cd c:\projects\project-code
-  - vendor\bin\phpunit --verbose --exclude-group=integration
-  - vendor\bin/phpspec run
+  - vendor\bin\phpunit tests
