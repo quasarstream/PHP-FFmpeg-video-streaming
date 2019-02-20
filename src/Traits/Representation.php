@@ -18,7 +18,6 @@
 
 namespace AYazdanpanah\FFMpegStreaming\Traits;
 
-
 use AYazdanpanah\FFMpegStreaming\AutoRepresentations;
 use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 
@@ -56,6 +55,10 @@ trait Representation
      */
     public function autoGenerateRepresentations()
     {
+        if (!$this->format) {
+            throw new Exception('Format has not been set');
+        }
+
         $this->representations = (new AutoRepresentations($this->media->getFirstStream()))
             ->get();
 

@@ -33,8 +33,16 @@ require 'vendor/autoload.php'; // if you use frameworks that require autoload, y
 
 $path = '/var/www/media/videos/test.mp4';// the path to the video
 
-dash($path);// auto create dash MPD file based on original video
-hls($path);// auto create HLS M3U8 file based on original video
+//You can transcode videos using a callback method
+$on = function ($audio, $format, $percentage) {
+    echo "$percentage % transcoded\n";
+};
+
+$save_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //You can set a path to save files
+$save_path_hls = null; //You can set a path to save files or it can be null(input path is the defult path for output path)
+
+dash($path,$save_path_dash, $on);
+hls($path,$save_path_hls, $on);
 ```
 
 ## Documentation
@@ -53,7 +61,7 @@ To create an MPD file use `DASH` method and export video into Dash.
 
  
 As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on the video size and bit rate:
-
+##### Auto create dash files
 ``` php
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
@@ -63,6 +71,9 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
     ->save(); // it can pass a path to the method or it can be null
 ```
+
+
+##### Create representation manually
 
 Also you can add representation manually by using  ```addRepresentation``` method:
 
@@ -80,6 +91,34 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->save(); // it can pass a path to the method or it can be null
 
 ```
+
+
+##### Transcoding
+
+You can transcode videos using the `on` method in formats class.
+ 
+ Transcoding progress can be monitored in realtime, see Format documentation
+in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
+Please note that audio and video bitrate are set on the format.
+
+```php
+$format = new AYazdanpanah\FFMpegStreaming\Format\HEVC();
+
+$format->on('progress', function ($video, $format, $percentage) {
+    echo "$percentage % transcoded";
+});
+
+AYazdanpanah\FFMpegStreaming\FFMpeg::create()
+    ->open('/var/www/media/videos/test.mp4')
+    ->DASH()
+    ->setFormat($format)
+    ->autoGenerateRepresentations()
+    ->setAdaption('id=0,streams=v id=1,streams=a')
+    ->save('/var/www/media/videos/dash/test.mpd');
+
+```
+
+
 
 For more information about [FFMpeg](https://ffmpeg.org/) and its dash options please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
 ### HLS
@@ -117,6 +156,25 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->save(); // it can pass a path to the method or it can be null
 ```
 For more information about `setStreamMap` method and its input and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
+
+
+##### Transcoding
+
+```php
+$format = new AYazdanpanah\FFMpegStreaming\Format\X264();
+
+$format->on('progress', function ($video, $format, $percentage) {
+    echo "$percentage % transcoded";
+});
+
+AYazdanpanah\FFMpegStreaming\FFMpeg::create()
+    ->open('/var/www/media/videos/test.mp4')
+    ->HLS()
+    ->setFormat($format)
+    ->autoGenerateRepresentations()
+    ->save('/var/www/media/videos/dash/test.m3u8');
+```
+
 
 ## Live Streaming
 

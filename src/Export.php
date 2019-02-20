@@ -25,7 +25,7 @@ abstract class Export
     use Formats;
 
     /** @var object */
-    protected $media;
+    public $media;
 
     /** @var Filter */
     protected $filter;
@@ -79,6 +79,6 @@ abstract class Export
             }
         }
 
-        return $path;
+        return str_replace('\\','/', $path);
     }
 }

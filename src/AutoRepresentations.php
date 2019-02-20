@@ -109,7 +109,7 @@ class AutoRepresentations
         $divided_by = 1.3;
 
         while ($count) {
-            $kilobitrates[] = (($kbitrate = intval($kilobitrate / $divided_by)) < 100) ? 100 : $kbitrate;
+            $kilobitrates[] = (($kbitrate = intval($kilobitrate / $divided_by)) < 64) ? 64 : $kbitrate;
             $divided_by += .3;
             $count--;
         }

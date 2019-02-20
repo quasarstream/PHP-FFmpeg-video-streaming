@@ -18,19 +18,23 @@
 
 namespace AYazdanpanah\FFMpegStreaming\Traits;
 
+use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 use AYazdanpanah\FFMpegStreaming\Format\HEVC;
+use AYazdanpanah\FFMpegStreaming\Format\Video;
+use AYazdanpanah\FFMpegStreaming\Format\VP9;
 use AYazdanpanah\FFMpegStreaming\Format\X264;
 use FFMpeg\Format\FormatInterface;
 
 trait Formats
 {
     /** @var object */
-    protected $format;
+    public $format;
 
     /**
      * @param string $audioCodec
      * @param string $videoCodec
      * @return $this
+     * @throws Exception
      */
     public function X264($audioCodec = 'libmp3lame', $videoCodec = 'libx264')
     {
@@ -42,10 +46,23 @@ trait Formats
      * @param string $audioCodec
      * @param string $videoCodec
      * @return $this
+     * @throws Exception
      */
     public function HEVC($audioCodec = 'libmp3lame', $videoCodec = 'libx265')
     {
         $this->setFormat(new HEVC($audioCodec, $videoCodec));
+        return $this;
+    }
+
+    /**
+     * @param string $audioCodec
+     * @param string $videoCodec
+     * @return $this
+     * @throws Exception
+     */
+    public function WebM($audioCodec = 'libvorbis', $videoCodec = 'libvpx-vp9')
+    {
+        $this->setFormat(new VP9($audioCodec, $videoCodec));
         return $this;
     }
 
@@ -60,9 +77,14 @@ trait Formats
     /**
      * @param mixed $format
      * @return $this
+     * @throws Exception
      */
-    protected function setFormat($format)
+    public function setFormat($format)
     {
+        if(!$format instanceof Video){
+            throw new Exception("Sorry! we only accept formats that inherent from AYazdanpanah\FFMpegStreaming\Format\Video");
+        }
+
         $this->format = $format;
         return $this;
     }

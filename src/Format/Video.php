@@ -18,24 +18,24 @@
 
 namespace AYazdanpanah\FFMpegStreaming\Format;
 
-use FFMpeg\Format\AudioInterface;
+use FFMpeg\Format\Audio\DefaultAudio;
 
-abstract class Video implements  AudioInterface
+abstract class Video extends DefaultAudio
 {
     /** @var string */
-    private $audioCodec;
+    protected $audioCodec;
 
     /** @var string */
-    private $videoCodec;
+    protected $videoCodec;
 
     /** @var integer */
-    private $passes = 1;
+    protected $passes = 1;
 
     /** @var integer */
-    private $audioKiloBitrate = 128;
+    protected $audioKiloBitrate = 128;
 
     /** @var integer */
-    private $audioChannels = 2;
+    protected $audioChannels = 2;
 
     /**
      * @return string
@@ -49,7 +49,7 @@ abstract class Video implements  AudioInterface
      * @param string $audioCodec
      * @return Video
      */
-    public function setAudioCodec(string $audioCodec)
+    public function setAudioCodec($audioCodec)
     {
         $this->audioCodec = $audioCodec;
         return $this;
