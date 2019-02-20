@@ -39,10 +39,10 @@ $on = function ($audio, $format, $percentage) {
 };
 
 $save_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //You can set a path to save files
-$save_path_hls = null; //You can set a path to save files or it can be null(input path is the defult path for output path)
+$save_path_hls = null; //You can set a path to save files or it can be null(the defult path is input path)
 
-dash($path,$save_path_dash, $on);
-hls($path,$save_path_hls, $on);
+dash($path, $save_path_dash, $on);
+hls($path, $save_path_hls, $on);
 ```
 
 ## Documentation
