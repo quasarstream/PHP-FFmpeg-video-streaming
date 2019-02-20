@@ -66,7 +66,7 @@ As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
-    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->HEVC() // the format of the video.for use another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
     ->save(); // it can pass a path to the method or it can be null
@@ -84,7 +84,7 @@ $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
-    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->HEVC() // the format of the video.for use another formats, see Traits\Formats
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
