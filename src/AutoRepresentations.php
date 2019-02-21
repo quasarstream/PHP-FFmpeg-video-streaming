@@ -80,7 +80,7 @@ class AutoRepresentations
             $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
 
             foreach (array_values($heights) as $key => $height) {
-                $representations[] = $this->addRepresentation($kilobitrates[$key], round_to_even($ratio * $height), $height);
+                $representations[] = $this->addRepresentation($kilobitrates[$key], Helper::roundToEven($ratio * $height), $height);
             }
         }
 
