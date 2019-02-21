@@ -34,14 +34,14 @@ require 'vendor/autoload.php'; // if you use frameworks that require autoload, y
 $path = '/var/www/media/videos/test.mp4';// the path to the video
 
 //You can transcode videos using a callback method
-$on = function ($audio, $format, $percentage) {
+$listener = function ($audio, $format, $percentage) {
     echo "$percentage % transcoded\n";
 };
 
 $save_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //You can set a path to save files
 $save_path_hls = null; //You can set a path to save files or it can be null(the defult path is input path)
 
-dash($path, $save_path_dash, $on);
+dash($path, $save_path_dash, $listener);
 hls($path, $save_path_hls, $on);
 ```
 

@@ -17,7 +17,7 @@
  */
 
 use AYazdanpanah\FFMpegStreaming\FFMpeg;
-use AYazdanpanah\FFMpegStreaming\Exception\FFMpegExceptionInterface;
+use FFMpeg\Exception\ExceptionInterface;
 use AYazdanpanah\FFMpegStreaming\Format\HEVC;
 use AYazdanpanah\FFMpegStreaming\Format\X264;
 
@@ -26,16 +26,16 @@ if (! function_exists('dash')) {
      * Auto generate dash MPD file
      *
      * @param string $input_path
-     * @param callable $on
+     * @param callable $listener
      * @param string|null $save_path
      * @return string
      */
-    function dash(string $input_path, string $save_path = null, callable $on = null)
+    function dash(string $input_path, string $save_path = null, callable $listener = null)
     {
         $format = new HEVC();
 
-        if (is_callable($on)) {
-            $format->on('progress', $on);
+        if (is_callable($listener)) {
+            $format->on('progress', $listener);
         }
 
         try {
@@ -46,7 +46,7 @@ if (! function_exists('dash')) {
                 ->autoGenerateRepresentations()
                 ->setAdaption('id=0,streams=v id=1,streams=a')
                 ->save($save_path);
-        } catch (FFMpegExceptionInterface $e) {
+        } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
     }
@@ -57,16 +57,16 @@ if (! function_exists('hls')) {
      * Auto generate HLS M3U8 file
      *
      * @param string $input_path
-     * @param callable|null $on
+     * @param callable|null $listener
      * @param string|null $save_path
      * @return string
      */
-    function hls(string $input_path,  string $save_path = null, callable $on = null)
+    function hls(string $input_path,  string $save_path = null, callable $listener = null)
     {
         $format = new X264();
 
-        if (is_callable($on)) {
-            $format->on('progress', $on);
+        if (is_callable($listener)) {
+            $format->on('progress', $listener);
         }
 
         try {
@@ -76,7 +76,7 @@ if (! function_exists('hls')) {
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
                 ->save($save_path);
-        } catch (FFMpegExceptionInterface $e) {
+        } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
     }
