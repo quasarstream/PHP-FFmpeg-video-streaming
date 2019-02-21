@@ -42,8 +42,8 @@ $listener = function ($audio, $format, $percentage) {
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
 $output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
 
-dash($input_path, $output_path_dash, $listener);
-hls($input_path, $output_path_hls, $on);
+dash($input_path, $output_path_dash, $listener); //Create the dash files
+hls($input_path, $output_path_hls, $listener); //Create the hls files
 ```
 
 ## Documentation
