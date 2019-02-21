@@ -41,14 +41,14 @@ $listener = function ($audio, $format, $percentage) {
 };
 
 //The path you would like to save your files.
-Also, it can be null, the defult path is the input path
+//Also, it can be null-the default path is the input path
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
 $output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
 
-$result_dash = dash($input_path, $output_path_dash, $listener); //Create the dash files
-$result_hls = hls($input_path, $output_path_hls, $listener); //Create the hls files
+$result_dash = dash($input_path, $output_path_dash, $listener); //Create dash files
+$result_hls = hls($input_path, $output_path_hls, $listener); //Create hls files
 
-//dupm your results
+//dupm the results
 var_dump($result_dash, $result_hls);
 ```
 
