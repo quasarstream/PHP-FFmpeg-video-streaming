@@ -58,7 +58,7 @@ class AutoRepresentations
         if (!$this->stream->has('bit_rate')) {
             throw new Exception("Invalid stream");
         }
-        return (int)$this->stream->get('bit_rate') / 1000;
+        return (int)$this->stream->get('bit_rate') / 1024;
     }
 
     /**
