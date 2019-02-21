@@ -33,7 +33,7 @@ require 'vendor/autoload.php'; // if you use frameworks that require autoload, y
 
 $input_path = '/var/www/media/videos/test.mp4';// the path to the video
 
-//You can transcode videos using a callback method. If you do not wish to transcode video, it can be null
+//You can transcode videos using a callback method. If you do not want to transcode video, it can be null
 $listener = function ($audio, $format, $percentage) {
     echo "$percentage % transcoded\n";
 };
