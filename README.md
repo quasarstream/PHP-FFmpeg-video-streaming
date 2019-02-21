@@ -29,21 +29,27 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ## Basic Usage
 
 ``` php
-require 'vendor/autoload.php'; // if you use frameworks that require autoload, you do not need to require it
+//if you use frameworks that require autoload, you do not need to require it
+require_once 'vendor/autoload.php'; 
 
 $input_path = '/var/www/media/videos/test.mp4';// the path to the video
 
-//You can transcode videos using a callback method. If you do not want to transcode video, it can be null
+//You can transcode videos using a callback method.
+//If you do not want to transcode video, do not pass it(it can be null)
 $listener = function ($audio, $format, $percentage) {
-    echo "$percentage % transcoded\n";
+    echo "$percentage % is transcoded\n";
 };
 
-//The path you would like to save your files. Also, it can be null, the defult path is the input path
+//The path you would like to save your files.
+Also, it can be null, the defult path is the input path
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
 $output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
 
-dash($input_path, $output_path_dash, $listener); //Create the dash files
-hls($input_path, $output_path_hls, $listener); //Create the hls files
+$result_dash = dash($input_path, $output_path_dash, $listener); //Create the dash files
+$result_hls = hls($input_path, $output_path_hls, $listener); //Create the hls files
+
+//dupm your results
+var_dump($result_dash, $result_hls);
 ```
 
 ## Documentation
@@ -102,11 +108,11 @@ You can transcode videos using the `on` method in formats class.
 in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
 Please note that audio and video bitrate are set on the format.
 
-```php
+``` php
 $format = new AYazdanpanah\FFMpegStreaming\Format\HEVC();
 
 $format->on('progress', function ($video, $format, $percentage) {
-    echo "$percentage % transcoded";
+    echo "$percentage % is transcoded";
 });
 
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()
@@ -161,11 +167,11 @@ For more information about `setStreamMap` method and its input and also HLS opti
 
 ##### Transcoding
 
-```php
+``` php
 $format = new AYazdanpanah\FFMpegStreaming\Format\X264();
 
 $format->on('progress', function ($video, $format, $percentage) {
-    echo "$percentage % transcoded";
+    echo "$percentage % is transcoded";
 });
 
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()
