@@ -31,18 +31,19 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ``` php
 require 'vendor/autoload.php'; // if you use frameworks that require autoload, you do not need to require it
 
-$path = '/var/www/media/videos/test.mp4';// the path to the video
+$input_path = '/var/www/media/videos/test.mp4';// the path to the video
 
-//You can transcode videos using a callback method
+//You can transcode videos using a callback method. If you do not wish to transcode video, it can be null
 $listener = function ($audio, $format, $percentage) {
     echo "$percentage % transcoded\n";
 };
 
-$save_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //You can set a path to save files
-$save_path_hls = null; //You can set a path to save files or it can be null(the defult path is input path)
+//The path you would like to save your files. Also, it can be null, the defult path is the input path
+$output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
+$output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
 
-dash($path, $save_path_dash, $listener);
-hls($path, $save_path_hls, $on);
+dash($input_path, $output_path_dash, $listener);
+hls($input_path, $output_path_hls, $on);
 ```
 
 ## Documentation
