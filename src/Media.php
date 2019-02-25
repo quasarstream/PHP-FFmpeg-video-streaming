@@ -55,14 +55,6 @@ class Media
     }
 
     /**
-     * @return Live
-     */
-    public function live(): Live
-    {
-        return new Live($this);
-    }
-
-    /**
      * @return HLS
      */
     public function HLS(): HLS

@@ -76,7 +76,7 @@ class AutoRepresentations
             return $value < $height;
         });
 
-        if ($heights) {
+        if (!empty($heights)) {
             $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
 
             foreach (array_values($heights) as $key => $height) {

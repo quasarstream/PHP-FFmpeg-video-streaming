@@ -24,7 +24,7 @@ class FFMpeg
 {
     /**
      * @param array $config
-     * @param null $logger
+     * @param array | null $logger
      * @return FFMpegInstance
      */
     public static function create($config = array(), $logger = null)

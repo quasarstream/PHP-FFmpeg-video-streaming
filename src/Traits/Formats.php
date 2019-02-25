@@ -78,7 +78,7 @@ trait Formats
      */
     public function setFormat($format)
     {
-        if(!$format instanceof Video){
+        if (!$format instanceof Video) {
             throw new Exception("Sorry! the format must be inherited from 'AYazdanpanah\FFMpegStreaming\Format\Video'");
         }
 

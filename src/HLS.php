@@ -19,12 +19,12 @@
 namespace AYazdanpanah\FFMpegStreaming;
 
 use AYazdanpanah\FFMpegStreaming\Filters\HLSFilter;
-use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+use AYazdanpanah\FFMpegStreaming\Traits\Representation as Representations;
 use AYazdanpanah\FFMpegStreaming\Filters\Filter;
 
 class HLS extends Export
 {
-    use Representation;
+    use Representations;
 
     /** @var string */
     private $hls_time = 5;

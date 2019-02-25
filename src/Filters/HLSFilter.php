@@ -70,7 +70,7 @@ class HLSFilter extends Filter
                 $filter[] = "-hls_segment_filename";
                 $filter[] = $dirname . "/" . $filename . "_" . $representation->getHeight() . "p_%04d.ts";
 
-                if(($hls_key_info_file = $media->getHlsKeyInfoFile()) !== ""){
+                if (($hls_key_info_file = $media->getHlsKeyInfoFile()) !== "") {
                     $filter[] = "-hls_key_info_file";
                     $filter[] = $hls_key_info_file;
                 }
@@ -80,8 +80,6 @@ class HLSFilter extends Filter
                 }
             }
         }
-
-
 
         return $filter;
     }

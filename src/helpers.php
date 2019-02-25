@@ -21,14 +21,14 @@ use FFMpeg\Exception\ExceptionInterface;
 use AYazdanpanah\FFMpegStreaming\Format\HEVC;
 use AYazdanpanah\FFMpegStreaming\Format\X264;
 
-if (! function_exists('dash')) {
+if (!function_exists('dash')) {
     /**
      * Auto generate dash MPD file
      *
      * @param string $input_path
      * @param callable $listener
      * @param string|null $save_path
-     * @return string
+     * @return mixed
      */
     function dash(string $input_path, string $save_path = null, callable $listener = null)
     {
@@ -52,7 +52,7 @@ if (! function_exists('dash')) {
     }
 }
 
-if (! function_exists('hls')) {
+if (!function_exists('hls')) {
     /**
      * Auto generate HLS M3U8 file
      *
@@ -60,7 +60,7 @@ if (! function_exists('hls')) {
      * @param string|null $save_path
      * @param callable|null $listener
      * @param string $hls_key
-     * @return string
+     * @return mixed
      */
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
     {

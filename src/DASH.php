@@ -19,12 +19,12 @@
 namespace AYazdanpanah\FFMpegStreaming;
 
 use AYazdanpanah\FFMpegStreaming\Filters\DASHFilter;
-use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+use AYazdanpanah\FFMpegStreaming\Traits\Representation as Representations;
 use AYazdanpanah\FFMpegStreaming\Filters\Filter;
 
 class DASH extends Export
 {
-    use Representation;
+    use Representations;
 
     /** @var string */
     protected $adaption;
