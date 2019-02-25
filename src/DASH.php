@@ -18,7 +18,9 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Filters\DASHFilter;
 use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+use AYazdanpanah\FFMpegStreaming\Filters\Filter;
 
 class DASH extends Export
 {
@@ -58,6 +60,6 @@ class DASH extends Export
      */
     protected function setFilter()
     {
-        $this->filter = new Filter($this);
+        $this->filter = new DASHFilter($this);
     }
 }

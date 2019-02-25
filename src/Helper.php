@@ -18,7 +18,6 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
-
 class Helper
 {
     /**
@@ -30,5 +29,16 @@ class Helper
     public static function roundToEven(float $number): int
     {
         return (($number = intval($number)) % 2 == 0) ? $number : $number + 1;
+    }
+
+
+    /**
+     * @param $dirname
+     */
+    public static function makeDir($dirname): void
+    {
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0777, true);
+        }
     }
 }

@@ -28,48 +28,45 @@ use FFMpeg\Format\FormatInterface;
 trait Formats
 {
     /** @var object */
-    public $format;
+    protected $format;
 
     /**
-     * @param string $audioCodec
      * @param string $videoCodec
      * @return $this
      * @throws Exception
      */
-    public function X264($audioCodec = 'libmp3lame', $videoCodec = 'libx264')
+    public function X264($videoCodec = 'libx264')
     {
-        $this->setFormat(new X264($audioCodec, $videoCodec));
+        $this->setFormat(new X264($videoCodec));
         return $this;
     }
 
     /**
-     * @param string $audioCodec
      * @param string $videoCodec
      * @return $this
      * @throws Exception
      */
-    public function HEVC($audioCodec = 'libmp3lame', $videoCodec = 'libx265')
+    public function HEVC($videoCodec = 'libx265')
     {
-        $this->setFormat(new HEVC($audioCodec, $videoCodec));
+        $this->setFormat(new HEVC($videoCodec));
         return $this;
     }
 
     /**
-     * @param string $audioCodec
      * @param string $videoCodec
      * @return $this
      * @throws Exception
      */
-    public function WebM($audioCodec = 'libvorbis', $videoCodec = 'libvpx-vp9')
+    public function WebM($videoCodec = 'libvpx-vp9')
     {
-        $this->setFormat(new VP9($audioCodec, $videoCodec));
+        $this->setFormat(new VP9($videoCodec));
         return $this;
     }
 
     /**
      * @return FormatInterface|mixed
      */
-    private function getFormat(): FormatInterface
+    public function getFormat(): FormatInterface
     {
         return $this->format;
     }
@@ -82,7 +79,7 @@ trait Formats
     public function setFormat($format)
     {
         if(!$format instanceof Video){
-            throw new Exception("Sorry! we only accept formats that inherent from AYazdanpanah\FFMpegStreaming\Format\Video");
+            throw new Exception("Sorry! the format must be inherited from 'AYazdanpanah\FFMpegStreaming\Format\Video'");
         }
 
         $this->format = $format;

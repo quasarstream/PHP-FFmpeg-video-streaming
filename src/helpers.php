@@ -57,11 +57,12 @@ if (! function_exists('hls')) {
      * Auto generate HLS M3U8 file
      *
      * @param string $input_path
-     * @param callable|null $listener
      * @param string|null $save_path
+     * @param callable|null $listener
+     * @param string $hls_key
      * @return string
      */
-    function hls(string $input_path,  string $save_path = null, callable $listener = null)
+    function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
     {
         $format = new X264();
 
@@ -69,15 +70,16 @@ if (! function_exists('hls')) {
             $format->on('progress', $listener);
         }
 
-        try {
+//        try {
             return FFMpeg::create()
                 ->open($input_path)
                 ->HLS()
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
+                ->setHlsKeyInfoFile($hls_key)
                 ->save($save_path);
-        } catch (ExceptionInterface $e) {
-            return "Failed: error: " . $e->getMessage();
-        }
+//        } catch (ExceptionInterface $e) {
+//            return "Failed: error: " . $e->getMessage();
+//        }
     }
 }

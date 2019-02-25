@@ -22,7 +22,6 @@ use FFMpeg\FFMpeg as BFFMpeg;
 
 class FFMpeg
 {
-
     /**
      * @param array $config
      * @param null $logger

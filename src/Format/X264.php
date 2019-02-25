@@ -18,19 +18,16 @@
 
 namespace AYazdanpanah\FFMpegStreaming\Format;
 
-class X264 extends Video
+final class X264 extends Video
 {
 
     /**
      * X264 constructor.
-     * @param string $audioCodec
      * @param string $videoCodec
      */
-    public function __construct($audioCodec = 'libmp3lame', $videoCodec = 'libx264')
+    public function __construct($videoCodec = 'libx264')
     {
-        $this
-            ->setAudioCodec($audioCodec)
-            ->setVideoCodec($videoCodec);
+        $this->setVideoCodec($videoCodec);
     }
 
     /**
@@ -40,6 +37,6 @@ class X264 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array('libmp3lame');
+        return array();
     }
 }

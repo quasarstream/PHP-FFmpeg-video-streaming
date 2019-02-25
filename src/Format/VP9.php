@@ -21,21 +21,11 @@ namespace AYazdanpanah\FFMpegStreaming\Format;
 /**
  * The VP9 video format
  */
-class VP9 extends Video
+final class VP9 extends Video
 {
-    public function __construct($audioCodec = 'libvorbis', $videoCodec = 'libvpx-vp9')
+    public function __construct($videoCodec = 'libvpx-vp9')
     {
-        $this
-            ->setAudioCodec($audioCodec)
-            ->setVideoCodec($videoCodec);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supportBFrames()
-    {
-        return true;
+        $this->setVideoCodec($videoCodec);
     }
 
     /**
@@ -43,7 +33,7 @@ class VP9 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array('libvorbis');
+        return array();
     }
 
     /**

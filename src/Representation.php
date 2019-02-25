@@ -23,18 +23,16 @@ use AYazdanpanah\FFMpegStreaming\Exception\Exception;
 class Representation
 {
     private $kiloBitrate = 1000;
-    private $resize = [];
+    private $resize = '';
+    private $width = 0;
+    private $height = 0;
 
     /**
      * @return mixed
      */
     public function getResize()
     {
-        if (!isset($this->resize['width']) || !isset($this->resize['height'])) {
-            return null;
-        }
-
-        return $this->resize['width'] . "x" . $this->resize['height'];
+        return $this->resize;
     }
 
     /**
@@ -49,8 +47,10 @@ class Representation
             throw new Exception('Wrong resize value');
         }
 
-        $this->resize['width'] = $width;
-        $this->resize['height'] = $height;
+        $this->width = $width;
+        $this->height = $height;
+        $this->resize = $width . "x" . $height;
+
         return $this;
     }
 
@@ -78,5 +78,21 @@ class Representation
         $this->kiloBitrate = (int)$kiloBitrate;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth(): int
+    {
+        return $this->width;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeight(): int
+    {
+        return $this->height;
     }
 }

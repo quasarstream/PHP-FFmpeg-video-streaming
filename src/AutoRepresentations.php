@@ -104,7 +104,7 @@ class AutoRepresentations
      * @param $count
      * @return array
      */
-    private function getKiloBitRates($kilobitrate, $count)
+    private function getKiloBitRates($kilobitrate, $count): array
     {
         $divided_by = 1.3;
 

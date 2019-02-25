@@ -18,19 +18,16 @@
 
 namespace AYazdanpanah\FFMpegStreaming\Format;
 
-class HEVC extends Video
+final class HEVC extends Video
 {
 
     /**
      * HEVC constructor.
-     * @param string $audioCodec
      * @param string $videoCodec
      */
-    public function __construct($audioCodec = 'libmp3lame', $videoCodec = 'libx265')
+    public function __construct($videoCodec = 'libx265')
     {
-        $this
-            ->setAudioCodec($audioCodec)
-            ->setVideoCodec($videoCodec);
+        $this->setVideoCodec($videoCodec);
     }
 
     /**
@@ -40,6 +37,6 @@ class HEVC extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array('libmp3lame');
+        return array();
     }
 }

@@ -18,6 +18,7 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Filters\Filter;
 use AYazdanpanah\FFMpegStreaming\Traits\Formats;
 
 abstract class Export
@@ -25,10 +26,13 @@ abstract class Export
     use Formats;
 
     /** @var object */
-    public $media;
+    protected $media;
 
     /** @var Filter */
     protected $filter;
+
+    /** @var array */
+    protected $path_info;
 
     /**
      * Export constructor.
@@ -45,6 +49,8 @@ abstract class Export
      */
     public function save(string $path = null): Export
     {
+        $path = $this->getPath($path);
+
         $this->setFilter();
 
         $this->media->addFilter(
@@ -53,7 +59,7 @@ abstract class Export
 
         $this->media->save(
             $this->getFormat(),
-            $this->getPath($path)
+            $path
         );
 
         return $this;
@@ -71,14 +77,26 @@ abstract class Export
 
     private function getPath($path): string
     {
-        if (null === $path) {
-            if ($this instanceof DASH) {
-                $path = $this->media->getPath() . '.mpd';
-            } elseif ($this instanceof HLS) {
-                $path = $this->media->getPath() . '.m3u8';
-            }
+        $this->path_info = $path_parts = (null === $path) ? $this->media->getPathInfo() : pathinfo($path);
+        $dirname = str_replace("\\", "/", $path_parts["dirname"]);
+        Helper::makeDir($dirname);
+        $filename = substr($path_parts["filename"], -50);
+
+        if ($this instanceof DASH) {
+            $path = $dirname . "/" . $filename . ".mpd";
+        } elseif ($this instanceof HLS) {
+            $path = $dirname . "/" . $filename . "_" . end($this->getRepresentations())->getHeight() . "p.m3u8";
+            ExportHLSPlaylist::savePlayList($dirname . "/" . $filename . ".m3u8", $this->getRepresentations(), $filename);
         }
 
-        return str_replace('\\','/', $path);
+        return $path;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPathInfo(): array
+    {
+        return $this->path_info;
     }
 }

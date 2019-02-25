@@ -18,31 +18,75 @@
 
 namespace AYazdanpanah\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Filters\HLSFilter;
 use AYazdanpanah\FFMpegStreaming\Traits\Representation;
+use AYazdanpanah\FFMpegStreaming\Filters\Filter;
 
 class HLS extends Export
 {
     use Representation;
 
     /** @var string */
-    protected $stream_map;
+    private $hls_time = 5;
+
+    /** @var bool */
+    private $hls_allow_cache = true;
+
+    /** @var string */
+    private $hls_key_info_file = "";
 
     /**
-     * @return mixed
+     * @param string $hls_time
+     * @return HLS
      */
-    public function getStreamMap()
+    public function setHlsTime(string $hls_time): HLS
     {
-        return $this->stream_map;
+        $this->hls_time = $hls_time;
+        return $this;
     }
 
     /**
-     * @param mixed $adaption
+     * @return string
+     */
+    public function getHlsTime(): string
+    {
+        return $this->hls_time;
+    }
+
+    /**
+     * @param bool $hls_allow_cache
      * @return HLS
      */
-    public function setStreamMap(string $adaption): HLS
+    public function setHlsAllowCache(bool $hls_allow_cache): HLS
     {
-        $this->stream_map = $adaption;
+        $this->hls_allow_cache = $hls_allow_cache;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHlsAllowCache(): bool
+    {
+        return $this->hls_allow_cache;
+    }
+
+    /**
+     * @param string $hls_key_info_file
+     * @return HLS
+     */
+    public function setHlsKeyInfoFile(string $hls_key_info_file): HLS
+    {
+        $this->hls_key_info_file = $hls_key_info_file;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHlsKeyInfoFile(): string
+    {
+        return $this->hls_key_info_file;
     }
 
     /**
@@ -58,6 +102,6 @@ class HLS extends Export
      */
     protected function setFilter()
     {
-        $this->filter = new Filter($this);
+        $this->filter = new HLSFilter($this);
     }
 }

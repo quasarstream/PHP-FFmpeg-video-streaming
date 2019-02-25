@@ -54,11 +54,28 @@ var_dump($result_dash, $result_hls);
 
 ## Documentation
 
-### UML Diagram
-This is how it works:
+It is recommended to browse the source code as it is self-documented.
 
+### Required Libraries
 
-![UML](/docs/uml-class1.png?raw=true "UML")
+This library requires a working FFMpeg install. You will need both FFMpeg and FFProbe binaries to use it.
+
+For installing FFmpeg and FFprobe, just Google "install ffmpeg on" + `your system operation`
+
+### Configuration
+
+FFMpeg will autodetect ffmpeg and ffprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
+
+``` php
+$config = [
+    'ffmpeg.binaries'  => '/opt/local/ffmpeg/bin/ffmpeg',
+    'ffprobe.binaries' => '/opt/local/ffmpeg/bin/ffprobe',
+    'timeout'          => 3600, // The timeout for the underlying process
+    'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
+    ];
+    
+$ffmpeg = AYazdanpanah\FFMpegStreaming\FFMpeg::create($config);
+```
 
 
 ### DASH
@@ -159,11 +176,11 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->addRepresentation($rep_3) // add representation
-    ->setStreamMap('v:0 v:1 v:2') // set the StreamMap.
+    ->setHlsTime(5) // set Hls Time. the default value is 5 
+    ->setHlsAllowCache(false) // set Hls that is allowed to cache files. the default value is true 
     ->save(); // it can pass a path to the method or it can be null
 ```
 For more information about `setStreamMap` method and its input and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
-
 
 ##### Transcoding
 
@@ -182,11 +199,55 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
+##### Encryption HLS
 
-## Live Streaming
+The encryption process requires some kind of secret (key) together with an encryption algorithm.
 
-Soon!
+HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [read more](http://hlsbook.net/how-to-encrypt-hls-video-with-ffmpeg/)
 
+Before we can encrypt our videos, we need an encryption key. I’m going to use OpenSSL to create the key, which we can do like so:
+
+``` bash 
+openssl rand 16 > enc.key
+```
+
+The next step is to generate an IV. This step is optional. (If no value is provided, the segment sequence number will be used instead.)
+``` bash
+openssl rand -hex 16
+ecd0d06eaf884d8226c33928e87efa33
+```
+
+Make a note of the output as you’ll need it shortly.
+
+To encrypt the video we need to tell ffmpeg what encryption key to use, the URI of the key, and so on. We use `setHlsKeyInfoFile` method and passing the location of a key info file. The file must be in the following format:
+
+``` bash
+Key URI
+Path to key file
+IV (optional)
+```
+
+The first line specifies the URI of the key, which will be written to the playlist. The second line is the path to the file containing the encryption key, and the (optional) third line contains the initialisation vector. Here’s an example (enc.keyinfo):
+
+``` bash
+https://example.com/enc.key
+enc.key
+ecd0d06eaf884d8226c33928e87efa33
+```
+
+Now that we have everything we need, run the following code to encrypt the video segments:
+
+``` php
+AYazdanpanah\FFMpegStreaming\FFMpeg::create()
+    ->open('/var/www/media/videos/test.mp4')
+    ->X264()
+    ->setFormat($format)
+    ->setHlsKeyInfoFile('/var/www/enc.keyinfo')
+    ->autoGenerateRepresentations()
+    ->save('/var/www/media/videos/dash/test.m3u8');
+```
+
+Reference: http://hlsbook.net/
 ## Contributing
 
 I'd love your help in improving, correcting, adding to the specification.

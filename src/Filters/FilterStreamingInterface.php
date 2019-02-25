@@ -16,24 +16,13 @@
  * limitations under the License.
  */
 
-namespace AYazdanpanah\FFMpegStreaming;
+namespace AYazdanpanah\FFMpegStreaming\Filters;
 
-class Live extends Export
+interface FilterStreamingInterface
 {
-
     /**
-     * @return Filter
-     */
-    protected function getFilter(): Filter
-    {
-        // TODO: Implement getFilter() method.
-    }
-
-    /**
+     * @param $media
      * @return mixed
      */
-    protected function setFilter()
-    {
-        // TODO: Implement setFilter() method.
-    }
+    public function setFilter($media);
 }

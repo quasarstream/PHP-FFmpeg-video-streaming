@@ -23,37 +23,9 @@ use FFMpeg\Format\Audio\DefaultAudio;
 abstract class Video extends DefaultAudio
 {
     /** @var string */
-    protected $audioCodec;
-
-    /** @var string */
     protected $videoCodec;
 
-    /** @var integer */
-    protected $passes = 1;
-
-    /** @var integer */
-    protected $audioKiloBitrate = 128;
-
-    /** @var integer */
-    protected $audioChannels = 2;
-
-    /**
-     * @return string
-     */
-    public function getAudioCodec(): string
-    {
-        return $this->audioCodec;
-    }
-
-    /**
-     * @param string $audioCodec
-     * @return Video
-     */
-    public function setAudioCodec($audioCodec)
-    {
-        $this->audioCodec = $audioCodec;
-        return $this;
-    }
+    protected $audioKiloBitrate = null;
 
     /**
      * @return string
@@ -82,35 +54,5 @@ abstract class Video extends DefaultAudio
             '-c:v',
             $this->getVideoCodec()
         ];
-    }
-
-    /**
-     * Returns the number of passes.
-     *
-     * @return string
-     */
-    public function getPasses()
-    {
-        return $this->passes;
-    }
-
-    /**
-     * Gets the audio kiloBitrate value.
-     *
-     * @return integer
-     */
-    public function getAudioKiloBitrate()
-    {
-        return $this->audioKiloBitrate;
-    }
-
-    /**
-     * Gets the audio channels value.
-     *
-     * @return integer
-     */
-    public function getAudioChannels()
-    {
-        return $this->audioChannels;
     }
 }

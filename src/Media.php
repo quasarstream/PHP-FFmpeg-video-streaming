@@ -100,10 +100,10 @@ class Media
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getPath(): string
+    public function getPathInfo(): array
     {
-        return str_replace('\\', '/', explode('.', $this->path)[0]);
+        return pathinfo($this->path);
     }
 }
