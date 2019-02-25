@@ -85,7 +85,7 @@ To create an MPD file use `DASH` method and export video into Dash.
 
  
 As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on the video size and bit rate:
-##### Auto create dash files
+#### Auto create dash files
 ``` php
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
@@ -97,7 +97,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
 ```
 
 
-##### Create representation manually
+#### Create representation manually
 
 Also you can add representation manually by using  ```addRepresentation``` method:
 
@@ -117,7 +117,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
 ```
 
 
-##### Transcoding
+#### Transcoding
 
 You can transcode videos using the `on` method in formats class.
  
@@ -182,7 +182,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
 ```
 For more information about `setStreamMap` method and its input and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
 
-##### Transcoding
+#### Transcoding
 
 ``` php
 $format = new AYazdanpanah\FFMpegStreaming\Format\X264();
@@ -199,7 +199,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
-##### Encryption HLS
+#### Encryption HLS
 
 The encryption process requires some kind of secret (key) together with an encryption algorithm.
 
