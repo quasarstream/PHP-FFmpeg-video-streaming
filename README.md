@@ -180,7 +180,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
     ->setHlsAllowCache(false) // set Hls that is allowed to cache files. the default value is true 
     ->save(); // it can pass a path to the method or it can be null
 ```
-For more information about `setStreamMap` method and its input and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
+For more information about which value you should pass to these methods and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
 
 #### Transcoding
 
