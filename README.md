@@ -35,18 +35,24 @@ require_once 'vendor/autoload.php';
 $input_path = '/var/www/media/videos/test.mp4';// the path to the video
 
 //You can transcode videos using a callback method.
-//If you do not want to transcode video, do not pass it(it can be null)
+//If you do not want to transcode video, do not pass it(it can be null).
+//This value is optional.
 $listener = function ($audio, $format, $percentage) {
     echo "$percentage % is transcoded\n";
 };
 
 //The path you would like to save your files.
-//Also, it can be null-the default path is the input path
+//Also, it can be null-the default path is the input path.
+//These values are optional
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
 $output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
 
-$result_dash = dash($input_path, $output_path_dash, $listener); //Create dash files
-$result_hls = hls($input_path, $output_path_hls, $listener); //Create hls files
+//The path to the key info for encryption hls.
+//This value is optional.
+$hls_key_info = __DIR__ . "/enc.keyinfo";
+
+$result_dash = dash($input_path, $output_path_dash, $listener); //Create dash files.
+$result_hls = hls($input_path, $output_path_hls, $listener, $hls_key_info); //Create hls files.
 
 //dupm the results
 var_dump($result_dash, $result_hls);

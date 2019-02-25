@@ -70,7 +70,7 @@ if (! function_exists('hls')) {
             $format->on('progress', $listener);
         }
 
-//        try {
+        try {
             return FFMpeg::create()
                 ->open($input_path)
                 ->HLS()
@@ -78,8 +78,8 @@ if (! function_exists('hls')) {
                 ->autoGenerateRepresentations()
                 ->setHlsKeyInfoFile($hls_key)
                 ->save($save_path);
-//        } catch (ExceptionInterface $e) {
-//            return "Failed: error: " . $e->getMessage();
-//        }
+        } catch (ExceptionInterface $e) {
+            return "Failed: error: " . $e->getMessage();
+        }
     }
 }
