@@ -16,16 +16,17 @@
  * limitations under the License.
  */
 
-
 namespace AYazdanpanah\FFMpegStreaming\Filters;
-
 
 use AYazdanpanah\FFMpegStreaming\HLS;
 use AYazdanpanah\FFMpegStreaming\Representation;
 
 class HLSFilter extends Filter
 {
-
+    /**
+     * @param $media
+     * @return mixed|void
+     */
     public function setFilter($media)
     {
         $this->filter = $this->HLSFilter($media);
@@ -45,7 +46,7 @@ class HLSFilter extends Filter
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
         $filename = substr($path_parts["filename"], -50);
 
-        foreach ($representations as $key => $representation) {
+        foreach ($representations as $representation) {
             if ($representation instanceof Representation) {
                 $filter[] = "-s:v";
                 $filter[] = $representation->getResize();

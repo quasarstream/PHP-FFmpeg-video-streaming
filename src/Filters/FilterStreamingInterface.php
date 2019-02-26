@@ -24,5 +24,5 @@ interface FilterStreamingInterface
      * @param $media
      * @return mixed
      */
-    public function setFilter($media);
+    public function setFilter($media): void;
 }

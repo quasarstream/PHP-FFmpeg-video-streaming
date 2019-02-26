@@ -64,6 +64,11 @@ class DASHFilter extends Filter
         return $filter;
     }
 
+    /**
+     * @param $format
+     * @param $count
+     * @return array
+     */
     private function getAdditionalFilters($format, $count)
     {
         $filter = [

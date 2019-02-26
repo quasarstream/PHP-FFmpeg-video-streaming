@@ -91,7 +91,7 @@ To create an MPD file use `DASH` method and export video into Dash.
 
  
 As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on the video size and bit rate:
-#### Auto create dash files
+#### Auto Create DASH Files
 ``` php
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
@@ -103,7 +103,7 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration an
 ```
 
 
-#### Create representation manually
+#### Create Representations Manually
 
 Also you can add representation manually by using  ```addRepresentation``` method:
 
@@ -246,14 +246,66 @@ Now that we have everything we need, run the following code to encrypt the video
 ``` php
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()
     ->open('/var/www/media/videos/test.mp4')
+    ->HLS()
     ->X264()
-    ->setFormat($format)
     ->setHlsKeyInfoFile('/var/www/enc.keyinfo')
     ->autoGenerateRepresentations()
-    ->save('/var/www/media/videos/dash/test.m3u8');
+    ->save('/var/www/media/videos/hls/test.m3u8');
 ```
 
 Reference: http://hlsbook.net/
+
+## Other Advanced Features
+You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method, it holds the Media object that belongs to the PHP-FFMpeg.
+
+``` php
+$ffmpeg = AYazdanpanah\FFMpegStreaming\FFMpeg::create()
+$video = $ffmpeg->open('/var/www/media/videos/test.mp4')
+```
+### Extracting image
+ou can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
+
+``` php
+$video
+    ->filters()
+    ->extractMultipleFrames(FFMpeg\Filters\Video\ExtractMultipleFramesFilter::FRAMERATE_EVERY_10SEC, '/path/to/destination/folder/')
+    ->synchronize();
+
+$video
+    ->save(new FFMpeg\Format\Video\X264(), '/path/to/new/file');
+```
+
+### Clip
+Cuts the video at a desired point. Use input seeking method. It is faster option than use filter clip.
+
+``` php
+$clip = $video->clip(FFMpeg\Coordinate\TimeCode::fromSeconds(30), FFMpeg\Coordinate\TimeCode::fromSeconds(15));
+$clip->filters()->resize(new FFMpeg\Coordinate\Dimension(320, 240), FFMpeg\Filters\Video\ResizeFilter::RESIZEMODE_INSET, true);
+$clip->save(new FFMpeg\Format\Video\X264(), 'video.avi');
+```
+
+### Watermark
+Watermark a video with a given image.
+
+``` php
+$video
+    ->filters()
+    ->watermark($watermarkPath, array(
+        'position' => 'absolute',
+        'x' => 1180,
+        'y' => 620,
+    ));
+```
+
+## Extracting Media Metadata
+You can also use `getFirstStream` method to extract media metadata.
+
+``` php
+$metadata = AYazdanpanah\FFMpegStreaming\FFMpeg::create()
+    ->open('/var/www/media/videos/test.mp4')
+    ->getFirstStream()
+    ->all();
+```
 ## Contributing
 
 I'd love your help in improving, correcting, adding to the specification.
