@@ -297,7 +297,7 @@ $video
     ));
 ```
 
-## Extracting Media Metadata
+### Extracting Media Metadata
 You can also use `getFirstStream` method to extract media metadata.
 
 ``` php
