@@ -255,14 +255,14 @@ AYazdanpanah\FFMpegStreaming\FFMpeg::create()
 
 Reference: http://hlsbook.net/
 
-## Other Advanced Features
+### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method, it holds the Media object that belongs to the PHP-FFMpeg.
 
 ``` php
 $ffmpeg = AYazdanpanah\FFMpegStreaming\FFMpeg::create()
 $video = $ffmpeg->open('/var/www/media/videos/test.mp4')
 ```
-### Extracting image
+#### Extracting image
 ou can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
 
 ``` php
@@ -275,7 +275,7 @@ $video
     ->save(new FFMpeg\Format\Video\X264(), '/path/to/new/file');
 ```
 
-### Clip
+#### Clip
 Cuts the video at a desired point. Use input seeking method. It is faster option than use filter clip.
 
 ``` php
@@ -284,7 +284,7 @@ $clip->filters()->resize(new FFMpeg\Coordinate\Dimension(320, 240), FFMpeg\Filte
 $clip->save(new FFMpeg\Format\Video\X264(), 'video.avi');
 ```
 
-### Watermark
+#### Watermark
 Watermark a video with a given image.
 
 ``` php
@@ -297,7 +297,7 @@ $video
     ));
 ```
 
-### Extracting Media Metadata
+#### Extracting Media Metadata
 You can also use `getFirstStream` method to extract media metadata.
 
 ``` php
