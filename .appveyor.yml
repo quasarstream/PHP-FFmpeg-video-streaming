@@ -16,46 +16,26 @@ environment:
     COMPOSER_NO_INTERACTION: 1
     ANSICON: 121x90 (121x90) # Console colors
 
-  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/
+  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
 
   matrix:
-    - PHP_VERSION: 7.1
+      - PHP_VERSION: 7.1
       COMPOSER_OPTS: --prefer-lowest
 
-    - PHP_VERSION: 7.1
+      - PHP_VERSION: 7.1
       COMPOSER_OPTS:
 
-    - PHP_VERSION: 7.2
+      - PHP_VERSION: 7.2
       COMPOSER_OPTS: --prefer-lowest
 
-    - PHP_VERSION: 7.2
+      - PHP_VERSION: 7.2
       COMPOSER_OPTS:
 
-    - PHP_VERSION: 7.3
+      - PHP_VERSION: 7.3
       COMPOSER_OPTS: --prefer-lowest
 
-    - PHP_VERSION: 7.3
+      - PHP_VERSION: 7.3
       COMPOSER_OPTS:
-
-    - platform: x64
-      nodejs_version: LTS
-      ffmpeg_version: 3.4.1
-      ffmpeg_platform: win64
-
-    - platform: x64
-      nodejs_version: Current
-      ffmpeg_version: latest
-      ffmpeg_platform: win64
-
-    - platform: x86
-      nodejs_version: LTS
-      ffmpeg_version: 3.4.1
-      ffmpeg_platform: win32
-
-    - platform: x86
-      nodejs_version: Current
-      ffmpeg_version: latest
-      ffmpeg_platform: win32
 
 init:
   - ps: $env:PATH = 'c:\tools\php;c:\ProgramData\ComposerSetup\bin;' + $env:PATH
@@ -63,9 +43,9 @@ init:
 install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
   - ps: appveyor-retry cinst --no-progress --params '""/InstallDir:c:\tools\php""' -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
-  - ps: Start-FileDownload $env:ffmpeg_download$env:ffmpeg_platform/static/ffmpeg-$env:ffmpeg_version-$env:ffmpeg_platform-static.zip
-  - 7z x ffmpeg-%ffmpeg_version%-%ffmpeg_platform%-static.zip
-  - PATH=%PATH%;%cd%\ffmpeg-%ffmpeg_version%-%ffmpeg_platform%-static\bin
+  - ps: Start-FileDownload $env:ffmpeg_download
+  - 7z x ffmpeg-20190225-f948082-win64-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
