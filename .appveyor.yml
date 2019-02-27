@@ -16,6 +16,8 @@ environment:
     COMPOSER_NO_INTERACTION: 1
     ANSICON: 121x90 (121x90) # Console colors
 
+  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/
+
   matrix:
     - PHP_VERSION: 7.1
       COMPOSER_OPTS: --prefer-lowest
@@ -34,6 +36,26 @@ environment:
 
     - PHP_VERSION: 7.3
       COMPOSER_OPTS:
+
+    - platform: x64
+      nodejs_version: LTS
+      ffmpeg_version: 3.4.1
+      ffmpeg_platform: win64
+
+    - platform: x64
+      nodejs_version: Current
+      ffmpeg_version: latest
+      ffmpeg_platform: win64
+
+    - platform: x86
+      nodejs_version: LTS
+      ffmpeg_version: 3.4.1
+      ffmpeg_platform: win32
+
+    - platform: x86
+      nodejs_version: Current
+      ffmpeg_version: latest
+      ffmpeg_platform: win32
 
 init:
   - ps: $env:PATH = 'c:\tools\php;c:\ProgramData\ComposerSetup\bin;' + $env:PATH
