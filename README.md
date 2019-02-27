@@ -8,10 +8,10 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
 [![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
 
-This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and exports well-known video streaming techniques such as DASH, HLS, and Live Streaming(DASH and HLS live streaming).
+This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and exports well-known video streaming techniques such as DASH, HLS.
 
 ## Features
-* Easily converts most types of videos into DASH, HLS, and Live video streaming.
+* Easily converts most types of videos into DASH, HLS.
 * Super easy wrapper around [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg), including support for filters and other advanced features.
 * Automatically detects video size and bitrate and creates multi-representations MPD or M3U8 file.
 * PHP > 7.1.0.

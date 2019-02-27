@@ -27,7 +27,7 @@ class HLSFilter extends Filter
      * @param $media
      * @return mixed|void
      */
-    public function setFilter($media)
+    public function setFilter($media): void
     {
         $this->filter = $this->HLSFilter($media);
     }

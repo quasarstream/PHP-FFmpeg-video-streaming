@@ -18,14 +18,30 @@
 
 namespace Tests\FFMpegStreaming;
 
+use AYazdanpanah\FFMpegStreaming\Filters\Filter;
+use AYazdanpanah\FFMpegStreaming\Filters\HLSFilter;
+use AYazdanpanah\FFMpegStreaming\HLS;
 
-use Mockery;
-
-class FFMpegTest extends TestCase
+class HLSFiltersTest extends TestCase
 {
-    public function test()
+    public function testFilterClass()
     {
-        $this->assertEquals("a", "a");
-        $this->assertFalse(1<0);
+        $this->assertInstanceOf(Filter::class, $this->getFilter());
     }
+
+    private function getFilter()
+    {
+        return new HLSFilter($this->getHLS());
+    }
+
+    private function getHLS()
+    {
+        $hls = new HLS($this->getVideo());
+
+        return $hls->X264()
+            ->autoGenerateRepresentations()
+            ->setHlsAllowCache(false)
+            ->setHlsTime(10);
+    }
+
 }

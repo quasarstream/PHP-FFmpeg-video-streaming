@@ -41,7 +41,9 @@ init:
 install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
   - ps: appveyor-retry cinst --no-progress --params '""/InstallDir:c:\tools\php""' -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
-
+  - ps: Start-FileDownload $env:ffmpeg_download$env:ffmpeg_platform/static/ffmpeg-$env:ffmpeg_version-$env:ffmpeg_platform-static.zip
+  - 7z x ffmpeg-%ffmpeg_version%-%ffmpeg_platform%-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-%ffmpeg_version%-%ffmpeg_platform%-static\bin
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
@@ -57,4 +59,5 @@ install:
 
 test_script:
   - cd c:\projects\project-code
+  - ffmpeg -version
   - vendor\bin\phpunit tests

@@ -41,6 +41,7 @@ abstract class Export
     public function __construct(Media $media)
     {
         $this->media = $media;
+        $this->path_info = $media->getPathInfo();
     }
 
     /**
@@ -77,15 +78,20 @@ abstract class Export
 
     private function getPath($path): string
     {
-        $this->path_info = $path_parts = (null === $path) ? $this->media->getPathInfo() : pathinfo($path);
-        $dirname = str_replace("\\", "/", $path_parts["dirname"]);
+        if(null !== $path){
+            $this->path_info = pathinfo($path);
+        }
+
+        $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
+        $filename = substr($this->path_info["filename"], -50);
+
         Helper::makeDir($dirname);
-        $filename = substr($path_parts["filename"], -50);
 
         if ($this instanceof DASH) {
             $path = $dirname . "/" . $filename . ".mpd";
         } elseif ($this instanceof HLS) {
-            $path = $dirname . "/" . $filename . "_" . end($this->getRepresentations())->getHeight() . "p.m3u8";
+            $representations = $this->getRepresentations();
+            $path = $dirname . "/" . $filename . "_" . end($representations)->getHeight() . "p.m3u8";
             ExportHLSPlaylist::savePlayList($dirname . "/" . $filename . ".m3u8", $this->getRepresentations(), $filename);
         }
 
