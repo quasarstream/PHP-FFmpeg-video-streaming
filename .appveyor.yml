@@ -20,21 +20,9 @@ environment:
 
   matrix:
     - PHP_VERSION: 7.1
-      COMPOSER_OPTS: --prefer-lowest
-
-    - PHP_VERSION: 7.1
       COMPOSER_OPTS:
 
     - PHP_VERSION: 7.2
-      COMPOSER_OPTS: --prefer-lowest
-
-    - PHP_VERSION: 7.2
-      COMPOSER_OPTS:
-
-    - PHP_VERSION: 7.3
-      COMPOSER_OPTS: --prefer-lowest
-
-    - PHP_VERSION: 7.3
       COMPOSER_OPTS:
 
 init:
