@@ -1,4 +1,4 @@
-# PHP FFMPEG Video Streaming
+# 📼 PHP FFMPEG Video Streaming
 
 [![Build Status](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
@@ -12,7 +12,7 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
 
 **NOTE:**
 
-- For DRM and encryption DASH and HLS, I **strongly recommend** to try [Shaka PHP](https://github.com/aminyazdanpanah/shaka-php), which is a great tool for this use case.
+- For DRM and encryption DASH and HLS, I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 ## Features
 * Easily package your videos to DASH and HLS live technique.
