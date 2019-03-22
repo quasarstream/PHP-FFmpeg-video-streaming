@@ -8,17 +8,21 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
 [![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
 
-This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and exports well-known video streaming techniques such as DASH, HLS.
+This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
+
+**NOTE:**
+
+- For DRM and encryption DASH and HLS, I **strongly recommend** to try [Shaka PHP](https://github.com/aminyazdanpanah/shaka-php), which is a great tool for this use case.
 
 ## Features
-* Easily converts most types of videos into DASH, HLS.
+* Easily package your videos to DASH and HLS live technique.
 * Super easy wrapper around [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg), including support for filters and other advanced features.
-* Automatically detects video size and bitrate and creates multi-representations MPD or M3U8 file.
-* PHP > 7.1.0.
+* Automatically detects video size and bitrate and packages DASH and HLS with multi-qualities.
+* PHP >= 7.1.0.
 
 ## Installation
 
-This version of the package is only compatible with PHP 7.1.0 or newer.
+This version of the package is only compatible with PHP 7.1.0 and later.
 
 Install the package via composer:
 
@@ -66,7 +70,7 @@ It is recommended to browse the source code as it is self-documented.
 
 This library requires a working FFMpeg install. You will need both FFMpeg and FFProbe binaries to use it.
 
-For installing FFmpeg and FFprobe, just Google "install ffmpeg on" + `your system operation`
+For installing FFmpeg and FFprobe, just Google "install ffmpeg on" + `your operation system`
 
 ### Configuration
 
