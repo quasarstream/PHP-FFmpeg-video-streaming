@@ -45,7 +45,7 @@
     },
     "require": {
         "php": "^7.1",
-        "php-ffmpeg/php-ffmpeg": "^0.13"
+        "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
