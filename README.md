@@ -10,9 +10,9 @@
 
 This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
 
-**NOTE:**
+- [See Full Documentation](http://video.aminyazdanpanah.com/)
 
-- For DRM and encryption DASH and HLS, I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
+**NOTE:** For DRM and encrypted DASH and HLS, I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 ## Features
 * Easily package your videos to DASH and HLS live technique.
@@ -64,7 +64,8 @@ var_dump($result_dash, $result_hls);
 
 ## Documentation
 
-It is recommended to browse the source code as it is self-documented.
+- [See Full Documentation](http://video.aminyazdanpanah.com/)
+
 
 ### Required Libraries
 
@@ -100,7 +101,7 @@ As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method  or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
-    ->HEVC() // the format of the video.for use another formats, see Traits\Formats
+    ->HEVC() // the format of the video. For using another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
     ->save(); // it can pass a path to the method or it can be null
@@ -118,7 +119,7 @@ $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->DASH()
-    ->HEVC() // the format of the video.for use another formats, see Traits\Formats
+    ->HEVC() // the format of the video. For using another formats, see Traits\Formats
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->setAdaption('id=0,streams=v id=1,streams=a') // set the adaption.
@@ -167,7 +168,7 @@ As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
-    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->X264() // the format of the video. For using another formats, see Traits\Formats
     ->autoGenerateRepresentations() // auto generate representations
     ->save(); // it can pass a path to the method or it can be null
 ```
@@ -182,7 +183,7 @@ $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 240);
 AYazdanpanah\FFMpegStreaming\FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
     ->open('/var/www/media/videos/test.mp4') // the path to the video
     ->HLS()
-    ->X264() // the format of the video.for use another formats, see Traits\Formats
+    ->X264() // the format of the video. For using another formats, see Traits\Formats
     ->addRepresentation($rep_1) // add representation
     ->addRepresentation($rep_2) // add representation
     ->addRepresentation($rep_3) // add representation
