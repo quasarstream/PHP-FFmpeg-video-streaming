@@ -3,7 +3,6 @@
 namespace Tests\FFMpegStreaming;
 
 use Streaming\FFMpeg;
-use Streaming\FFMpegInstance;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
@@ -15,7 +14,7 @@ class TestCase extends BaseTestCase
         $this->srcDir = __DIR__ . '/files';
     }
 
-    public function getFFMpeg(): FFMpegInstance
+    public function getFFMpeg(): FFMpeg
     {
         return FFMpeg::create();
     }

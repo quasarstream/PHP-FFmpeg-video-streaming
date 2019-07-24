@@ -21,7 +21,6 @@ class FFMpeg
     protected $ffmpeg;
 
     /**
-     * FFMpegInstance constructor.
      * @param $ffmpeg
      */
     public function __construct(BFFMpeg $ffmpeg)
