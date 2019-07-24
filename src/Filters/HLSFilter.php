@@ -69,15 +69,14 @@ class HLSFilter extends Filter
                     $filter[] = $hls_key_info_file;
                 }
 
+                $filter[] = "-strict";
+                $filter[] = "-2";
+
                 if (++$counter !== $total_count) {
                     $filter[] = $dirname . "/" . $filename . "_" . $representation->getHeight() . "p.m3u8";
                 }
             }
         }
-
-        $filter[] = "-strict";
-        $filter[] = "-2";
-
         return $filter;
     }
 }
