@@ -16,7 +16,7 @@ before_install:
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
   - sudo add-apt-repository -y ppa:mc3man/trusty-media
-  - sudo apt-get install -y --allow-unauthenticated software-properties-common ffmpeg
+  - sudo apt-get install ffmpeg
 
 script:
   - /usr/bin/ffmpeg -y -i /home/travis/build/aminyazdanpanah/PHP-FFmpeg-video-streaming/tests/files/test.mp4 -c:v libx265 -bf 1 -keyint_min 120 -g 120 -sc_threshold 0 -b_strategy 0 -use_timeline 1 -use_template 1 -f dash -map 0 -b:v:0 237k -s:v:0 256x144 -map 0 -b:v:1 292k -s:v:1 426x240 -map 0 -b:v:2 380k -s:v:2 640x360 /home/travis/build/aminyazdanpanah/PHP-FFmpeg-video-streaming/tests/files/dash/test.mpd
