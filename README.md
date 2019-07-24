@@ -225,7 +225,7 @@ $url_to_key = "https://www.aminyazdanpanah.com/enc.key"; //Path to get the key o
 $path_to_save_key = "/var/www/media/keys/my_key/enc.key"; //Path to save the random key on your server
 $hls_key_info = new Streaming\KeyInfo($url_to_key, $path_to_save_key);
 ```
- - **NOTE:** It is better to protect your key by using a token or a session/cookie.
+ - **NOTE:** It is recommended to protect your key on your website using a token or a session/cookie.
 
 The next step is to pass key info to `setHlsKeyInfoFile` method:
 ``` php
