@@ -32,7 +32,7 @@ class HLSFilter extends Filter
     private function HLSFilter(HLS $media)
     {
 
-        $filter = ["-strict", "-2"];
+        $filter = [];
         $total_count = count($representations = $media->getRepresentations());
         $counter = 0;
         $path_parts = $media->getPathInfo();
@@ -74,6 +74,9 @@ class HLSFilter extends Filter
                 }
             }
         }
+
+        $filter[] = "-strict";
+        $filter[] = "-2";
 
         return $filter;
     }
