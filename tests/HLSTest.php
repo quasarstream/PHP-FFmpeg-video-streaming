@@ -1,27 +1,20 @@
 <?php
 
 /**
- * Copyright 2019 Amin Yazdanpanah<http://www.aminyazdanpanah.com>.
+ * This file is part of the PHP-FFmpeg-video-streaming package.
  *
- * Licensed under the MIT License;
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * (c) Amin Yazdanpanah <contact@aminyazdanpanah.com>
  *
- *      https://opensource.org/licenses/MIT
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Tests\FFMpegStreaming;
 
-use AYazdanpanah\FFMpegStreaming\HLS;
-use AYazdanpanah\FFMpegStreaming\Export;
-use AYazdanpanah\FFMpegStreaming\Format\Video;
-use AYazdanpanah\FFMpegStreaming\Representation;
+use Streaming\HLS;
+use Streaming\Export;
+use Streaming\Format\Video;
+use Streaming\Representation;
 use ReflectionClass;
 
 class HLSTest extends TestCase

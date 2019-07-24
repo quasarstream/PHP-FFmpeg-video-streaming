@@ -2,8 +2,8 @@
 
 namespace Tests\FFMpegStreaming;
 
-use AYazdanpanah\FFMpegStreaming\FFMpeg;
-use AYazdanpanah\FFMpegStreaming\FFMpegInstance;
+use Streaming\FFMpeg;
+use Streaming\FFMpegInstance;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase

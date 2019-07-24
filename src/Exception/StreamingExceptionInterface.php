@@ -9,13 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Streaming\Filters;
+namespace Streaming\Exception;
 
-interface FilterStreamingInterface
+use FFMpeg\Exception\ExceptionInterface;
+
+interface StreamingExceptionInterface extends ExceptionInterface
 {
-    /**
-     * @param $media
-     * @return mixed
-     */
-    public function setFilter($media): void;
 }

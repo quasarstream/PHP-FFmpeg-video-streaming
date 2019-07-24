@@ -32,7 +32,7 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "AYazdanpanah\\FFMpegStreaming\\": "src"
+            "Streaming\\": "src"
         }
     },
     "require-dev": {
