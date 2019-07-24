@@ -66,7 +66,7 @@ class DASHFilter extends Filter
     {
         $filter = [
             "-bf", "1", "-keyint_min", "120", "-g", "120",
-            "-sc_threshold", "0", "-b_strategy", "0",
+            "-sc_threshold", "0", "-b_strategy", "0", "-strict", "-2",
             "-use_timeline", "1", "-use_template", "1", "-f", "dash"
         ];
 

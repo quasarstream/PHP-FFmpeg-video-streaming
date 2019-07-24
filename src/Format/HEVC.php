@@ -30,6 +30,6 @@ final class HEVC extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array();
+        return array('libx265');
     }
 }

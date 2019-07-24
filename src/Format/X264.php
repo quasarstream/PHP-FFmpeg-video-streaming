@@ -30,6 +30,6 @@ final class X264 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array();
+        return array('libx264', 'h264');
     }
 }
