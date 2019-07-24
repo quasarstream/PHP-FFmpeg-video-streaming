@@ -15,7 +15,6 @@ before_install:
 
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
-  - sudo add-apt-repository -y ppa:mc3man/trusty-media
   - sudo apt-get install ffmpeg
 
 script:
