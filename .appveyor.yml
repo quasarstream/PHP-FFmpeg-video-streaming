@@ -33,8 +33,8 @@ install:
   - ps: appveyor-retry cinst --no-progress --params '""/InstallDir:c:\tools\php""' -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
   - ps: Start-FileDownload $env:ffmpeg_download
 
-  - 7z x ffmpeg-20190225-f948082-win64-static.zip
-  - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin
+  - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
