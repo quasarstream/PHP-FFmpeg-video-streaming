@@ -1,6 +1,6 @@
 {
     "name": "aminyazdanpanah/php-ffmpeg-video-streaming",
-    "description": "📹📼 PHP FFMpeg - Video Streaming - DASH, HLS http://video.aminyazdanpanah.com",
+    "description": "📼 PHP FFMpeg - Video Streaming - DASH, HLS http://video.aminyazdanpanah.com",
     "type": "library",
     "keywords": [
         "dash",
@@ -10,6 +10,9 @@
         "streaming",
         "chunk",
         "live",
+        "media",
+        "video-streaming",
+        "live-streaming",
         "AminYazdanpanah",
         "DynamicAdaptiveStreamingOverHTTP"
     ],
@@ -20,7 +23,7 @@
         {
             "name": "Amin Yazdanpanah",
             "email": "contact@aminyazdanpanah.com",
-            "homepage": "http://www.aminyazdanpanah.com"
+            "homepage": "https://www.aminyazdanpanah.com"
         }
     ],
     "minimum-stability": "dev",
@@ -45,7 +48,7 @@
     },
     "require": {
         "php": "^7.1",
-        "php-ffmpeg/php-ffmpeg": "^0.13"
+        "php-ffmpeg/php-ffmpeg": "^0.14"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"

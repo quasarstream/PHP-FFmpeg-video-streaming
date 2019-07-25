@@ -37,15 +37,15 @@ class MediaTest extends TestCase
     public function testGetFirstStream()
     {
         $media = $this->getVideo();
-        $get_first_stream = $media->getFirstStream();
+        $get_first_stream = $media->getVideoStream();
 
         $this->assertInstanceOf(Stream::class, $get_first_stream);
     }
 
-    public function testGetPathInfo()
+    public function testGetPath()
     {
         $media = $this->getVideo();
-        $get_path_info = $media->getPathInfo();
+        $get_path_info = pathinfo($media->getPath());
 
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname',$get_path_info);

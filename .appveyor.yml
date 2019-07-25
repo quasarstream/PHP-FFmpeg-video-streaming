@@ -16,7 +16,7 @@ environment:
     COMPOSER_NO_INTERACTION: 1
     ANSICON: 121x90 (121x90) # Console colors
 
-  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
+  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190725-923d5c4-win64-static.zip
 
   matrix:
     - PHP_VERSION: 7.1

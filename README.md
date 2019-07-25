@@ -1,12 +1,12 @@
 # 📼 PHP FFMPEG Video Streaming
 
 [![Build Status](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/?branch=master)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Total Downloads](https://img.shields.io/packagist/dt/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
-[![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
 
 This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
 
@@ -50,19 +50,21 @@ $listener = function ($audio, $format, $percentage) {
 //Also, it can be null-the default path is the input path.
 //These values are optional
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
-$output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8'
+$output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8';
+$output_path_encrypted_hls = '/var/www/media/videos/test/hls/output.m3u8'; // or null
 
-//The path to the key info for encrypted hls.
-//This value is optional.
-$url_to_key = "https://www.aminyazdanpanah.com/enc.key"; //Path to get the key on your website
-$path_to_save_key = "/var/www/media/keys/my_key/enc.key"; //Path to save the random key on your server
-$hls_key_info = new Streaming\KeyInfo($url_to_key, $path_to_save_key);
+//Path to acceess the key on your website.
+// NOTE: It is highly recommended to protect the key using a token or a session/cookie.
+$url_to_key = "https://www.aminyazdanpanah.com/enc.key";
+//Path to save the random key on your server.
+$path_to_save_key = "/var/www/media/keys/my_key/enc.key";
 
 $result_dash = dash($input_path, $output_path_dash, $listener); //Create dash files.
 $result_hls = hls($input_path, $output_path_hls, $listener, $hls_key_info); //Create hls files.
+$result_encrypted_hls = encrypted_hls($input_path, $output_path_encrypted_hls, $listener, $url_to_key, $path_to_save_key); //Create encrypted hls files
 
 //dupm the results
-var_dump($result_dash, $result_hls);
+var_dump($result_dash, $result_hls, $result_encrypted_hls);
 ```
 
 ## Documentation
@@ -216,28 +218,30 @@ Streaming\FFMpeg::create()
 
 The encryption process requires some kind of secret (key) together with an encryption algorithm.
 
-HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [read more](http://hlsbook.net/how-to-encrypt-hls-video-with-ffmpeg/)
+HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [learn more](http://hlsbook.net/how-to-encrypt-hls-video-with-ffmpeg/)
 
 Before we can encrypt videos, we need an encryption key. However you can use any software that can generate key, this package requires a working OpenSSL to create the key:
 
-``` php 
-$url_to_key = "https://www.aminyazdanpanah.com/enc.key"; //Path to get the key on your website
-$path_to_save_key = "/var/www/media/keys/my_key/enc.key"; //Path to save the random key on your server
-$hls_key_info = new Streaming\KeyInfo($url_to_key, $path_to_save_key);
-```
- - **NOTE:** It is recommended to protect your key on your website using a token or a session/cookie.
+Getting OpenSSL: https://www.openssl.org/source/
+
+Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
 The next step is to pass key info to `setHlsKeyInfoFile` method:
 ``` php
+$url = "https://www.aminyazdanpanah.com/enc.key"; //Path to access the key on your website
+$path = "/var/www/media/keys/my_key/enc.key"; //Path to save the random key on your server
+
 Streaming\FFMpeg::create()
     ->open('/var/www/media/videos/test.mp4')
     ->HLS()
     ->X264()
-    ->setHlsKeyInfoFile($hls_key_info)
+    ->generateRandomKeyInfo($url, $path)
     ->autoGenerateRepresentations()
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
-- **Note:** Alternatively, you can generate a key info using another library and pass the path to the method.
+- **Note:** Alternatively, you can generate a key info using another library and pass the path to the `setHlsKeyInfoFile` method.
+- **NOTE:** It is highly recommended to protect your key on your website using a token or a session/cookie (e.x. https://wwww.aminyazdanpanah.com/enc.key?tk=J5HLhi97Tjk4N).
+- **NOTE:** For getting the benefit of the OpenSSL binary detection in windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
 
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method, it holds the Media object that belongs to the PHP-FFMpeg.

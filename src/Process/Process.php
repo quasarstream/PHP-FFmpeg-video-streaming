@@ -91,6 +91,7 @@ class Process
         } else {
             $this->commands[] = $command;
         }
+
         return $this;
     }
 
@@ -113,5 +114,14 @@ class Process
     public function getCommand(): array
     {
         return $this->commands;
+    }
+
+    /**
+     * @return Process
+     */
+    public function reset()
+    {
+        $this->commands = [current($this->commands)];
+        return $this;
     }
 }

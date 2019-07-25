@@ -11,6 +11,7 @@
 
 namespace Streaming;
 
+
 class Helper
 {
     /**
@@ -35,10 +36,31 @@ class Helper
         }
     }
 
+    /**
+     * @param int $length
+     * @return bool|string
+     */
     public static function randomString($length = 10)
     {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return substr(str_shuffle(str_repeat($chars, ceil($length / strlen($chars)))), 1, $length);
 
+    }
+
+    /**
+     * @param $dir
+     * @return int|null
+     */
+    public static function directorySize($dir)
+    {
+        if (is_dir($dir)) {
+            $size = 0;
+            foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
+                $size += is_file($each) ? filesize($each) : static::directorySize($each);
+            }
+            return $size;
+        }
+
+        return null;
     }
 }

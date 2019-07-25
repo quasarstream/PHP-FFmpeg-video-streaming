@@ -43,16 +43,17 @@ trait Representation
     }
 
     /**
+     * @param null $side_values
      * @return $this
      * @throws Exception
      */
-    public function autoGenerateRepresentations()
+    public function autoGenerateRepresentations($side_values = null)
     {
         if (!$this->format) {
             throw new Exception('Format has not been set');
         }
 
-        $this->representations = (new AutoRepresentations($this->media->getFirstStream()))
+        $this->representations = (new AutoRepresentations($this->media->getVideoStream(), $side_values))
             ->get();
 
         return $this;

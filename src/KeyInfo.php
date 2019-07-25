@@ -33,7 +33,7 @@ class KeyInfo
      * @param string $binary
      * @throws Exception\Exception
      */
-    public function __construct($url, $path, $binary = "openssl")
+    public function __construct(string $url, string $path, $binary = "openssl")
     {
         $this->url = $url;
         $this->path = $path;
@@ -84,6 +84,6 @@ class KeyInfo
      */
     private function generateIV(): string
     {
-        return $this->openssl->removeCommand('16')->addCommand(['-hex' ,'16'])->run();
+        return $this->openssl->reset()->addCommand(['rand', '-hex' ,'16'])->run();
     }
 }

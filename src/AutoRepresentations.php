@@ -19,15 +19,22 @@ class AutoRepresentations
     /** @var Stream $stream */
     private $stream;
 
-    /** @Const regular video's heights */
-    private const heights = [2160, 1080, 720, 480, 240, 144];
+    /** @var array side_values
+     * regular video's heights
+     */
+    private $side_values = [2160, 1080, 720, 480, 240, 144];
 
     /**
      * AutoRepresentations constructor.
      * @param Stream $stream
+     * @param null $side_values
      */
-    public function __construct(Stream $stream)
+    public function __construct(Stream $stream, $side_values)
     {
+        if(null !== $side_values){
+            $this->side_values = $side_values;
+        }
+
         $this->stream = $stream;
     }
 
@@ -65,7 +72,7 @@ class AutoRepresentations
 
         $representations[] = $this->addRepresentation($kilobitrate, $width, $height);
 
-        $heights = array_filter(static::heights, function ($value) use ($height) {
+        $heights = array_filter($this->side_values, function ($value) use ($height) {
             return $value < $height;
         });
 

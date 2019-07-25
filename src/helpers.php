@@ -76,3 +76,37 @@ if (!function_exists('hls')) {
         }
     }
 }
+
+if (!function_exists('encrypted_hls')) {
+    /**
+     * Auto generate HLS M3U8 file
+     *
+     * @param string $input_path
+     * @param string|null $save_path
+     * @param callable|null $listener
+     * @param null $url
+     * @param null $path
+     * @param string $binary
+     * @return mixed
+     */
+    function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null, $binary = 'openssl')
+    {
+        $format = new X264();
+
+        if (is_callable($listener)) {
+            $format->on('progress', $listener);
+        }
+
+        try {
+            return FFMpeg::create()
+                ->open($input_path)
+                ->HLS()
+                ->setFormat($format)
+                ->autoGenerateRepresentations()
+                ->generateRandomKeyInfo($url, $path, $binary)
+                ->save($save_path);
+        } catch (ExceptionInterface $e) {
+            return "Failed: error: " . $e->getMessage();
+        }
+    }
+}

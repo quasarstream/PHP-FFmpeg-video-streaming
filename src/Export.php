@@ -34,14 +34,16 @@ abstract class Export
     public function __construct(Media $media)
     {
         $this->media = $media;
-        $this->path_info = $media->getPathInfo();
+        $this->path_info = pathinfo($media->getPath());
     }
 
     /**
      * @param string $path
-     * @return Export
+     * @param bool $analyse
+     * @param bool $delete_original_video
+     * @return mixed
      */
-    public function save(string $path = null): Export
+    public function save(string $path = null, $analyse = true, $delete_original_video = false)
     {
         $path = $this->getPath($path);
 
@@ -56,7 +58,12 @@ abstract class Export
             $path
         );
 
-        return $this;
+        if ($delete_original_video) {
+            sleep(1);
+            @unlink($this->media->getPath());
+        }
+
+        return ($analyse) ? (new StreamingAnalytics($this))->analyse() : $path;
     }
 
     /**
@@ -71,7 +78,7 @@ abstract class Export
 
     private function getPath($path): string
     {
-        if(null !== $path){
+        if (null !== $path) {
             $this->path_info = pathinfo($path);
         }
 
@@ -97,5 +104,13 @@ abstract class Export
     public function getPathInfo(): array
     {
         return $this->path_info;
+    }
+
+    /**
+     * @return object|Media
+     */
+    public function getMedia()
+    {
+        return $this->media;
     }
 }
