@@ -13,6 +13,7 @@ namespace Streaming\Traits;
 
 use Streaming\AutoRepresentations;
 use Streaming\Exception\Exception;
+use Streaming\Representation as Rep;
 
 trait Representation
 {
@@ -20,11 +21,11 @@ trait Representation
     protected $representations = [];
 
     /**
-     * @param Representation $representation
+     * @param Rep $representation
      * @return $this
      * @throws Exception
      */
-    public function addRepresentation(Representation $representation)
+    public function addRepresentation(Rep $representation)
     {
         if (!$this->format) {
             throw new Exception('Format has not been set');
