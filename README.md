@@ -103,7 +103,7 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 You can open a file by passing a URL to `fromURL` method:
 
 ``` php
-$video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4")
+$video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4", "/var/wwww/media/my/new/video.mp4");
 ```
 
 Also, the path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
