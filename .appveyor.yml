@@ -20,17 +20,16 @@ environment:
 
   matrix:
     - PHP_VERSION: 7.1
-      COMPOSER_OPTS:
 
     - PHP_VERSION: 7.2
-      COMPOSER_OPTS:
 
 init:
   - ps: $env:PATH = 'c:\tools\php;c:\ProgramData\ComposerSetup\bin;' + $env:PATH
 
 install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
-  - ps: appveyor-retry cinst --no-progress --params '""/InstallDir:c:\tools\php""' -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+  - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+
   - ps: Start-FileDownload $env:ffmpeg_download
 
   - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
@@ -46,7 +45,7 @@ install:
   - appveyor-retry cinst --no-progress -y composer
 
   - cd c:\projects\project-code
-  - appveyor-retry composer update --no-interaction --no-progress --no-suggest --optimize-autoloader --prefer-stable --prefer-dist %COMPOSER_OPTS%
+  - appveyor-retry composer update --no-interaction --no-progress --no-suggest --optimize-autoloader --prefer-stable --prefer-dist
 
 test_script:
   - cd c:\projects\project-code
