@@ -10,16 +10,19 @@
 
 This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
 
+- [Full Documentation](https://video.aminyazdanpanah.com/)
 
-- [See Full Documentation](https://video.aminyazdanpanah.com/)
+- ****NOTE:****  For DRM and encryption(DASH and HLS), I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
-****NOTE:****  For DRM and encryption DASH and HLS, I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
-## Features
-* Easily package your videos to DASH and HLS live technique.
-* Super easy wrapper around [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg), including support for filters and other advanced features.
-* Automatically detects video size and bitrate and packages DASH and HLS with multi-qualities.
-* PHP >= 7.1.0.
+## Required Libraries
+
+This library requires a working FFMpeg. You will need both FFMpeg and FFProbe binaries to use it.
+- Getting FFmpeg: https://ffmpeg.org/download.html
+
+Also, for HLS encryption you will need a working OpenSSL:
+- Getting OpenSSL: https://www.openssl.org/source/
+- Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
 ## Installation
 
@@ -34,21 +37,19 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ## Basic Usage
 
 ``` php
-//if you use frameworks that require autoload, you do not need to require it
 require_once 'vendor/autoload.php'; 
 
-$input_path = '/var/www/media/videos/test.mp4';// the path to the video
+// the path to a video or it can be a URL
+$input_path = '/var/www/media/videos/test.mp4';// or "https://www.aminyazdanpanah.com/my_sweetie.mp4"
 
 //You can transcode videos using a callback method.
 //If you do not want to transcode video, do not pass it(it can be null).
-//This value is optional.
 $listener = function ($audio, $format, $percentage) {
     echo "$percentage% is transcoded\n";
 };
 
-//The path you would like to save your files.
-//Also, it can be null-the default path is the input path.
-//These values are optional
+//The path you want to save your files.
+//Also, it can be null - the default path is the input path.
 $output_path_dash = '/var/www/media/videos/test/dash/output.mpd'; //or null
 $output_path_hls = null; //or '/var/www/media/videos/test/hls/output.m3u8';
 $output_path_encrypted_hls = '/var/www/media/videos/test/hls/output.m3u8'; // or null
@@ -67,15 +68,9 @@ $result_encrypted_hls = encrypted_hls($input_path, $output_path_encrypted_hls, $
 var_dump($result_dash, $result_hls, $result_encrypted_hls);
 ```
 
-## Documentation
+## Usage
 
-- [See Full Documentation](http://video.aminyazdanpanah.com/)
-
-### Required Libraries
-
-This library requires a working FFMpeg. You will need both FFMpeg and FFProbe binaries to use it.
-
-- Getting FFmpeg: https://ffmpeg.org/download.html
+- [Full Documentation](https://video.aminyazdanpanah.com/)
 
 ### Configuration
 
@@ -83,8 +78,8 @@ FFMpeg will autodetect ffmpeg and ffprobe binaries. If you want to give binary p
 
 ``` php
 $config = [
-    'ffmpeg.binaries'  => '/opt/local/ffmpeg/bin/ffmpeg',
-    'ffprobe.binaries' => '/opt/local/ffmpeg/bin/ffprobe',
+    'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+    'ffprobe.binaries' => '/usr/bin/ffprobe',
     'timeout'          => 3600, // The timeout for the underlying process
     'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
     ];
@@ -93,52 +88,64 @@ $ffmpeg = Streaming\FFMpeg::create($config);
 ```
 
 
+### Opening a File
+
+There are two ways to open a file:
+
+#### 1. From Local
+You can pass a local path of video to the `open` method:
+
+``` php
+$video = $ffmpeg->open('/var/www/media/videos/test.mp4');
+```
+
+#### 2. From Cloud
+You can open a file by passing a URL to `fromURL` method:
+
+``` php
+$video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4")
+```
+
+Also, the path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
+
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
-To create an MPD file use `DASH` method and export video into Dash.
-
+Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events.
  
-As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-representations MPD file automatically based on the video size and bit rate:
+ - [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
 #### Auto Create DASH Files
 ``` php
-Streaming\FFMpeg::create()// It can pass the configuration and logger to the method  or it can be null
-    ->open('/var/www/media/videos/test.mp4') // Path to a video
-    ->DASH()
+$video->DASH()
     ->HEVC() // Format of the video. For Using another format, see Traits\Formats
     ->autoGenerateRepresentations() // Auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
-    ->save(); // It can pass a path to the method or it can be null
+    ->save(); // It can be passed a path to the method or it can be null
 ```
 
 
 #### Create Representations Manually
-
-Also you can add representation manually by using  ```addRepresentation``` method:
+Create multi-representations video files using `Representation` object:
 
 ``` php
 $rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1080 , 720);
-$rep_2 = (new Representation())->setKiloBitrate(300)->setResize(320 , 170);
+$rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
 
-Streaming\FFMpeg::create()// It can pass the configuration and logger to the method or it can be null
-    ->open('/var/www/media/videos/test.mp4') // Path to the video
-    ->DASH()
+$video->DASH()
     ->HEVC() // Format of the video.For Using another format, see Traits\Formats
-    ->addRepresentation($rep_1) // Add representation
-    ->addRepresentation($rep_2) // Add representation
-    ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
-    ->save(); // It can pass a path to the method or it can be null
+    ->addRepresentation($rep_1) // Add a representation
+    ->addRepresentation($rep_2) // Add a representation
+    ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
+    ->save(); // It can be passed a path to the method or it can be null
 
 ```
 
 
 #### Transcoding
 
-You can transcode videos using the `on` method in formats class.
+You can transcode videos using the `on` method in the format class.
  
- Transcoding progress can be monitored in realtime, see Format documentation
-in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
-Please note that audio and video bitrate are set on the format.
+ Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
 
 ``` php
 $format = new Streaming\Format\HEVC();
@@ -147,9 +154,7 @@ $format->on('progress', function ($video, $format, $percentage) {
     echo "$percentage% is transcoded\n";
 });
 
-Streaming\FFMpeg::create()
-    ->open('/var/www/media/videos/test.mp4')
-    ->DASH()
+$video->DASH()
     ->setFormat($format)
     ->autoGenerateRepresentations()
     ->setAdaption('id=0,streams=v id=1,streams=a')
@@ -159,43 +164,40 @@ Streaming\FFMpeg::create()
 
 
 
-For more information about [FFMpeg](https://ffmpeg.org/) and its dash options please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
+For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash options]((https://ffmpeg.org/ffmpeg-formats.html#dash-2))** please visit its website.
+
 ### HLS
 
-**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based media streaming communications protocol implemented by [Apple Inc](https://www.apple.com/).
+**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
 
-To create an M3U8 playlist to do HLS, just use `HLS` method.
+HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist.
 
-As of version 1.1.0, the ```autoGenerateRepresentations``` method has been added. This method allows you to create a multi-formats M3U8 file automatically based on original video size and bit rate:
-
+ - [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
+ 
 ``` php
-Streaming\FFMpeg::create()// It can pass the configuration and logger to the method or it can be null
-    ->open('/var/www/media/videos/test.mp4') // Path to the video
-    ->HLS()
-    ->X264() // Format of the video.For Using another format, see Traits\Formats
+$video->HLS()
+    ->X264()
     ->autoGenerateRepresentations() // Auto generate representations
-    ->save(); // It can pass a path to the method or it can be null
+    ->save(); // It can be passed a path to the method or it can be null
 ```
 
-or you can add representation manually by using  ```addRepresentation``` method:
+Create multi-qualities video files using `Representation` object:
 
 ``` php
 $rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1080 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 270);
 
-Streaming\FFMpeg::create()// it can pass the configuration and logger to the method or it can be null
-    ->open('/var/www/media/videos/test.mp4') // Path to a video
-    ->HLS()
-    ->X264() // Format of the video.For Using another formats, see Traits\Formats
-    ->addRepresentation($rep_1) // Add representation
-    ->addRepresentation($rep_2) // Add representation
-    ->addRepresentation($rep_3) // Add representation
-    ->setHlsTime(5) // Set Hls Time. Default value is 5 
-    ->setHlsAllowCache(false) // Set Hls that is allowed to cache files. Default value is true 
-    ->save(); // It can pass a path to the method or it can be null
+$video->HLS()
+    ->X264() 
+    ->addRepresentation($rep_1) // Add a representation
+    ->addRepresentation($rep_2) // Add a representation
+    ->addRepresentation($rep_3) // Add a representation
+    ->setHlsTime(5) // Set Hls Time. Default value is 10 
+    ->setHlsAllowCache(false) // Default value is true 
+    ->save();
 ```
-For more information about which value you should pass to these methods and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
+See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more information.
 
 #### Transcoding
 
@@ -206,9 +208,7 @@ $format->on('progress', function ($video, $format, $percentage) {
     echo "$percentage% is transcoded\n";
 });
 
-Streaming\FFMpeg::create()
-    ->open('/var/www/media/videos/test.mp4')
-    ->HLS()
+$video->HLS()
     ->setFormat($format)
     ->autoGenerateRepresentations()
     ->save('/var/www/media/videos/dash/test.m3u8');
@@ -218,7 +218,7 @@ Streaming\FFMpeg::create()
 
 The encryption process requires some kind of secret (key) together with an encryption algorithm.
 
-HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [learn more](http://hlsbook.net/how-to-encrypt-hls-video-with-ffmpeg/)
+HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 Before we can encrypt videos, we need an encryption key. However you can use any software that can generate key, this package requires a working OpenSSL to create the key:
 
@@ -226,29 +226,35 @@ Getting OpenSSL: https://www.openssl.org/source/
 
 Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
-The next step is to pass key info to `setHlsKeyInfoFile` method:
+You need to pass both 'URL to Key' and a path to save a random key:
 ``` php
-$url = "https://www.aminyazdanpanah.com/enc.key"; //Path to access the key on your website
-$path = "/var/www/media/keys/my_key/enc.key"; //Path to save the random key on your server
+//Path to access the key on your website
+$url = "https://www.aminyazdanpanah.com/enc.key";
 
-Streaming\FFMpeg::create()
-    ->open('/var/www/media/videos/test.mp4')
-    ->HLS()
+//Path to save a random key on your server
+$path = "/var/www/my_website_project/storage/enc.key";
+
+$video->HLS()
     ->X264()
     ->generateRandomKeyInfo($url, $path)
     ->autoGenerateRepresentations()
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
 - **Note:** Alternatively, you can generate a key info using another library and pass the path to the `setHlsKeyInfoFile` method.
-- **NOTE:** It is highly recommended to protect your key on your website using a token or a session/cookie (e.x. https://wwww.aminyazdanpanah.com/enc.key?tk=J5HLhi97Tjk4N).
+- **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).
+    
+    (e.x. https://wwww.aminyazdanpanah.com/enc.key?tk=J5HLhi97Tjk4N).
+    
 - **NOTE:** For getting the benefit of the OpenSSL binary detection in windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
 
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method, it holds the Media object that belongs to the PHP-FFMpeg.
 
+- [Full PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation)
+
 ``` php
 $ffmpeg = Streaming\FFMpeg::create()
-$video = $ffmpeg->open('/var/www/media/videos/test.mp4')
+$video = $$ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4")
 ```
 #### Extracting image
 ou can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
@@ -285,16 +291,6 @@ $video
     ));
 ```
 
-#### Extracting Media Metadata
-You can also use `getFirstStream` method to extract media metadata.
-
-``` php
-$metadata = Streaming\FFMpeg::create()
-    ->open('/var/www/media/videos/test.mp4')
-    ->getFirstStream()
-    ->all();
-```
-
 ## Several Open Source Players
 
  - DASH and HLS on Web: [Flowplayer](https://flowplayer.com/)
@@ -321,6 +317,10 @@ Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-vid
 
 If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
 contact [AT] aminyazdanpanah • com.
+
+## Reporting Bugs
+Please for reporting bugs just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues).
+
 ## Credits
 
 - [Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)

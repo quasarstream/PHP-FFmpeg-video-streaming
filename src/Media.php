@@ -27,16 +27,23 @@ class Media
      * @var string
      */
     private $path;
+    /**
+     * @var bool
+     */
+    private $is_tmp;
+
 
     /**
      * Media constructor.
      * @param MediaTypeInterface $media
      * @param string $path
+     * @param bool $is_tmp
      */
-    public function __construct(MediaTypeInterface $media, string $path)
+    public function __construct(MediaTypeInterface $media, string $path, bool $is_tmp)
     {
         $this->media = $media;
         $this->path = $path;
+        $this->is_tmp = $is_tmp;
     }
 
     /**
@@ -98,5 +105,13 @@ class Media
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTmp(): bool
+    {
+        return $this->is_tmp;
     }
 }

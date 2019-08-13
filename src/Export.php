@@ -11,6 +11,7 @@
 
 namespace Streaming;
 
+use Streaming\Exception\Exception;
 use Streaming\Filters\Filter;
 use Streaming\Traits\Formats;
 
@@ -40,10 +41,10 @@ abstract class Export
     /**
      * @param string $path
      * @param bool $analyse
-     * @param bool $delete_original_video
      * @return mixed
+     * @throws Exception
      */
-    public function save(string $path = null, $analyse = true, $delete_original_video = false)
+    public function save(string $path = null, $analyse = true)
     {
         $path = $this->getPath($path);
 
@@ -58,12 +59,13 @@ abstract class Export
             $path
         );
 
-        if ($delete_original_video) {
-            sleep(1);
-            @unlink($this->media->getPath());
+        $response = ($analyse) ? (new StreamingAnalytics($this))->analyse() : $path;
+
+        if ($this->media->isTmp()) {
+            $this->deleteOriginalFile();
         }
 
-        return ($analyse) ? (new StreamingAnalytics($this))->analyse() : $path;
+        return $response;
     }
 
     /**
@@ -76,10 +78,20 @@ abstract class Export
      */
     abstract protected function setFilter();
 
+    /**
+     * @param $path
+     * @return string
+     * @throws Exception
+     */
     private function getPath($path): string
     {
         if (null !== $path) {
             $this->path_info = pathinfo($path);
+        }
+
+        if (null === $path && $this->media->isTmp()) {
+            $this->deleteOriginalFile();
+            throw new Exception("You need to specify a path. It is not possible to save to a tmp directory");
         }
 
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
@@ -112,5 +124,11 @@ abstract class Export
     public function getMedia()
     {
         return $this->media;
+    }
+
+    private function deleteOriginalFile()
+    {
+        sleep(1);
+        @unlink($this->media->getPath());
     }
 }

@@ -32,13 +32,17 @@ if (!function_exists('dash')) {
         }
 
         try {
-            return FFMpeg::create()
-                ->open($input_path)
-                ->DASH()
-                ->setFormat($format)
-                ->autoGenerateRepresentations()
-                ->setAdaption('id=0,streams=v id=1,streams=a')
-                ->save($save_path);
+            if (filter_var($input_path, FILTER_VALIDATE_URL)) {
+                $video = FFMpeg::create()->fromURL($input_path);
+            } else {
+                $video = FFMpeg::create()->open($input_path);
+            }
+
+            return $video->DASH()
+                    ->setFormat($format)
+                    ->autoGenerateRepresentations()
+                    ->setAdaption('id=0,streams=v id=1,streams=a')
+                    ->save($save_path);
         } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
@@ -64,9 +68,13 @@ if (!function_exists('hls')) {
         }
 
         try {
-            return FFMpeg::create()
-                ->open($input_path)
-                ->HLS()
+            if (filter_var($input_path, FILTER_VALIDATE_URL)) {
+                $video = FFMpeg::create()->fromURL($input_path);
+            } else {
+                $video = FFMpeg::create()->open($input_path);
+            }
+
+            return $video->HLS()
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
                 ->setHlsKeyInfoFile($hls_key)
@@ -98,9 +106,13 @@ if (!function_exists('encrypted_hls')) {
         }
 
         try {
-            return FFMpeg::create()
-                ->open($input_path)
-                ->HLS()
+            if (filter_var($input_path, FILTER_VALIDATE_URL)) {
+                $video = FFMpeg::create()->fromURL($input_path);
+            } else {
+                $video = FFMpeg::create()->open($input_path);
+            }
+
+            return $video->HLS()
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
                 ->generateRandomKeyInfo($url, $path, $binary)

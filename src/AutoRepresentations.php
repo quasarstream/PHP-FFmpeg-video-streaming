@@ -22,7 +22,7 @@ class AutoRepresentations
     /** @var array side_values
      * regular video's heights
      */
-    private $side_values = [2160, 1080, 720, 480, 240, 144];
+    private $side_values = [2160, 1080, 720, 480, 360, 240, 144];
 
     /**
      * AutoRepresentations constructor.
@@ -31,7 +31,7 @@ class AutoRepresentations
      */
     public function __construct(Stream $stream, $side_values)
     {
-        if(null !== $side_values){
+        if (null !== $side_values) {
             $this->side_values = $side_values;
         }
 

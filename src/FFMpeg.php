@@ -14,6 +14,9 @@ namespace Streaming;
 use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
+use Streaming\Exception\Exception;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class FFMpeg
 {
@@ -29,12 +32,49 @@ class FFMpeg
     }
 
     /**
-     * @param $path
+     * @param string $path
+     * @param bool $is_tmp
      * @return Media
+     * @throws Exception
      */
-    public function open($path): Media
+    public function open(string $path, bool $is_tmp = false): Media
     {
-        return new Media($this->ffmpeg->open($path), $path);
+        if (!is_file($path)) {
+            throw new Exception("There is no file in this path: " . $path);
+        }
+
+        return new Media($this->ffmpeg->open($path), $path, $is_tmp);
+    }
+
+    /**
+     * @param string $url
+     * @param string|null $save_to
+     * @param string $method
+     * @param $request_options
+     * @return Media
+     * @throws Exception
+     */
+    public function fromURL(string $url, string $save_to = null, string $method = "GET", $request_options = []): Media
+    {
+        $is_tmp = false;
+
+        if (null === $save_to) {
+            $is_tmp = true;
+            $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
+
+            Helper::makeDir($tmp_path);
+
+            $ext = "";
+            if (isset(pathinfo($url)["extension"])) {
+                $ext = "." . substr(explode("?", pathinfo($url)["extension"])[0], 0, 10);
+            }
+
+            $save_to = $tmp_path . DIRECTORY_SEPARATOR . Helper::randomString() . $ext;
+        }
+
+        Helper::downloadFile($url, $save_to, $method, $request_options);
+
+        return $this->open($save_to, $is_tmp);
     }
 
     /**

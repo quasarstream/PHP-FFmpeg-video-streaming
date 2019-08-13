@@ -48,7 +48,8 @@
     },
     "require": {
         "php": "^7.1",
-        "php-ffmpeg/php-ffmpeg": "^0.14"
+        "php-ffmpeg/php-ffmpeg": "^0.14",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"

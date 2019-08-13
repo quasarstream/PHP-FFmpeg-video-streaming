@@ -20,7 +20,7 @@ class HLS extends Export
     use Representations;
 
     /** @var string */
-    private $hls_time = 5;
+    private $hls_time = 10;
 
     /** @var bool */
     private $hls_allow_cache = true;
@@ -83,12 +83,12 @@ class HLS extends Export
      */
     public function generateRandomKeyInfo(string $url = null, string $path = null, string $binary = "openssl"): HLS
     {
-        if (null === $url && null === $path){
+        if (null === $url && null === $path) {
             $key_name = $url = Helper::randomString() . ".key";
             $path = $this->path_info["dirname"] . DIRECTORY_SEPARATOR . $key_name;
         }
 
-        $this->hls_key_info_file = (string) new KeyInfo($url, $path, $binary);
+        $this->hls_key_info_file = (string)new KeyInfo($url, $path, $binary);
         return $this;
     }
 

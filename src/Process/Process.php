@@ -23,7 +23,7 @@ class Process
     protected $commands = [];
 
     /**
-     * ShakaProcess constructor.
+     * Process constructor.
      * @param $binary
      * @throws Exception
      */
@@ -47,7 +47,7 @@ class Process
             if ($binary = $finder->find($binary)) {
                 return $binary;
             } else {
-                throw new Exception("We could not find 'Shaka Packager' binary.\nPlease check the path to the shaka binary");
+                throw new Exception("We could not find the binary.\nPlease check the path to the binary");
             }
         }
     }
