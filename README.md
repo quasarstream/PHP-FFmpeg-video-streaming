@@ -164,7 +164,7 @@ $video->DASH()
 
 
 
-For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash options]((https://ffmpeg.org/ffmpeg-formats.html#dash-2))** please visit its website.
+For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** please visit its website.
 
 ### HLS
 
@@ -228,15 +228,15 @@ Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
 You need to pass both 'URL to Key' and a path to save a random key:
 ``` php
+//Path to save a random key on your server
+$save_as = "/var/www/my_website_project/storage/enc.key";
+
 //Path to access the key on your website
 $url = "https://www.aminyazdanpanah.com/enc.key";
 
-//Path to save a random key on your server
-$path = "/var/www/my_website_project/storage/enc.key";
-
 $video->HLS()
     ->X264()
-    ->generateRandomKeyInfo($url, $path)
+    ->generateRandomKeyInfo($url, $save_as)
     ->autoGenerateRepresentations()
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
