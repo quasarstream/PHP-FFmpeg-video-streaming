@@ -21,17 +21,17 @@ trait Representation
     protected $representations = [];
 
     /**
-     * @param Rep $representation
+     * @param Rep $rep
      * @return $this
      * @throws Exception
      */
-    public function addRepresentation(Rep $representation)
+    public function addRepresentation(Rep $rep)
     {
         if (!$this->format) {
             throw new Exception('Format has not been set');
         }
 
-        $this->representations[] = $representation;
+        $this->representations[] = $rep;
         return $this;
     }
 
