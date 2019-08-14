@@ -216,7 +216,7 @@ Getting OpenSSL: https://www.openssl.org/source/
 
 Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
-You need to pass both 'URL to Key' and a path to save a random key:
+You need to pass both 'URL to the key' and 'path to save a random key' to `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
 $save_to = "/var/www/my_website_project/storage/keys/enc.key";
