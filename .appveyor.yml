@@ -28,7 +28,7 @@ init:
 
 install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
-  - ps: cinst php
+  - ps: cinst php --params '""/InstallDir:C:\tools\php""' --ignore-checksums --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP_VERSION | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
   - ps: Start-FileDownload $env:ffmpeg_download
 
   - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
