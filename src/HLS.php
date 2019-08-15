@@ -88,7 +88,7 @@ class HLS extends Export
             $path = $this->path_info["dirname"] . DIRECTORY_SEPARATOR . $key_name;
         }
 
-        $this->hls_key_info_file = (string)new KeyInfo($url, $path, $binary);
+        $this->setHlsKeyInfoFile(new KeyInfo($url, $path, $binary));
         return $this;
     }
 

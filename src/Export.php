@@ -91,7 +91,7 @@ abstract class Export
 
         if (null === $path && $this->media->isTmp()) {
             $this->deleteOriginalFile();
-            throw new Exception("You need to specify a path. It is not possible to save to a tmp directory");
+            throw new Exception("You need to specify a path. It is not possible to save to the tmp directory");
         }
 
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
@@ -108,6 +108,41 @@ abstract class Export
         }
 
         return $path;
+    }
+
+    /**
+     * @param array $config
+     * @param string $dest
+     * @param string|null $path
+     * @return mixed
+     * @throws Exception
+     */
+    public function saveToS3(array $config, string $dest, string $path = null)
+    {
+        $basename = Helper::randomString();
+
+        if (null !== $path){
+            $basename = pathinfo($path)["basename"];
+        }
+
+        $tmp_dir = Helper::tmpDir();
+        $tmp_file = $tmp_dir . $basename;
+
+        $results = $this->save($tmp_file);
+        sleep(1);
+
+        $aws = new AWS($config);
+        $aws->uploadAndDownloadDirectory($tmp_dir, $dest);
+
+        if(null !== $path){
+            $destination = pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR;
+            Helper::makeDir($destination);
+            Helper::moveDir($tmp_dir, $destination);
+        }else{
+            Helper::deleteDirectory($tmp_dir);
+        }
+
+        return $results;
     }
 
     /**

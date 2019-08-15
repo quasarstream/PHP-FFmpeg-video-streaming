@@ -71,7 +71,6 @@ class Helper
 
             throw new Exception($error);
         }
-
     }
 
     /**
@@ -100,5 +99,66 @@ class Helper
         }
 
         return null;
+    }
+
+    /**
+     * @param string $ext
+     * @return string
+     * @throws Exception
+     */
+    public static function tmpFile(string $ext = ""): string
+    {
+        if ("" !== $ext) {
+            $ext = "." . $ext;
+        }
+
+        $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
+        static::makeDir($tmp_path);
+
+        return $tmp_path . DIRECTORY_SEPARATOR . static::randomString() . $ext;
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public static function tmpDir(): string
+    {
+        return static::tmpFile() . DIRECTORY_SEPARATOR;
+    }
+
+
+    public static function moveDir(string $source, string $destination)
+    {
+        foreach (scandir($source) as $file) {
+            if (in_array($file, [".", ".."])) continue;
+            if (copy($source . $file, $destination . $file)) {
+                unlink($source . $file);
+            }
+        }
+    }
+
+    /**
+     * @param $dir
+     * @return bool
+     */
+    public static function deleteDirectory($dir)
+    {
+        if (!file_exists($dir)) {
+            return true;
+        }
+
+        if (!is_dir($dir)) {
+            return @unlink($dir);
+        }
+
+        foreach (scandir($dir) as $item) {
+            if (in_array($item, [".", ".."])) continue;
+            if (!static::deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+                return false;
+            }
+        }
+
+        return @rmdir($dir);
     }
 }

@@ -15,8 +15,6 @@ use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Exception\Exception;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 class FFMpeg
 {
@@ -54,25 +52,44 @@ class FFMpeg
      * @return Media
      * @throws Exception
      */
-    public function fromURL(string $url, string $save_to = null, string $method = "GET", $request_options = []): Media
+    public function fromURL(string $url, string $save_to = null, string $method = "GET", array $request_options = []): Media
     {
         $is_tmp = false;
 
         if (null === $save_to) {
             $is_tmp = true;
-            $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
-
-            Helper::makeDir($tmp_path);
-
             $ext = "";
             if (isset(pathinfo($url)["extension"])) {
-                $ext = "." . substr(explode("?", pathinfo($url)["extension"])[0], 0, 10);
+                $ext = substr(explode("?", pathinfo($url)["extension"])[0], 0, 10);
             }
 
-            $save_to = $tmp_path . DIRECTORY_SEPARATOR . Helper::randomString() . $ext;
+            $save_to = Helper::tmpFile($ext);
+        }
+        Helper::downloadFile($url, $save_to, $method, $request_options);
+
+        return $this->open($save_to, $is_tmp);
+    }
+
+
+    /**
+     * @param array $config
+     * @param string $bucket
+     * @param string $key
+     * @param string|null $save_to
+     * @return Media
+     * @throws Exception
+     */
+    public function fromS3(array $config, string $bucket, string $key, string $save_to = null): Media
+    {
+        $is_tmp = false;
+
+        if (null === $save_to) {
+            $is_tmp = true;
+            $save_to = Helper::tmpFile();
         }
 
-        Helper::downloadFile($url, $save_to, $method, $request_options);
+        $aws = new AWS($config);
+        $aws->downloadFile($bucket, $key, $save_to);
 
         return $this->open($save_to, $is_tmp);
     }

@@ -12,7 +12,7 @@
 This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
 
 - Before you get started, please read the FFMpeg Document found **[here](https://ffmpeg.org/ffmpeg-formats.html)**.
-- **[Full API Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
+- **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
 - For DRM and encryption(DASH and HLS), I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
@@ -22,18 +22,13 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
 - [Usage](#usage)
   - [Configuration](#configuration)
   - [Opening a File](#opening-a-file)
-    - [From Local](#1-from-local)
-    - [From Cloud](#2-from-cloud)
   - [DASH](#dash)
-    - [Create DASH Files](#create-dash-files)
-    - [Transcoding(DASH)](#transcodingdash)
   - [HLS](#hls)
     - [Create HLS Files](#create-hls-files)
-    - [Transcoding(HLS)](#transcodinghls)
     - [Encrypted HLS](#encrypted-hls)
+  - [Transcoding](#transcoding)
+  - [Save to Amazon S3](#)
   - [Other Advanced Features](#other-advanced-features)
-    - [Extracting image](#extracting-image)
-    - [Watermark](#watermark)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing](#contributing)
 - [Security](#security)
@@ -76,14 +71,14 @@ $config = [
     'ffprobe.binaries' => '/usr/bin/ffprobe',
     'timeout'          => 3600, // The timeout for the underlying process
     'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
-    ];
+];
     
 $ffmpeg = Streaming\FFMpeg::create($config);
 ```
 
 ### Opening a File
 
-There are two ways to open a file:
+There are three ways to open a file:
 
 #### 1. From Local
 You can pass a local path of video to the `open` method:
@@ -101,6 +96,32 @@ $video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4");
 
 Also, the path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
 
+#### 3. From Amazon S3
+Amazon S3 or Amazon Simple Storage Service is a service offered by [Amazon Web Services (AWS)](https://aws.amazon.com/) that provides object storage through a web service interface. [learn more](https://en.wikipedia.org/wiki/Amazon_S3)
+
+- For getting credentials, you need to have an AWS account or you can [create one](https://portal.aws.amazon.com/billing/signup#/start).
+- Before you get started, please read the "AWS SDK for PHP" Document found **[here](https://aws.amazon.com/sdk-for-php/)**.
+
+For downloading a file from Amazon S3, you need to pass an array as configuration, name of the bucket, and the key of your bucket to `fromS3` method:
+
+``` php
+$config = [
+    'version' => 'latest',
+    'region' => 'us-west-1',
+    'credentials' => [
+        'key' => 'my-access-key-id',
+        'secret' => 'my-secret-access-key',
+    ]
+];
+
+$bucket = "my-bucket-name";
+$key = "/videos/my_sweetie.mp4";
+
+$video = $ffmpeg->fromS3($config, $bucket, $key);
+```
+
+A path can also be passed to save the file on your local computer/server.
+
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
@@ -109,7 +130,7 @@ Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaki
 #### Create DASH Files
 ``` php
 $video->DASH()
-    ->HEVC() // Format of the video. For Using another format, see Traits\Formats
+    ->HEVC() // Format of the video. Alternatives: X264() and VP9()
     ->autoGenerateRepresentations() // Auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
     ->save(); // It can be passed a path to the method or it can be null
@@ -122,37 +143,12 @@ $rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1080 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
 
 $video->DASH()
-    ->HEVC() // Format of the video.For Using another format, see Traits\Formats
+    ->HEVC()
     ->addRepresentation($rep_1) // Add a representation
     ->addRepresentation($rep_2) // Add a representation
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
-    ->save(); // It can be passed a path to the method or it can be null
-
+    ->save('/var/www/media/videos/dash/test.mpd'); // It can be passed a path to the method or it can be null
 ```
-
-
-#### Transcoding(DASH)
-
-You can transcode videos using the `on` method in the format class.
- 
- Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
-
-``` php
-$format = new Streaming\Format\HEVC();
-
-$format->on('progress', function ($video, $format, $percentage) {
-    echo "$percentage% is transcoded\n";
-});
-
-$video->DASH()
-    ->setFormat($format)
-    ->autoGenerateRepresentations()
-    ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->save('/var/www/media/videos/dash/test.mpd');
-
-```
-
-
 
 For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** please visit its website.
 
@@ -187,22 +183,10 @@ $video->HLS()
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
 ```
+
+**NOTE:** You cannot use HEVC and VP9 formats for HLS packaging.
+
 See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more information.
-
-#### Transcoding(HLS)
-
-``` php
-$format = new Streaming\Format\X264();
-
-$format->on('progress', function ($video, $format, $percentage) {
-    echo "$percentage% is transcoded\n";
-});
-
-$video->HLS()
-    ->setFormat($format)
-    ->autoGenerateRepresentations()
-    ->save('/var/www/media/videos/dash/test.m3u8');
-```
 
 #### Encrypted HLS
 
@@ -234,6 +218,76 @@ $video->HLS()
 - **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 - **NOTE:** For getting the benefit of the OpenSSL binary detection in windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
 
+### Transcoding
+
+You can transcode videos using the `on` method in the format class.
+ 
+ Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
+
+``` php
+$format = new Streaming\Format\HEVC();
+
+$format->on('progress', function ($video, $format, $percentage) {
+    echo "$percentage% is transcoded\n";
+});
+
+$video->DASH()
+    ->setFormat($format)
+    ->autoGenerateRepresentations()
+    ->setAdaption('id=0,streams=v id=1,streams=a')
+    ->save();
+```
+
+HLS Transcoding:
+
+``` php
+$format = new Streaming\Format\X264();
+
+$format->on('progress', function ($video, $format, $percentage) {
+    echo "$percentage% is transcoded\n";
+});
+
+$video->HLS()
+    ->setFormat($format)
+    ->autoGenerateRepresentations()
+    ->save('/var/www/media/videos/dash/test.m3u8');
+```
+
+### Save to Amazon S3
+You can save and upload entire packaged video files to [Amazon S3](https://aws.amazon.com/). For uploading files, you need to have credentials.
+
+``` php
+$config = [
+    'version' => 'latest',
+    'region' => 'us-west-1',
+    'credentials' => [
+        'key' => 'my-access-key-id',
+        'secret' => 'my-secret-access-key',
+    ]
+];
+
+$dest = 's3://bucket'; 
+```
+
+Upload DASH files to Amazon Simple Storage Service:
+``` php
+$video->DASH()
+    ->HEVC()
+    ->autoGenerateRepresentations()
+    ->setAdaption('id=0,streams=v id=1,streams=a')
+    ->saveToS3($config, $dest);
+```
+A filename can also be passed to save files on your local computer/server.
+
+``` php
+$video->HLS()
+    ->X264()
+    ->autoGenerateRepresentations()
+    ->saveToS3($config, $dest, '/var/www/media/videos/dash/test.m3u8');
+```
+
+For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
+
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
 
@@ -244,7 +298,7 @@ $ffmpeg = Streaming\FFMpeg::create()
 $video = $$ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4", "/var/wwww/media/my/new/video.mp4");
 ```
 
-#### Extracting image
+#### Example(Extracting image)
 You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
 
 ``` php
@@ -257,21 +311,8 @@ $video
     ->save(new FFMpeg\Format\Video\X264(), '/path/to/new/file');
 ```
 
-#### Watermark
-Watermark a video with a given image.
-
-``` php
-$video
-    ->filters()
-    ->watermark($watermarkPath, array(
-        'position' => 'absolute',
-        'x' => 1180,
-        'y' => 620,
-    ));
-```
-
 ## Several Open Source Players
-You can use these player to play your packaged videos
+You can use these players to play your packaged videos
 - **WEB**
     - DASH and HLS: [Plyr](https://github.com/sampotts/plyr)
     - DASH and HLS: [MediaElement.js](https://github.com/mediaelement/mediaelement)

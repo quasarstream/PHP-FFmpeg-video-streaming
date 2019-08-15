@@ -50,11 +50,9 @@ class KeyInfo
         $key_info[] = $this->generateRandomKey();
         $key_info[] = $this->generateIV();
 
-        $key_info_path = $this->path_info["dirname"] . DIRECTORY_SEPARATOR . Helper::randomString() . ".keyinfo";
+        file_put_contents($path = Helper::tmpFile("keyinfo"), implode(PHP_EOL, $key_info));
 
-        file_put_contents($key_info_path, implode(PHP_EOL, $key_info));
-
-        return $key_info_path;
+        return $path;
     }
 
     /**
