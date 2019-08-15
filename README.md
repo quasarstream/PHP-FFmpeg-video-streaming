@@ -27,12 +27,10 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
     - [Create HLS Files](#create-hls-files)
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
-  - [Save to Amazon S3](#)
+  - [Save to Amazon S3](#save-to-amazon-s3)
   - [Other Advanced Features](#other-advanced-features)
 - [Several Open Source Players](#several-open-source-players)
-- [Contributing](#contributing)
-- [Security](#security)
-- [Reporting Bugs](#reporting-bugs)
+- [Contributing and Reporting Bug](#contributing-and-reporting-bug)
 - [Credits](#credits)
 - [License](#license)
 
@@ -145,9 +143,9 @@ $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
 $video->DASH()
     ->HEVC()
     ->addRepresentation($rep_1) // Add a representation
-    ->addRepresentation($rep_2) // Add a representation
+    ->addRepresentation($rep_2) 
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
-    ->save('/var/www/media/videos/dash/test.mpd'); // It can be passed a path to the method or it can be null
+    ->save('/var/www/media/videos/dash/test.mpd');
 ```
 
 For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** please visit its website.
@@ -163,8 +161,8 @@ Create HLS files based on original video(auto generate qualities).
 ``` php
 $video->HLS()
     ->X264()
-    ->autoGenerateRepresentations() // Auto generate representations
-    ->save(); // It can be passed a path to the method or it can be null
+    ->autoGenerateRepresentations()
+    ->save();
 ```
 
 Create multi-qualities video files using `Representation` object(set bit-rate and size manually):
@@ -326,21 +324,18 @@ You can use these players to play your packaged videos
 - **Android**
     - DASH and HLS: [ExoPlayer](https://github.com/google/ExoPlayer)
     
-## Contributing
+## Contributing and Reporting bug
 
 I'd love your help in improving, correcting, adding to the specification.
 Please [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)
 or [submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls).
 
-Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
+- Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
 
-## Security
+- Please for reporting bugs just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues).
 
-If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
+- If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
 contact [AT] aminyazdanpanah • com.
-
-## Reporting Bugs
-Please for reporting bugs just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues).
 
 ## Credits
 
