@@ -27,7 +27,7 @@ class AutoRepresentations
     /**
      * AutoRepresentations constructor.
      * @param Stream $stream
-     * @param null $side_values
+     * @param null | array $side_values
      */
     public function __construct(Stream $stream, $side_values)
     {

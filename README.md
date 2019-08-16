@@ -27,7 +27,7 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
     - [Create HLS Files](#create-hls-files)
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
-  - [Save to Amazon S3](#save-to-amazon-s3)
+  - [Saving Files](#saving-files)
   - [Other Advanced Features](#other-advanced-features)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bug](#contributing-and-reporting-bug)
@@ -94,6 +94,36 @@ $video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4");
 
 Also, the path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
 
+``` php
+$api = 'https://www.aminyazdanpanah.com/api/v1.0';
+$save_to = '/var/www/media/videos/my_sweetie.mp4';
+$method = 'POST';
+$options = [
+    'auth' => ['username', 'password', 'digest'],
+    'form_params' => [
+            'token'  => 'YOR_TOKEN',
+            'method' => 'download',
+            'path'   => ['dir3', 'videos', 'my_sweetie.mp4']
+    ],
+    'headers' => [
+        'User-Agent'        => 'testing/1.0',
+        'Accept'            => 'application/json',
+        'X-Authentication'  => 'Bearer x1234'
+    ],
+    'progress' => function(
+        $downloadTotal,
+        $downloadedBytes,
+        $uploadTotal,
+        $uploadedBytes
+    ) {
+        $percentage = intval($downloadedBytes / $downloadTotal) * 100;
+        echo "$percentage% is downloaded\n";
+    },
+];
+
+$video = $ffmpeg->fromURL($api, $save_to, $method, $options);
+```
+
 #### 3. From Amazon S3
 Amazon S3 or Amazon Simple Storage Service is a service offered by [Amazon Web Services (AWS)](https://aws.amazon.com/) that provides object storage through a web service interface. [learn more](https://en.wikipedia.org/wiki/Amazon_S3)
 
@@ -104,10 +134,10 @@ For downloading a file from Amazon S3, you need to pass an array as configuratio
 
 ``` php
 $config = [
-    'version' => 'latest',
-    'region' => 'us-west-1',
+    'version'     => 'latest',
+    'region'      => 'us-west-1',
     'credentials' => [
-        'key' => 'my-access-key-id',
+        'key'    => 'my-access-key-id',
         'secret' => 'my-secret-access-key',
     ]
 ];
@@ -137,6 +167,8 @@ $video->DASH()
 Also, You can create multi-representations video files using `Representation` object:
 
 ``` php
+use Streaming\Representation;
+
 $rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1080 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
 
@@ -161,22 +193,24 @@ Create HLS files based on original video(auto generate qualities).
 ``` php
 $video->HLS()
     ->X264()
-    ->autoGenerateRepresentations()
+    ->autoGenerateRepresentations([720, 360]) // You can limit the numbers of representatons
     ->save();
 ```
 
 Create multi-qualities video files using `Representation` object(set bit-rate and size manually):
 
 ``` php
+use Streaming\Representation;
+
 $rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1080 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 270);
 
 $video->HLS()
     ->X264() 
-    ->addRepresentation($rep_1) // Add a representation
-    ->addRepresentation($rep_2) // Add a representation
-    ->addRepresentation($rep_3) // Add a representation
+    ->addRepresentation($rep_1)
+    ->addRepresentation($rep_2)
+    ->addRepresentation($rep_3)
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
@@ -201,7 +235,7 @@ Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 You need to pass both 'URL to the key' and 'path to save a random key' to `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
-$save_to = "/var/www/my_website_project/storage/keys/enc.key";
+$save_to = "/var/www/my_website_project/keys/enc.key";
 
 //A URL (or a path) to access the key on your website
 $url = "https://www.aminyazdanpanah.com/keys/enc.key";// or "/keys/enc.key";
@@ -209,7 +243,7 @@ $url = "https://www.aminyazdanpanah.com/keys/enc.key";// or "/keys/enc.key";
 $video->HLS()
     ->X264()
     ->generateRandomKeyInfo($url, $save_to)
-    ->autoGenerateRepresentations()
+    ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
 - **Note:** Alternatively, you can generate a key info using another library and pass the path of key info to the `setHlsKeyInfoFile` method.
@@ -251,7 +285,72 @@ $video->HLS()
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
-### Save to Amazon S3
+### Saving Files
+There are three ways to save your packaged video files:
+
+#### 1. To a Local Path
+You can pass a local path to `save` method. If there was no directory in the path, then the package auto create the path.
+
+``` php
+$dash = $video->DASH()
+            ->HEVC()
+            ->autoGenerateRepresentations()
+            ->setAdaption('id=0,streams=v id=1,streams=a');
+            
+$dash->save('/var/www/media/videos/dash/test.mpd');
+```
+
+It can also be null. The default path is the input path.
+
+``` php
+$hls = $video->HLS()
+            ->X264()
+            ->autoGenerateRepresentations();
+            
+$hls->save();
+```
+- **NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
+
+#### 2. To a Cloud
+You can save your files to cloud using `saveToCloud` method. This package uses [Guzzle](http://docs.guzzlephp.org/en/stable/index.html) to send and receive files.
+
+- Before you get started, please read the Guzzle Document found **[here](http://docs.guzzlephp.org/en/stable/index.html)**.
+
+
+``` php
+$api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
+$field_name = "MY_FILES";
+$method = 'POST';
+$headers = [
+    'User-Agent'        => 'testing/1.0',
+    'Accept'            => 'application/json',
+    'X-Authentication'  => 'Bearer x1234'
+]
+$options = [
+    'auth' => ['username', 'password', 'digest'],
+    'progress' => function(
+        $downloadTotal,
+        $downloadedBytes,
+        $uploadTotal,
+        $uploadedBytes
+    ) {
+        $percentage = intval($uploadedBytes / $uploadTotal) * 100;
+        echo "$percentage% is uploaded\n";
+    },
+];
+
+$dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
+```
+NOTE: For more information about option visit [here](http://docs.guzzlephp.org/en/stable/request-options.html).
+
+It can also be passed a path to save a copy files on the local path:
+
+``` php
+$save_to = '/var/www/media/videos/my_sweetie.mp4';
+$hls->saveToCloud($api, $field_name, $save_to, $method, $headers, $options);
+```
+
+#### 3. TO Amazon S3
 You can save and upload entire packaged video files to [Amazon S3](https://aws.amazon.com/). For uploading files, you need to have credentials.
 
 ``` php
@@ -269,22 +368,17 @@ $dest = 's3://bucket';
 
 Upload DASH files to Amazon Simple Storage Service:
 ``` php
-$video->DASH()
-    ->HEVC()
-    ->autoGenerateRepresentations()
-    ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->saveToS3($config, $dest);
+$dash->saveToS3($config, $dest);
 ```
-A filename can also be passed to save files on your local computer/server.
+A path can also be passed to save a copy files on your local computer/server.
 
 ``` php
-$video->HLS()
-    ->X264()
-    ->autoGenerateRepresentations()
-    ->saveToS3($config, $dest, '/var/www/media/videos/dash/test.m3u8');
+$hls->saveToS3($config, $dest, '/var/www/media/videos/dash/test.m3u8');
 ```
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
+
+- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file and save packaged files to Cloud (or vice versa).   
 
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.

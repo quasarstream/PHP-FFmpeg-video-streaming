@@ -92,8 +92,8 @@ if (!function_exists('encrypted_hls')) {
      * @param string $input_path
      * @param string|null $save_path
      * @param callable|null $listener
-     * @param null $url
-     * @param null $path
+     * @param string | null $url
+     * @param string |null $path
      * @param string $binary
      * @return mixed
      */

@@ -104,10 +104,40 @@ abstract class Export
         } elseif ($this instanceof HLS) {
             $representations = $this->getRepresentations();
             $path = $dirname . "/" . $filename . "_" . end($representations)->getHeight() . "p.m3u8";
-            ExportHLSPlaylist::savePlayList($dirname . "/" . $filename . ".m3u8", $this->getRepresentations(), $filename);
+            ExportHLSPlaylist::savePlayList($dirname . DIRECTORY_SEPARATOR . $filename . ".m3u8", $this->getRepresentations(), $filename);
         }
 
         return $path;
+    }
+
+    /**
+     * @param string $url
+     * @param string $name
+     * @param array $headers
+     * @param string|null $path
+     * @param string $method
+     * @param array $options
+     * @return mixed
+     * @throws Exception
+     */
+    public function saveToCloud(
+        string $url,
+        string $name,
+        string $path = null,
+        string $method = 'GET',
+        array $headers = [],
+        array $options = []
+    )
+    {
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path);
+        sleep(1);
+
+        $file_manager = new FileManager($url, $method, $options);
+        $file_manager->uploadDirectory($tmp_dir, $name, $headers);
+
+        $this->moveTmpFolder($path, $tmp_dir);
+
+        return $results;
     }
 
     /**
@@ -119,28 +149,13 @@ abstract class Export
      */
     public function saveToS3(array $config, string $dest, string $path = null)
     {
-        $basename = Helper::randomString();
-
-        if (null !== $path){
-            $basename = pathinfo($path)["basename"];
-        }
-
-        $tmp_dir = Helper::tmpDir();
-        $tmp_file = $tmp_dir . $basename;
-
-        $results = $this->save($tmp_file);
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path);
         sleep(1);
 
         $aws = new AWS($config);
         $aws->uploadAndDownloadDirectory($tmp_dir, $dest);
 
-        if(null !== $path){
-            $destination = pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR;
-            Helper::makeDir($destination);
-            Helper::moveDir($tmp_dir, $destination);
-        }else{
-            Helper::deleteDirectory($tmp_dir);
-        }
+        $this->moveTmpFolder($path, $tmp_dir);
 
         return $results;
     }
@@ -165,5 +180,40 @@ abstract class Export
     {
         sleep(1);
         @unlink($this->media->getPath());
+    }
+
+    /**
+     * @param $path
+     * @return array
+     * @throws Exception
+     */
+    private function saveToTemporaryFolder($path)
+    {
+        $basename = Helper::randomString();
+
+        if (null !== $path) {
+            $basename = pathinfo($path)["basename"];
+        }
+
+        $tmp_dir = Helper::tmpDir();
+        $tmp_file = $tmp_dir . $basename;
+
+        return [$this->save($tmp_file), $tmp_dir];
+    }
+
+    /**
+     * @param string|null $path
+     * @param $tmp_dir
+     * @throws Exception
+     */
+    private function moveTmpFolder(?string $path, $tmp_dir)
+    {
+        if (null !== $path) {
+            $destination = pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR;
+            Helper::makeDir($destination);
+            Helper::moveDir($tmp_dir, $destination);
+        } else {
+            Helper::deleteDirectory($tmp_dir);
+        }
     }
 }

@@ -48,32 +48,6 @@ class Helper
     }
 
     /**
-     * @param string $url
-     * @param string|null $save_to
-     * @param string $method
-     * @param array $request_options
-     * @throws Exception
-     */
-    public static function downloadFile(string $url, string $save_to = null, string $method = "GET", $request_options = []): void
-    {
-        $request_options = array_merge($request_options, ['sink' => $save_to]);
-        $client = new Client();
-        try {
-            $client->request($method, $url, $request_options);
-        } catch (GuzzleException $e) {
-
-            $error = sprintf('The url("%s") is not downloadable:\n' . "\n\nExit Code: %s(%s)\n\nbody:\n: %s",
-                $url,
-                $e->getCode(),
-                $e->getMessage(),
-                $e->getResponse()->getBody()->getContents()
-            );
-
-            throw new Exception($error);
-        }
-    }
-
-    /**
      * @param int $length
      * @return bool|string
      */

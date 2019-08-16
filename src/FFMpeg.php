@@ -65,7 +65,8 @@ class FFMpeg
 
             $save_to = Helper::tmpFile($ext);
         }
-        Helper::downloadFile($url, $save_to, $method, $request_options);
+        $file_manager = new FileManager($url, $method, $request_options);
+        $file_manager->downloadFile($save_to);
 
         return $this->open($save_to, $is_tmp);
     }
