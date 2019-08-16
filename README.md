@@ -116,7 +116,7 @@ $options = [
         $uploadTotal,
         $uploadedBytes
     ) {
-        $percentage = intval($downloadedBytes / $downloadTotal) * 100;
+        $percentage = intval(($downloadedBytes / $downloadTotal) * 100);
         echo "$percentage% is downloaded\n";
     },
 ];
@@ -286,7 +286,7 @@ $video->HLS()
 ```
 
 ### Saving Files
-There are three ways to save your packaged video files:
+There are three options to save your packaged video files:
 
 #### 1. To a Local Path
 You can pass a local path to `save` method. If there was no directory in the path, then the package auto create the path.
@@ -334,14 +334,14 @@ $options = [
         $uploadTotal,
         $uploadedBytes
     ) {
-        $percentage = intval($uploadedBytes / $uploadTotal) * 100;
+        $percentage = intval(($uploadedBytes / $uploadTotal) * 100);
         echo "$percentage% is uploaded\n";
     },
 ];
 
 $dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
 ```
-NOTE: For more information about option visit [here](http://docs.guzzlephp.org/en/stable/request-options.html).
+- **NOTE:** For more information about options visit [here](http://docs.guzzlephp.org/en/stable/request-options.html).
 
 It can also be passed a path to save a copy files on the local path:
 
