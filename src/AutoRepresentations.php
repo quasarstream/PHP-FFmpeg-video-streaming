@@ -12,12 +12,16 @@
 namespace Streaming;
 
 use Streaming\Exception\Exception;
-use FFMpeg\FFProbe\DataMapping\Stream;
+use Streaming\MediaInfo\Streams\Stream;
+use Streaming\MediaInfo\Streams\StreamCollection;
 
 class AutoRepresentations
 {
-    /** @var Stream $stream */
-    private $stream;
+    /** @var Stream $video */
+    private $video;
+
+    /** @var Stream $general */
+    private $general;
 
     /** @var array side_values
      * regular video's heights
@@ -26,16 +30,17 @@ class AutoRepresentations
 
     /**
      * AutoRepresentations constructor.
-     * @param Stream $stream
+     * @param StreamCollection $streamCollection
      * @param null | array $side_values
      */
-    public function __construct(Stream $stream, $side_values)
+    public function __construct(StreamCollection $streamCollection, $side_values)
     {
         if (null !== $side_values) {
             $this->side_values = $side_values;
         }
 
-        $this->stream = $stream;
+        $this->video = $streamCollection->videos()->first();
+        $this->general = $streamCollection->general();
     }
 
     /**
@@ -43,8 +48,8 @@ class AutoRepresentations
      */
     private function getDimensions(): array
     {
-        $width = $this->stream->get('width');
-        $height = $this->stream->get('height');
+        $width = $this->video->get('Width');
+        $height = $this->video->get('Height');
 
         return [$width, $height, $width / $height];
     }
@@ -55,10 +60,14 @@ class AutoRepresentations
      */
     private function getKiloBitRate(): int
     {
-        if (!$this->stream->has('bit_rate')) {
-            throw new Exception("Invalid stream");
+        if (!$this->video->has('BitRate')) {
+            if (!$this->general->has('OverallBitRate')) {
+                throw new Exception("Invalid stream");
+            }
+
+            return (int)($this->general->get('OverallBitRate') / 1024) * .9;
         }
-        return (int)$this->stream->get('bit_rate') / 1024;
+        return (int)$this->video->get('BitRate') / 1024;
     }
 
     /**

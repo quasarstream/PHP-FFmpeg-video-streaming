@@ -13,6 +13,7 @@ namespace Streaming\Traits;
 
 use Streaming\AutoRepresentations;
 use Streaming\Exception\Exception;
+use Streaming\MediaInfo\MediaInfo;
 use Streaming\Representation as Rep;
 
 trait Representation
@@ -54,7 +55,9 @@ trait Representation
             throw new Exception('Format has not been set');
         }
 
-        $this->representations = (new AutoRepresentations($this->media->getVideoStream(), $side_values))
+        $media_info = MediaInfo::initialize($this->media->getPath(), $this->mediaInfoBinary);
+
+        $this->representations = (new AutoRepresentations($media_info, $side_values))
             ->get();
 
         return $this;

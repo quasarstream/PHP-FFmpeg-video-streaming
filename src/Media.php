@@ -84,22 +84,6 @@ class Media
     }
 
     /**
-     * @return mixed
-     */
-    public function getVideoStream(): Stream
-    {
-        return $this->media->getStreams()->videos()->first();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAllStreams()
-    {
-        return $this->media->getStreams()->all();
-    }
-
-    /**
      * @return string
      */
     public function getPath(): string

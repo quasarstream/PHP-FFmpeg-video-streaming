@@ -28,6 +28,9 @@ abstract class Export
     /** @var array */
     protected $path_info;
 
+    /** @var string */
+    protected $mediaInfoBinary = 'mediainfo';
+
     /**
      * Export constructor.
      * @param Media $media
@@ -59,7 +62,7 @@ abstract class Export
             $path
         );
 
-        $response = ($analyse) ? (new StreamingAnalytics($this))->analyse() : $path;
+        $response = ($analyse) ? (new StreamingAnalytics($this, $this->mediaInfoBinary))->analyse() : $this;
 
         if ($this->media->isTmp()) {
             $this->deleteOriginalFile();
@@ -113,10 +116,11 @@ abstract class Export
     /**
      * @param string $url
      * @param string $name
-     * @param array $headers
      * @param string|null $path
      * @param string $method
+     * @param array $headers
      * @param array $options
+     * @param bool $analyse
      * @return mixed
      * @throws Exception
      */
@@ -126,10 +130,11 @@ abstract class Export
         string $path = null,
         string $method = 'GET',
         array $headers = [],
-        array $options = []
+        array $options = [],
+        bool $analyse = true
     )
     {
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path);
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
 
         $file_manager = new FileManager($url, $method, $options);
@@ -144,12 +149,13 @@ abstract class Export
      * @param array $config
      * @param string $dest
      * @param string|null $path
+     * @param bool $analyse
      * @return mixed
      * @throws Exception
      */
-    public function saveToS3(array $config, string $dest, string $path = null)
+    public function saveToS3(array $config, string $dest, string $path = null, bool $analyse =true)
     {
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path);
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
 
         $aws = new AWS($config);
@@ -184,10 +190,11 @@ abstract class Export
 
     /**
      * @param $path
+     * @param $analyse
      * @return array
      * @throws Exception
      */
-    private function saveToTemporaryFolder($path)
+    private function saveToTemporaryFolder($path, $analyse)
     {
         $basename = Helper::randomString();
 
@@ -198,7 +205,7 @@ abstract class Export
         $tmp_dir = Helper::tmpDir();
         $tmp_file = $tmp_dir . $basename;
 
-        return [$this->save($tmp_file), $tmp_dir];
+        return [$this->save($tmp_file, $analyse), $tmp_dir];
     }
 
     /**
@@ -215,5 +222,15 @@ abstract class Export
         } else {
             Helper::deleteDirectory($tmp_dir);
         }
+    }
+
+    /**
+     * @param string $mediaInfoBinary
+     * @return Export
+     */
+    public function setMediaInfoBinary(string $mediaInfoBinary)
+    {
+        $this->mediaInfoBinary = $mediaInfoBinary;
+        return $this;
     }
 }

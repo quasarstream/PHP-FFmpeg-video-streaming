@@ -16,6 +16,9 @@ before_install:
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
   - sudo apt-get install ffmpeg
+  - sudo apt-get install mediainfo
 
 script:
+  - ffmpeg -version
+  - mediainfo --version
   - vendor/bin/phpunit tests

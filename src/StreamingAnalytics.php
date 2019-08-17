@@ -13,32 +13,33 @@
 namespace Streaming;
 
 
+use Streaming\MediaInfo\MediaInfo;
+
 class StreamingAnalytics
 {
     /**
      * @var Export
      */
     private $export;
+    /**
+     * @var string
+     */
+    private $mediaInfoBinary;
 
     /**
      * StreamingAnalytics constructor.
      * @param Export $export
+     * @param string $binary
      */
-    public function __construct(Export $export)
+    public function __construct(Export $export, string $binary)
     {
         $this->export = $export;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return json_encode($this->analyse());
+        $this->mediaInfoBinary = $binary;
     }
 
     /**
      * @return mixed
+     * @throws Exception\Exception
      */
     public function analyse()
     {
@@ -54,12 +55,13 @@ class StreamingAnalytics
 
     /**
      * @return mixed
+     * @throws Exception\Exception
      */
     private function getOriginalMetadata()
     {
-        $streams = $this->export
-            ->getMedia()
-            ->getAllStreams();
+        $media_info = MediaInfo::initialize($this->export->getMedia()->getPath(), $this->mediaInfoBinary);
+
+        $streams = $media_info->all();
 
         foreach ($streams as $key => $stream){
             $streams[$key] = $stream->all();

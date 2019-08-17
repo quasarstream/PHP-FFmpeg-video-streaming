@@ -17,6 +17,7 @@ environment:
     ANSICON: 121x90 (121x90) # Console colors
 
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190725-923d5c4-win64-static.zip
+  mediainfo_download: https://mediaarea.net/download/binary/mediainfo/19.07/MediaInfo_CLI_19.07_Windows_x64.zip
 
   matrix:
     - PHP_VERSION: Latest_Version
@@ -28,9 +29,12 @@ install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
   - ps: cinst php --params '""/InstallDir:C:\tools\php""' --ignore-checksums
   - ps: Start-FileDownload $env:ffmpeg_download
+  - ps: Start-FileDownload $env:mediainfo_download
 
   - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
   - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
+  - 7z x MediaInfo_CLI_19.07_Windows_x64.zip
+  - PATH=%PATH%;%cd%\MediaInfo_CLI_19.07_Windows_x64
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
@@ -47,4 +51,5 @@ install:
 test_script:
   - cd c:\projects\project-code
   - ffmpeg -version
+  - mediainfo --version
   - vendor\bin\phpunit tests

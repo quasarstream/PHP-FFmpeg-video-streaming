@@ -39,13 +39,22 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
 
 ### Required Libraries
 
+#### 1. FFMpeg
 This library requires a working FFMpeg. You will need both FFMpeg and FFProbe binaries to use it.
 - Getting FFmpeg: https://ffmpeg.org/download.html
 
-Also, for HLS encryption you will need a working OpenSSL:
+#### 2. MediaInfo
+For auto generating representations and also for digital media analysis, this package needs a working MediaInfo.
+- Getting MediaInfo: https://mediaarea.net/en/MediaInfo
+
+**NOTE:** You must download MediaInfo CLI. If you want this package autodetect the MediaInfo binary, you need to add the path of CLI to your system path. Otherwise, You have to pass the full path of binary to `setMediaInfoBinary` method.
+
+#### 3. OpenSSL
+For HLS encryption you will need a working OpenSSL:
 - Getting OpenSSL: https://www.openssl.org/source/
 - Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
+**NOTE:** Add the path of OpenSSL bin directory to system path to get the benefit of binary autodetect.
 
 ### Installing Package
 This version of the package is only compatible with PHP 7.1.0 and later.
@@ -232,7 +241,7 @@ Getting OpenSSL: https://www.openssl.org/source/
 
 Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
-You need to pass both 'URL to the key' and 'path to save a random key' to `generateRandomKeyInfo` method:
+You need to pass both 'URL to the key' and 'path to save a random key' to the `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
 $save_to = "/var/www/my_website_project/keys/enc.key";
@@ -346,7 +355,7 @@ $dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
 It can also be passed a path to save a copy files on the local path:
 
 ``` php
-$save_to = '/var/www/media/videos/my_sweetie.mp4';
+$save_to = '/var/www/media/videos/hls/test.m3u8';
 $hls->saveToCloud($api, $field_name, $save_to, $method, $headers, $options);
 ```
 
@@ -373,7 +382,7 @@ $dash->saveToS3($config, $dest);
 A path can also be passed to save a copy files on your local computer/server.
 
 ``` php
-$hls->saveToS3($config, $dest, '/var/www/media/videos/dash/test.m3u8');
+$hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 ```
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
