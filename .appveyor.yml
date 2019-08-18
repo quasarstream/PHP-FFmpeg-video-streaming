@@ -35,7 +35,7 @@ install:
   - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
   - mkdir mediainfo
   - move MediaInfo_CLI_19.07_Windows_x64.zip mediainfo
-  - 7z x mediainfo\MediaInfo_CLI_19.07_Windows_x64.zip
+  - 7z a mediainfo\MediaInfo_CLI_19.07_Windows_x64.zip
   - PATH=%PATH%;%cd%\mediainfo
   - PATH=%PATH%;%cd%\mediainfo\MediaInfo_CLI_19.07_Windows_x64
   - cd c:\tools\php
