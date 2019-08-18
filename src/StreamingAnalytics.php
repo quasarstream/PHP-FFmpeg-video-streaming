@@ -120,7 +120,7 @@ class StreamingAnalytics
         $stream_path = $this->export->getPathInfo();
         $metadata["dir_path_to_stream"] = $stream_path["dirname"];
         $metadata["path_to_stream"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
-        $metadata["size_of_stream_dir"] = Helper::directorySize($stream_path["dirname"]);
+        $metadata["size_of_stream_dir"] = FileManager::directorySize($stream_path["dirname"]);
         $metadata["datetime"] = date("Y-m-d H:i:s");
         $metadata["time"] = time();
 

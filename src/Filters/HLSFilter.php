@@ -11,6 +11,7 @@
 
 namespace Streaming\Filters;
 
+use Streaming\FileManager;
 use Streaming\HLS;
 use Streaming\Representation;
 
@@ -28,6 +29,7 @@ class HLSFilter extends Filter
     /**
      * @param HLS $media
      * @return array
+     * @throws \Streaming\Exception\Exception
      */
     private function HLSFilter(HLS $media)
     {
@@ -37,6 +39,8 @@ class HLSFilter extends Filter
         $counter = 0;
         $path_parts = $media->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
+        $ts_sub_dir = $media->getTsSubDirectory() . "/";
+        FileManager::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);
         $filename = substr($path_parts["filename"], -50);
 
         foreach ($representations as $representation) {
@@ -61,8 +65,14 @@ class HLSFilter extends Filter
                 $filter[] = $representation->getKiloBitrate() . "k";
                 $filter[] = "-maxrate";
                 $filter[] = intval($representation->getKiloBitrate() * 1.2) . "k";
+
+                if("" !== $media->getTsSubDirectory()){
+                    $filter[] = "-strftime_mkdir";
+                    $filter[] = "1";
+                }
+
                 $filter[] = "-hls_segment_filename";
-                $filter[] = $dirname . "/" . $filename . "_" . $representation->getHeight() . "p_%04d.ts";
+                $filter[] = $dirname . "/" . $ts_sub_dir . $filename . "_" . $representation->getHeight() . "p_%04d.ts";
 
                 if (($hls_key_info_file = $media->getHlsKeyInfoFile()) !== "") {
                     $filter[] = "-hls_key_info_file";

@@ -34,14 +34,6 @@ class MediaTest extends TestCase
         $this->assertInstanceOf(HLS::class, $this->getHLS());
     }
 
-    public function testGetFirstStream()
-    {
-        $media = $this->getVideo();
-        $get_first_stream = $media->getVideoStream();
-
-        $this->assertInstanceOf(Stream::class, $get_first_stream);
-    }
-
     public function testGetPath()
     {
         $media = $this->getVideo();

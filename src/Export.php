@@ -100,7 +100,7 @@ abstract class Export
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
         $filename = substr($this->path_info["filename"], -50);
 
-        Helper::makeDir($dirname);
+        FileManager::makeDir($dirname);
 
         if ($this instanceof DASH) {
             $path = $dirname . "/" . $filename . ".mpd";
@@ -202,7 +202,7 @@ abstract class Export
             $basename = pathinfo($path)["basename"];
         }
 
-        $tmp_dir = Helper::tmpDir();
+        $tmp_dir = FileManager::tmpDir();
         $tmp_file = $tmp_dir . $basename;
 
         return [$this->save($tmp_file, $analyse), $tmp_dir];
@@ -217,10 +217,10 @@ abstract class Export
     {
         if (null !== $path) {
             $destination = pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR;
-            Helper::makeDir($destination);
-            Helper::moveDir($tmp_dir, $destination);
+            FileManager::makeDir($destination);
+            FileManager::moveDir($tmp_dir, $destination);
         } else {
-            Helper::deleteDirectory($tmp_dir);
+            FileManager::deleteDirectory($tmp_dir);
         }
     }
 

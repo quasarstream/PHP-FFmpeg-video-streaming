@@ -50,7 +50,7 @@ class KeyInfo
         $key_info[] = $this->generateRandomKey();
         $key_info[] = $this->generateIV();
 
-        file_put_contents($path = Helper::tmpFile("keyinfo"), implode(PHP_EOL, $key_info));
+        file_put_contents($path = FileManager::tmpFile("keyinfo"), implode(PHP_EOL, $key_info));
 
         return $path;
     }
@@ -70,7 +70,7 @@ class KeyInfo
      */
     private function generateRandomKey(): string
     {
-        Helper::makeDir($this->path_info["dirname"]);
+        FileManager::makeDir($this->path_info["dirname"]);
         file_put_contents($this->path, $this->openssl->addCommand(['rand', '16'])->run());
 
         return $this->path;

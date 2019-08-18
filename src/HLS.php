@@ -28,6 +28,27 @@ class HLS extends Export
     /** @var string */
     private $hls_key_info_file = "";
 
+    /** @var string */
+    private $ts_sub_directory = "";
+
+    /**
+     * @return string
+     */
+    public function getTsSubDirectory(): string
+    {
+        return $this->ts_sub_directory;
+    }
+
+    /**
+     * @param string $ts_sub_directory
+     * @return HLS
+     */
+    public function setTsSubDirectory(string $ts_sub_directory)
+    {
+        $this->ts_sub_directory = $ts_sub_directory;
+        return $this;
+    }
+
     /**
      * @param string $hls_time
      * @return HLS

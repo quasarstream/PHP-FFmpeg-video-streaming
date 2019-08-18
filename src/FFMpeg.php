@@ -63,7 +63,7 @@ class FFMpeg
                 $ext = substr(explode("?", pathinfo($url)["extension"])[0], 0, 10);
             }
 
-            $save_to = Helper::tmpFile($ext);
+            $save_to = FileManager::tmpFile($ext);
         }
         $file_manager = new FileManager($url, $method, $request_options);
         $file_manager->downloadFile($save_to);
@@ -86,7 +86,7 @@ class FFMpeg
 
         if (null === $save_to) {
             $is_tmp = true;
-            $save_to = Helper::tmpFile();
+            $save_to = FileManager::tmpFile();
         }
 
         $aws = new AWS($config);
