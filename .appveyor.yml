@@ -37,6 +37,8 @@ install:
   - move MediaInfo_CLI_19.07_Windows_x64.zip mediainfo
   - cd mediainfo
   - 7z a MediaInfo_CLI_19.07_Windows_x64.zip
+  - dir
+  - dir \MediaInfo_CLI_19.07_Windows_x64
   - PATH=%PATH%;%cd%\
   - PATH=%PATH%;%cd%\MediaInfo_CLI_19.07_Windows_x64
   - cd c:\tools\php
