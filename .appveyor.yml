@@ -33,11 +33,10 @@ install:
 
   - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
   - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
-  - 7z x MediaInfo_CLI_19.07_Windows_x64.zip
-  - cd MediaInfo_CLI_19.07_Windows_x64
   - mkdir mediainfo
-  - move MediaInfo.exe mediainfo
-  - PATH=%PATH%;%cd%\mediainfo
+  - cd mediainfo
+  - 7z x MediaInfo_CLI_19.07_Windows_x64.zip
+  - PATH=%PATH%;%cd%\MediaInfo_CLI_19.07_Windows_x64
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
