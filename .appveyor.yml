@@ -17,7 +17,7 @@ environment:
     ANSICON: 121x90 (121x90) # Console colors
 
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190725-923d5c4-win64-static.zip
-  mediainfo_download: https://mediaarea.net/download/binary/mediainfo/19.07/MediaInfo_CLI_19.07_Windows_x64.zip
+  mediainfo_download: https://www.aminyazdanpanah.com/mediainfo.exe
 
   matrix:
     - PHP_VERSION: Latest_Version
@@ -34,13 +34,8 @@ install:
   - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
   - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
   - mkdir mediainfo
-  - move MediaInfo_CLI_19.07_Windows_x64.zip mediainfo
-  - cd mediainfo
-  - 7z a MediaInfo_CLI_19.07_Windows_x64.zip
-  - dir
-  - dir \MediaInfo_CLI_19.07_Windows_x64
-  - PATH=%PATH%;%cd%\
-  - PATH=%PATH%;%cd%\MediaInfo_CLI_19.07_Windows_x64
+  - move mediainfo.exe mediainfo
+  - PATH=%PATH%;%cd%\mediainfo
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
