@@ -389,6 +389,8 @@ For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-f
 
 - **NOTE:** You can mix opening and saving options together. For Instance, you can open a file and save packaged files to Cloud (or vice versa).   
 
+![schema](/docs/schema.gif?raw=true "schema" )
+
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
 
