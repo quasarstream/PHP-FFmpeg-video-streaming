@@ -7,17 +7,25 @@ php:
 env:
   matrix:
     - COMPOSER_FLAGS=""
-    - MEDIAINFO_PATH=/usr/bin/mediainfo
 before_install:
   - sudo apt-get update
   - travis_retry composer self-update
   - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
-  - sudo apt-get install -y mediainfo
 
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
   - sudo apt-get install ffmpeg
+  - sudo apt-get install git automake autoconf libtool pkg-config make g++ zlib1g-dev
+  - sudo wget https://mediaarea.net/download/binary/libmediainfo0/19.07/libmediainfo0v5_19.07-1_amd64.xUbuntu_16.04.deb
+  - sudo wget https://mediaarea.net/download/binary/libmediainfo0/19.07/libmediainfo-dev_19.07-1_amd64.xUbuntu_16.04.deb
+  - sudo wget https://mediaarea.net/download/binary/libzen0/0.4.37/libzen0v5_0.4.37-1_amd64.xUbuntu_16.04.deb
+  - sudo wget https://mediaarea.net/download/binary/libzen0/0.4.37/libzen-dev_0.4.37-1_amd64.xUbuntu_16.04.deb
+  - sudo dpkg -i libmediainfo* libzen*
+  - sudo wget https://mediaarea.net/download/binary/mediainfo/19.07/mediainfo_19.07-1_amd64.xUbuntu_16.04.deb
+  - sudo dpkg -i mediainfo*
+  - sudo apt-get install -f
 
 script:
   - ffmpeg -version
+  - mediainfo --version
   - vendor/bin/phpunit tests
