@@ -12,6 +12,7 @@
 namespace Streaming;
 
 use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
 
 class Representation
 {
@@ -32,12 +33,12 @@ class Representation
      * @param $width
      * @param $height
      * @return Representation
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function setResize(int $width, int $height): Representation
     {
         if ($width < 1 || $height < 1) {
-            throw new Exception('Wrong resize value');
+            throw new InvalidArgumentException('Wrong resize value');
         }
 
         $this->width = $width;
@@ -60,12 +61,12 @@ class Representation
      *
      * @param  integer $kiloBitrate
      * @return Representation
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function setKiloBitrate($kiloBitrate)
     {
         if ($kiloBitrate < 1) {
-            throw new Exception('Wrong kilo bit rate value');
+            throw new InvalidArgumentException('Wrong kilo bit rate value');
         }
 
         $this->kiloBitrate = (int)$kiloBitrate;

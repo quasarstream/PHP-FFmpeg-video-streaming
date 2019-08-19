@@ -17,6 +17,7 @@ namespace Streaming;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Streaming\Exception\Exception;
+use Streaming\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -53,7 +54,7 @@ class FileManager
 
     /**
      * @param string $save_to
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function downloadFile(string $save_to): void
     {
@@ -64,7 +65,7 @@ class FileManager
      * @param string $dir
      * @param string $name
      * @param array $headers
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function uploadDirectory(string $dir, string $name, array $headers = []): void
     {
@@ -89,7 +90,7 @@ class FileManager
 
     /**
      * @param array $options
-     * @throws Exception
+     * @throws RuntimeException
      */
     private function sendRequest(array $options): void
     {
@@ -104,7 +105,7 @@ class FileManager
                 $e->getResponse()->getBody()->getContents()
             );
 
-            throw new Exception($error);
+            throw new RuntimeException($error);
         }
     }
 

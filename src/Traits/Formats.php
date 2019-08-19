@@ -11,7 +11,7 @@
 
 namespace Streaming\Traits;
 
-use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
 use Streaming\Format\HEVC;
 use Streaming\Format\Video;
 use Streaming\Format\VP9;
@@ -26,7 +26,7 @@ trait Formats
     /**
      * @param string $videoCodec
      * @return $this
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function X264($videoCodec = 'libx264')
     {
@@ -37,7 +37,7 @@ trait Formats
     /**
      * @param string $videoCodec
      * @return $this
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function HEVC($videoCodec = 'libx265')
     {
@@ -48,7 +48,7 @@ trait Formats
     /**
      * @param string $videoCodec
      * @return $this
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function WebM($videoCodec = 'libvpx-vp9')
     {
@@ -67,12 +67,12 @@ trait Formats
     /**
      * @param mixed $format
      * @return $this
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function setFormat($format)
     {
         if (!$format instanceof Video) {
-            throw new Exception("Sorry! the format must be inherited from 'Streaming\Format\Video'");
+            throw new InvalidArgumentException("Sorry! the format must be inherited from 'Streaming\Format\Video'");
         }
 
         $this->format = $format;

@@ -20,10 +20,9 @@ use Streaming\Process\Process;
 class MediaInfo
 {
     /**
-     * @param string|null $binary
      * @param string $path
+     * @param string|null $binary
      * @return StreamCollection
-     * @throws \Streaming\Exception\Exception
      */
     public static function initialize(string $path, string $binary = 'mediainfo'): StreamCollection
     {
@@ -43,7 +42,6 @@ class MediaInfo
      * @param Process $media_info
      * @param string $path
      * @return string
-     * @throws \Streaming\Exception\Exception
      */
     private static function getJsonOutPut(Process $media_info, string $path): string
     {

@@ -12,6 +12,7 @@
 namespace Streaming;
 
 use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
 use Streaming\MediaInfo\Streams\Stream;
 use Streaming\MediaInfo\Streams\StreamCollection;
 
@@ -56,13 +57,13 @@ class AutoRepresentations
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     private function getKiloBitRate(): int
     {
         if (!$this->video->has('BitRate')) {
             if (!$this->general->has('OverallBitRate')) {
-                throw new Exception("Invalid stream");
+                throw new InvalidArgumentException("Invalid stream");
             }
 
             return (int)($this->general->get('OverallBitRate') / 1024) * .9;
@@ -101,7 +102,7 @@ class AutoRepresentations
      * @param $kilobitrate
      * @param $height
      * @return Representation
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     private function addRepresentation($kilobitrate, $width, $height): Representation
     {

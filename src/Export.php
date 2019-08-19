@@ -12,6 +12,7 @@
 namespace Streaming;
 
 use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
 use Streaming\Filters\Filter;
 use Streaming\Traits\Formats;
 
@@ -27,6 +28,9 @@ abstract class Export
 
     /** @var array */
     protected $path_info;
+
+    /** @var string */
+    protected $strict = "-2";
 
     /** @var string */
     protected $mediaInfoBinary = 'mediainfo';
@@ -94,7 +98,7 @@ abstract class Export
 
         if (null === $path && $this->media->isTmp()) {
             $this->deleteOriginalFile();
-            throw new Exception("You need to specify a path. It is not possible to save to the tmp directory");
+            throw new InvalidArgumentException("You need to specify a path. It is not possible to save to the tmp directory");
         }
 
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
@@ -134,6 +138,9 @@ abstract class Export
         bool $analyse = true
     )
     {
+        if($this instanceof HLS && $this->getTsSubDirectory()){
+            throw new InvalidArgumentException("It is not possible to create subdirectory in cloud saving");
+        }
         list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
 
@@ -232,5 +239,23 @@ abstract class Export
     {
         $this->mediaInfoBinary = $mediaInfoBinary;
         return $this;
+    }
+
+    /**
+     * @param string $strict
+     * @return Export
+     */
+    public function setStrict(string $strict): Export
+    {
+        $this->strict = $strict;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrict(): string
+    {
+        return $this->strict;
     }
 }

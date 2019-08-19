@@ -31,6 +31,9 @@ class HLS extends Export
     /** @var string */
     private $ts_sub_directory = "";
 
+    /** @var string */
+    private $hls_base_url  = "";
+
     /**
      * @return string
      */
@@ -100,7 +103,7 @@ class HLS extends Export
      * @param string $path
      * @param string $binary
      * @return HLS
-     * @throws Exception\Exception
+     * @throws Exception\InvalidArgumentException
      */
     public function generateRandomKeyInfo(string $url = null, string $path = null, string $binary = "openssl"): HLS
     {
@@ -119,6 +122,24 @@ class HLS extends Export
     public function getHlsKeyInfoFile(): string
     {
         return $this->hls_key_info_file;
+    }
+
+    /**
+     * @param string $hls_base_url
+     * @return HLS
+     */
+    public function setHlsBaseUrl(string $hls_base_url): HLS
+    {
+        $this->hls_base_url = $hls_base_url;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHlsBaseUrl(): string
+    {
+        return $this->hls_base_url;
     }
 
     /**

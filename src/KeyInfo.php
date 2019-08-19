@@ -31,7 +31,7 @@ class KeyInfo
      * @param $url
      * @param $path
      * @param string $binary
-     * @throws Exception\Exception
+     * @throws Exception\RuntimeException
      */
     public function __construct(string $url, string $path, $binary = "openssl")
     {
@@ -78,7 +78,7 @@ class KeyInfo
 
     /**
      * @return string
-     * @throws Exception\Exception
+     * @throws Exception\RuntimeException
      */
     private function generateIV(): string
     {

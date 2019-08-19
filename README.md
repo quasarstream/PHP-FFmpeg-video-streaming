@@ -54,7 +54,7 @@ For HLS encryption you will need a working OpenSSL:
 - Getting OpenSSL: https://www.openssl.org/source/
 - Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
-**NOTE:** Add the path of OpenSSL bin directory to system path to get the benefit of binary autodetect.
+**NOTE:** Add the path of OpenSSL bin directory to system path to get the benefit of binary detection.
 
 ### Installing Package
 This version of the package is only compatible with PHP 7.1.0 and later.
@@ -110,9 +110,9 @@ $method = 'POST';
 $options = [
     'auth' => ['username', 'password', 'digest'],
     'form_params' => [
-            'token'  => 'YOR_TOKEN',
-            'method' => 'download',
-            'path'   => ['dir3', 'videos', 'my_sweetie.mp4']
+        'token'  => 'YOR_TOKEN',
+        'method' => 'download',
+        'path'   => ['dir3', 'videos', 'my_sweetie.mp4']
     ],
     'headers' => [
         'User-Agent'        => 'testing/1.0',
@@ -235,7 +235,7 @@ The encryption process requires some kind of secret (key) together with an encry
 
 HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-Before we can encrypt videos, we need an encryption key. However you can use any software that can generate key, this package requires a working OpenSSL to create the key:
+Before we can encrypt videos, we need an encryption key. However you can use any software that can generate a key, this package requires a working OpenSSL to create a key:
 
 Getting OpenSSL: https://www.openssl.org/source/
 
@@ -257,7 +257,7 @@ $video->HLS()
 ```
 - **Note:** Alternatively, you can generate a key info using another library and pass the path of key info to the `setHlsKeyInfoFile` method.
 - **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
-- **NOTE:** For getting the benefit of the OpenSSL binary detection in windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
+- **NOTE:** For getting the benefit of the OpenSSL binary auto detection in the Windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
 
 ### Transcoding
 
@@ -298,7 +298,7 @@ $video->HLS()
 There are three options to save your packaged video files:
 
 #### 1. To a Local Path
-You can pass a local path to `save` method. If there was no directory in the path, then the package auto create the path.
+You can pass a local path to the `save` method. If there was no directory in the path, then the package auto make the directory.
 
 ``` php
 $dash = $video->DASH()
@@ -309,7 +309,7 @@ $dash = $video->DASH()
 $dash->save('/var/www/media/videos/dash/test.mpd');
 ```
 
-It can also be null. The default path is the input path.
+It can also be null. The default path to save files is the input path.
 
 ``` php
 $hls = $video->HLS()
@@ -321,7 +321,7 @@ $hls->save();
 - **NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
 
 #### 2. To a Cloud
-You can save your files to cloud using `saveToCloud` method. This package uses [Guzzle](http://docs.guzzlephp.org/en/stable/index.html) to send and receive files.
+You can save your files to a cloud using the `saveToCloud` method. This package uses [Guzzle](http://docs.guzzlephp.org/en/stable/index.html) to send and receive files.
 
 - Before you get started, please read the Guzzle Document found **[here](http://docs.guzzlephp.org/en/stable/index.html)**.
 
@@ -350,9 +350,9 @@ $options = [
 
 $dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
 ```
-- **NOTE:** For more information about options visit [here](http://docs.guzzlephp.org/en/stable/request-options.html).
+- **NOTE:** For more information about options see [here](http://docs.guzzlephp.org/en/stable/request-options.html).
 
-It can also be passed a path to save a copy files on the local path:
+It can also be passed a path to save a copy of files on your local computer/server:
 
 ``` php
 $save_to = '/var/www/media/videos/hls/test.m3u8';
@@ -379,7 +379,7 @@ Upload DASH files to Amazon Simple Storage Service:
 ``` php
 $dash->saveToS3($config, $dest);
 ```
-A path can also be passed to save a copy files on your local computer/server.
+A path can also be passed to save a copy of files on your local computer/server.
 
 ``` php
 $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
@@ -387,7 +387,7 @@ $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
 
-- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file and save packaged files to Cloud (or vice versa).   
+- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file on your local computer/server and save packaged files into a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
 
@@ -437,8 +437,7 @@ or [submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-s
 
 - Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
 
-- Please for reporting bugs just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues).
-
+- Please just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs. 
 - If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
 contact [AT] aminyazdanpanah • com.
 

@@ -21,6 +21,7 @@ if (!function_exists('dash')) {
      * @param string $input_path
      * @param callable $listener
      * @param string|null $save_path
+     * @deprecated this method has been deprecated
      * @return mixed
      */
     function dash(string $input_path, string $save_path = null, callable $listener = null)
@@ -57,6 +58,7 @@ if (!function_exists('hls')) {
      * @param string|null $save_path
      * @param callable|null $listener
      * @param string $hls_key
+     * @deprecated this method has been deprecated
      * @return mixed
      */
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
@@ -95,6 +97,7 @@ if (!function_exists('encrypted_hls')) {
      * @param string | null $url
      * @param string |null $path
      * @param string $binary
+     * @deprecated this method has been deprecated
      * @return mixed
      */
     function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null, $binary = 'openssl')

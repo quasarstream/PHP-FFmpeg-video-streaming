@@ -13,7 +13,7 @@
 namespace Streaming\Process;
 
 
-use Streaming\Exception\Exception;
+use Streaming\Exception\RuntimeException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process as SymphonyProcess;
 
@@ -25,7 +25,7 @@ class Process
     /**
      * Process constructor.
      * @param $binary
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function __construct($binary)
     {
@@ -35,7 +35,7 @@ class Process
     /**
      * @param $binary
      * @return mixed
-     * @throws Exception
+     * @throws RuntimeException
      */
     private function getBinary($binary)
     {
@@ -47,20 +47,20 @@ class Process
             if ($binary = $finder->find($binary)) {
                 return $binary;
             } else {
-                throw new Exception("We could not find the binary.\nPlease check the path to the binary");
+                throw new RuntimeException("We could not find the binary($binary).\nPlease check the path to the binary");
             }
         }
     }
 
     /**
-     * @throws Exception
+     * @return string
      */
     public function run()
     {
         $commands = $this->getCommand();
-
-        if (!is_executable(current($commands))) {
-            throw new Exception('The binary is not executable');
+        $binary = current($commands);
+        if (!is_executable($binary)) {
+            throw new RuntimeException("The binary($binary) is not executable");
         }
 
         $process = new SymphonyProcess($commands);
@@ -74,7 +74,7 @@ class Process
                 $process->getWorkingDirectory()
             );
 
-            throw new Exception($error);
+            throw new RuntimeException($error);
         }
 
         return $process->getOutput();

@@ -11,7 +11,6 @@
 
 namespace Streaming\Exception;
 
-
-interface StreamingExceptionInterface extends \Throwable
+class RuntimeException extends \RuntimeException implements StreamingExceptionInterface
 {
 }

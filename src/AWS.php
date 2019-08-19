@@ -17,6 +17,7 @@ use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Aws\S3\Transfer;
 use Streaming\Exception\Exception;
+use Streaming\Exception\RuntimeException;
 
 class AWS
 {
@@ -37,7 +38,7 @@ class AWS
      * @param $filename
      * @param string $acl
      * @return mixed
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function uploadFile(string $bucket, string $key, string $filename, string $acl = 'public-read'): string
     {
@@ -51,7 +52,7 @@ class AWS
 
             return isset($result['ObjectURL']) ? $result['ObjectURL'] : "It is private";
         } catch (S3Exception $e) {
-            throw new Exception("There was an error uploading the file.\n error: " . $e->getMessage());
+            throw new RuntimeException("There was an error uploading the file.\n error: " . $e->getMessage());
         }
     }
 
@@ -76,7 +77,7 @@ class AWS
                 throw new Exception("There is no file in the bucket");
             }
         } catch (S3Exception $e) {
-            throw new Exception("There was an error downloading the file.\n error: " . $e->getMessage());
+            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage());
         }
     }
 
