@@ -26,7 +26,6 @@ class Helper
         return (($number = intval($number)) % 2 == 0) ? $number : $number + 1;
     }
 
-
     /**
      * @param int $length
      * @return bool|string
@@ -35,6 +34,17 @@ class Helper
     {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return substr(str_shuffle(str_repeat($chars, ceil($length / strlen($chars)))), 1, $length);
+    }
 
+    /**
+     * @param $word
+     * @return bool|string
+     */
+    public static function appendSlash($word)
+    {
+        if($word){
+            return rtrim($word, '/') . '/';
+        }
+        return $word;
     }
 }

@@ -12,6 +12,7 @@
 namespace Streaming\Filters;
 
 use Streaming\FileManager;
+use Streaming\Helper;
 use Streaming\HLS;
 use Streaming\Representation;
 
@@ -40,8 +41,8 @@ class HLSFilter extends Filter
         $path_parts = $media->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
         $filename = substr($path_parts["filename"], -50);
-        $ts_sub_dir = ($media->getTsSubDirectory() && substr($media->getTsSubDirectory(), -1) !== "/") ? $media->getTsSubDirectory() . "/" : $media->getTsSubDirectory();
-        $base_url = ($media->getHlsBaseUrl() && substr($media->getHlsBaseUrl(), -1) !== "/") ? $media->getHlsBaseUrl() . "/" : $media->getHlsBaseUrl();
+        $ts_sub_dir = Helper::appendSlash($media->getTsSubDirectory());
+        $base_url = Helper::appendSlash($media->getHlsBaseUrl());
 
         if ($ts_sub_dir) {
             FileManager::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);

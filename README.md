@@ -216,7 +216,8 @@ $rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
 $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 270);
 
 $video->HLS()
-    ->X264() 
+    ->X264()
+    ->setHlsBaseUrl("https://bucket.s3-us-west-1.amazonaws.com/videos") // Add a base URL
     ->addRepresentation($rep_1)
     ->addRepresentation($rep_2)
     ->addRepresentation($rep_3)
@@ -251,6 +252,7 @@ $url = "https://www.aminyazdanpanah.com/keys/enc.key";// or "/keys/enc.key";
 
 $video->HLS()
     ->X264()
+    ->setTsSubDirectory("ts_files")// put all ts files in subdirectory
     ->generateRandomKeyInfo($url, $save_to)
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls/test.m3u8');
@@ -290,6 +292,8 @@ $format->on('progress', function ($video, $format, $percentage) {
 
 $video->HLS()
     ->setFormat($format)
+    ->setTsSubDirectory("ts_files")
+    ->setHlsBaseUrl("https://bucket.s3-us-west-1.amazonaws.com/videos")
     ->autoGenerateRepresentations()
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
