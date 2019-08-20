@@ -32,9 +32,6 @@ abstract class Export
     /** @var string */
     protected $strict = "-2";
 
-    /** @var string */
-    protected $mediaInfoBinary = 'mediainfo';
-
     /**
      * Export constructor.
      * @param Media $media
@@ -66,7 +63,7 @@ abstract class Export
             $path
         );
 
-        $response = ($analyse) ? (new StreamingAnalytics($this, $this->mediaInfoBinary))->analyse() : $this;
+        $response = ($analyse) ? (new StreamingAnalytics($this))->analyse() : $this;
 
         if ($this->media->isTmp()) {
             $this->deleteOriginalFile();
@@ -138,7 +135,7 @@ abstract class Export
         bool $analyse = true
     )
     {
-        if($this instanceof HLS && $this->getTsSubDirectory()){
+        if ($this instanceof HLS && $this->getTsSubDirectory()) {
             throw new InvalidArgumentException("It is not possible to create subdirectory in cloud saving");
         }
         list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
@@ -160,7 +157,7 @@ abstract class Export
      * @return mixed
      * @throws Exception
      */
-    public function saveToS3(array $config, string $dest, string $path = null, bool $analyse =true)
+    public function saveToS3(array $config, string $dest, string $path = null, bool $analyse = true)
     {
         list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
@@ -184,7 +181,7 @@ abstract class Export
     /**
      * @return object|Media
      */
-    public function getMedia()
+    public function getMedia(): Media
     {
         return $this->media;
     }
@@ -229,16 +226,6 @@ abstract class Export
         } else {
             FileManager::deleteDirectory($tmp_dir);
         }
-    }
-
-    /**
-     * @param string $mediaInfoBinary
-     * @return Export
-     */
-    public function setMediaInfoBinary(string $mediaInfoBinary)
-    {
-        $this->mediaInfoBinary = $mediaInfoBinary;
-        return $this;
     }
 
     /**

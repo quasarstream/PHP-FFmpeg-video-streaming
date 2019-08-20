@@ -50,7 +50,7 @@ class KeyInfo
         $key_info[] = $this->generateRandomKey();
         $key_info[] = $this->generateIV();
 
-        file_put_contents($path = FileManager::tmpFile("keyinfo"), implode(PHP_EOL, $key_info));
+        file_put_contents($path = FileManager::tmpFile(), implode(PHP_EOL, $key_info));
 
         return $path;
     }
@@ -82,6 +82,6 @@ class KeyInfo
      */
     private function generateIV(): string
     {
-        return $this->openssl->reset()->addCommand(['rand', '-hex' ,'16'])->run();
+        return $this->openssl->reset()->addCommand(['rand', '-hex', '16'])->run();
     }
 }

@@ -28,6 +28,7 @@ This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FF
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
+  - [Video Analysis](#video-analysis)
   - [Other Advanced Features](#other-advanced-features)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bug](#contributing-and-reporting-bug)
@@ -391,9 +392,40 @@ $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
 
-- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file on your local computer/server and save packaged files into a Cloud (or vice versa).   
+- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
+
+### Video Analysis
+This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. Why MediaInfo?! Although FFprobe can go way more in depth and is much more powerful, in some cases MediaInfo is much more reliable and more powerful. For instance, as it can be seen in this issue(#12), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameter and as a result, this package cannot calculate the value of `kilo bite rate` to auto generate representations. However, MediaInfo cannot obtain these value as well, it has a general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of video's bite rate.  
+
+- Please download and install the latest version of [MediaInfo](https://mediaarea.net/en/MediaInfo).
+
+You can extract the media info and analyze streams when packaging is done. It also puts a `analysis.json` file in the packaged video directory: 
+
+``` php
+$metadata = $hls->save();
+
+print_r($metadata);
+```
+
+You can also pass a false boolean to not extract and analyze the video:
+
+``` php
+$export_obj = $hls->save(null, false);
+``` 
+
+There is an option to extract media info without packaging:
+
+``` php
+$streams = $video->mediaInfo();
+
+$general = $streams->general();
+$video = $streams->videos()->first();
+$audio = $streams->audios()->first();
+
+var_dump($general->all(), $video->all(), $audio->all());
+```
 
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.

@@ -11,7 +11,6 @@
 
 namespace Streaming;
 
-use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\MediaInfo\Streams\Stream;
 use Streaming\MediaInfo\Streams\StreamCollection;
@@ -24,8 +23,10 @@ class AutoRepresentations
     /** @var Stream $general */
     private $general;
 
-    /** @var array side_values
+    /**
      * regular video's heights
+     *
+     * @var array side_values
      */
     private $side_values = [2160, 1080, 720, 480, 360, 240, 144];
 
@@ -73,7 +74,6 @@ class AutoRepresentations
 
     /**
      * @return array
-     * @throws Exception
      */
     public function get(): array
     {

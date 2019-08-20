@@ -19,10 +19,11 @@ if (!function_exists('dash')) {
      * Auto generate dash MPD file
      *
      * @param string $input_path
-     * @param callable $listener
      * @param string|null $save_path
-     * @deprecated this method has been deprecated
+     * @param callable $listener
      * @return mixed
+     * @throws \Streaming\Exception\Exception
+     * @deprecated this method has been deprecated
      */
     function dash(string $input_path, string $save_path = null, callable $listener = null)
     {
@@ -40,10 +41,10 @@ if (!function_exists('dash')) {
             }
 
             return $video->DASH()
-                    ->setFormat($format)
-                    ->autoGenerateRepresentations()
-                    ->setAdaption('id=0,streams=v id=1,streams=a')
-                    ->save($save_path);
+                ->setFormat($format)
+                ->autoGenerateRepresentations()
+                ->setAdaption('id=0,streams=v id=1,streams=a')
+                ->save($save_path);
         } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
@@ -58,8 +59,9 @@ if (!function_exists('hls')) {
      * @param string|null $save_path
      * @param callable|null $listener
      * @param string $hls_key
-     * @deprecated this method has been deprecated
      * @return mixed
+     * @throws \Streaming\Exception\Exception
+     * @deprecated this method has been deprecated
      */
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
     {
@@ -97,8 +99,9 @@ if (!function_exists('encrypted_hls')) {
      * @param string | null $url
      * @param string |null $path
      * @param string $binary
-     * @deprecated this method has been deprecated
      * @return mixed
+     * @throws \Streaming\Exception\Exception
+     * @deprecated this method has been deprecated
      */
     function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null, $binary = 'openssl')
     {

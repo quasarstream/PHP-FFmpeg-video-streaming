@@ -13,7 +13,6 @@
 namespace Streaming;
 
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Streaming\Exception\Exception;
@@ -39,11 +38,13 @@ class FileManager
 
     /**
      * FileManager constructor.
+     * It is all about files
+     *
      * @param string $url
      * @param string $method
      * @param array $options
      */
-    public function __construct(string $url,  string $method = "GET", $options = [])
+    public function __construct(string $url, string $method = "GET", $options = [])
     {
         $this->client = new Client();
         $this->url = $url;
@@ -102,7 +103,7 @@ class FileManager
                 $this->url,
                 $e->getCode(),
                 $e->getMessage(),
-                $e->getResponse()->getBody()->getContents()
+                (method_exists($e->getResponse(), 'getBody')) ? $e->getResponse()->getBody()->getContents() : ""
             );
 
             throw new RuntimeException($error);
@@ -143,20 +144,12 @@ class FileManager
     }
 
     /**
-     * @param string $ext
      * @return string
      * @throws Exception
      */
-    public static function tmpFile(string $ext = ""): string
+    public static function tmpFile(): string
     {
-        if ("" !== $ext) {
-            $ext = "." . $ext;
-        }
-
-        $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
-        static::makeDir($tmp_path);
-
-        return $tmp_path . DIRECTORY_SEPARATOR . Helper::randomString() . $ext;
+        return tempnam(static::tmpDirPath(), 'stream');
     }
 
     /**
@@ -165,10 +158,28 @@ class FileManager
      */
     public static function tmpDir(): string
     {
-        return static::tmpFile() . DIRECTORY_SEPARATOR;
+        $tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Helper::randomString() . DIRECTORY_SEPARATOR;
+        static::makeDir($tmp_dir);
+
+        return $tmp_dir;
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private static function tmpDirPath(): string
+    {
+        $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
+        static::makeDir($tmp_path);
 
+        return $tmp_path;
+    }
+
+    /**
+     * @param string $source
+     * @param string $destination
+     */
     public static function moveDir(string $source, string $destination)
     {
         foreach (scandir($source) as $file) {
@@ -202,5 +213,4 @@ class FileManager
 
         return @rmdir($dir);
     }
-
 }

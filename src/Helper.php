@@ -13,6 +13,8 @@ namespace Streaming;
 
 
 
+use Streaming\Exception\InvalidArgumentException;
+
 class Helper
 {
     /**
@@ -40,11 +42,24 @@ class Helper
      * @param $word
      * @return bool|string
      */
-    public static function appendSlash($word)
+    public static function appendSlash(string $word)
     {
-        if($word){
+        if ($word) {
             return rtrim($word, '/') . '/';
         }
         return $word;
+    }
+
+    /**
+     * @param $url
+     * @return bool
+     */
+    public static function isURL(string $url)
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new InvalidArgumentException("Your URL($url) is not valid! Your URL should start with (http://) or (https://).");
+        }
+
+        return true;
     }
 }

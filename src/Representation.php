@@ -11,7 +11,6 @@
 
 namespace Streaming;
 
-use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 
 class Representation

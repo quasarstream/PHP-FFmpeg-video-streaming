@@ -13,33 +13,24 @@
 namespace Streaming;
 
 
-use Streaming\MediaInfo\MediaInfo;
-
 class StreamingAnalytics
 {
     /**
      * @var Export
      */
     private $export;
-    /**
-     * @var string
-     */
-    private $mediaInfoBinary;
 
     /**
      * StreamingAnalytics constructor.
      * @param Export $export
-     * @param string $binary
      */
-    public function __construct(Export $export, string $binary)
+    public function __construct(Export $export)
     {
         $this->export = $export;
-        $this->mediaInfoBinary = $binary;
     }
 
     /**
      * @return mixed
-     * @throws Exception\Exception
      */
     public function analyse()
     {
@@ -55,15 +46,13 @@ class StreamingAnalytics
 
     /**
      * @return mixed
-     * @throws Exception\Exception
      */
     private function getOriginalMetadata()
     {
-        $media_info = MediaInfo::initialize($this->export->getMedia()->getPath(), $this->mediaInfoBinary);
 
-        $streams = $media_info->all();
+        $streams = $this->export->getMedia()->mediaInfo()->all();
 
-        foreach ($streams as $key => $stream){
+        foreach ($streams as $key => $stream) {
             $streams[$key] = $stream->all();
         }
 
@@ -77,10 +66,10 @@ class StreamingAnalytics
     {
         $metadata["qualities"] = $this->getQualities();
 
-        $format_class =  explode("\\" ,get_class($this->export->getFormat()));
+        $format_class = explode("\\", get_class($this->export->getFormat()));
         $metadata["format"] = end($format_class);
 
-        $export_class =  explode("\\" ,get_class($this->export));
+        $export_class = explode("\\", get_class($this->export));
         $metadata["streaming_technique"] = end($export_class);
 
         if ($this->export instanceof DASH) {
@@ -114,8 +103,8 @@ class StreamingAnalytics
         $metadata["dir_path_to_video"] = pathinfo($video_path)["dirname"];
         $metadata["basename_of_video"] = pathinfo($video_path)["basename"];
         $metadata["extension_of_video"] = pathinfo($video_path)["extension"];
-        $metadata["mime_content_type_of_video"] = !is_file($video_path)?:mime_content_type($video_path);
-        $metadata["size_of_video"] = !is_file($video_path)?:filesize($video_path);
+        $metadata["mime_content_type_of_video"] = !is_file($video_path) ?: mime_content_type($video_path);
+        $metadata["size_of_video"] = !is_file($video_path) ?: filesize($video_path);
 
         $stream_path = $this->export->getPathInfo();
         $metadata["dir_path_to_stream"] = $stream_path["dirname"];

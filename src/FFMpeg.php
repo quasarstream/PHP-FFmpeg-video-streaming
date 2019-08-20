@@ -54,23 +54,14 @@ class FFMpeg
      */
     public function fromURL(string $url, string $save_to = null, string $method = "GET", array $request_options = []): Media
     {
-        $is_tmp = false;
+        Helper::isURL($url);
+        list($is_tmp, $save_to) = $this->isTmp($save_to);
 
-        if (null === $save_to) {
-            $is_tmp = true;
-            $ext = "";
-            if (isset(pathinfo($url)["extension"])) {
-                $ext = substr(explode("?", pathinfo($url)["extension"])[0], 0, 10);
-            }
-
-            $save_to = FileManager::tmpFile($ext);
-        }
         $file_manager = new FileManager($url, $method, $request_options);
         $file_manager->downloadFile($save_to);
 
         return $this->open($save_to, $is_tmp);
     }
-
 
     /**
      * @param array $config
@@ -82,17 +73,29 @@ class FFMpeg
      */
     public function fromS3(array $config, string $bucket, string $key, string $save_to = null): Media
     {
-        $is_tmp = false;
-
-        if (null === $save_to) {
-            $is_tmp = true;
-            $save_to = FileManager::tmpFile();
-        }
+        list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $aws = new AWS($config);
         $aws->downloadFile($bucket, $key, $save_to);
 
         return $this->open($save_to, $is_tmp);
+    }
+
+    /**
+     * @param $path
+     * @return array
+     * @throws Exception
+     */
+    private function isTmp($path)
+    {
+        $is_tmp = false;
+
+        if (null === $path) {
+            $is_tmp = true;
+            $path = FileManager::tmpFile();
+        }
+
+        return [$is_tmp, $path];
     }
 
     /**

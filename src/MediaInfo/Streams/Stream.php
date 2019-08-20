@@ -20,7 +20,7 @@ class Stream implements \Countable
     /**
      * @param array $stream
      */
-    public function __construct(array  $stream)
+    public function __construct(array $stream)
     {
         $this->stream = $stream;
 

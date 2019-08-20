@@ -50,7 +50,7 @@ class StreamCollection implements \Countable, \IteratorAggregate
      */
     public function videos()
     {
-        $videos =  array_filter($this->streams, function (Stream $stream) {
+        $videos = array_filter($this->streams, function (Stream $stream) {
             return $stream->isVideo();
         });
 
@@ -62,8 +62,8 @@ class StreamCollection implements \Countable, \IteratorAggregate
      */
     public function general()
     {
-        foreach ($this->streams as $stream){
-            if ($stream instanceof Stream && $stream->get('@type') === "General"){
+        foreach ($this->streams as $stream) {
+            if ($stream instanceof Stream && $stream->get('@type') === "General") {
                 return $stream;
             }
         }

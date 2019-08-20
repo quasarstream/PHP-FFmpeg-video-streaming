@@ -31,7 +31,7 @@ class MediaInfo
         $streams = $media_info["media"]["track"];
         $stream_collection = [];
 
-        foreach ($streams as $stream){
+        foreach ($streams as $stream) {
             $stream_collection[] = new Stream($stream);
         }
 

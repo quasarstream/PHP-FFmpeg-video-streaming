@@ -13,5 +13,4 @@ namespace Streaming\Exception;
 
 class Exception extends \Exception implements StreamingExceptionInterface
 {
-
 }

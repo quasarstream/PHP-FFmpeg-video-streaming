@@ -32,7 +32,7 @@ class HLS extends Export
     private $ts_sub_directory = "";
 
     /** @var string */
-    private $hls_base_url  = "";
+    private $hls_base_url = "";
 
     /**
      * @return string
