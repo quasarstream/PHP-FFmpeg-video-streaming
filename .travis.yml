@@ -1,8 +1,8 @@
 language: php
 
 php:
-  - 7.1
   - 7.2
+  - 7.3
 
 env:
   matrix:
@@ -28,5 +28,5 @@ install:
 script:
   - ffmpeg -version
   - mediainfo --version
-  - mediainfo --Output=JSON tests/files/test.mp4
+  - openssl version
   - vendor/bin/phpunit tests

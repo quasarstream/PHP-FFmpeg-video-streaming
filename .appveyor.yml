@@ -23,7 +23,7 @@ environment:
     - PHP_VERSION: Latest_Version
 
 init:
-  - ps: $env:PATH = 'c:\tools\php;c:\ProgramData\ComposerSetup\bin;' + $env:PATH
+  - ps: $env:PATH = 'c:\tools\php;c:\OpenSSL-v111-Win64\bin;c:\ProgramData\ComposerSetup\bin;' + $env:PATH
 
 install:
   - ps: Set-Service wuauserv -StartupType Manual # Chocolatey will try to install Windows updates when installing PHP.
@@ -53,4 +53,5 @@ test_script:
   - cd c:\projects\project-code
   - ffmpeg -version
   - mediainfo --version
+  - openssl version
   - vendor\bin\phpunit tests

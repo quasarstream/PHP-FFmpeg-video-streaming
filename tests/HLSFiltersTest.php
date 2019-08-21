@@ -36,5 +36,4 @@ class HLSFiltersTest extends TestCase
             ->setHlsAllowCache(false)
             ->setHlsTime(10);
     }
-
 }

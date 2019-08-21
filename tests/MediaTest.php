@@ -40,8 +40,8 @@ class MediaTest extends TestCase
         $get_path_info = pathinfo($media->getPath());
 
         $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname',$get_path_info);
-        $this->assertArrayHasKey('filename',$get_path_info);
+        $this->assertArrayHasKey('dirname', $get_path_info);
+        $this->assertArrayHasKey('filename', $get_path_info);
     }
 
     private function getDASH()

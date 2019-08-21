@@ -52,9 +52,9 @@ class HLSTest extends TestCase
         $this->assertEquals('426x240', $representations[1]->getResize());
         $this->assertEquals('640x360', $representations[2]->getResize());
 
-        $this->assertEquals(237, $representations[0]->getKiloBitrate());
-        $this->assertEquals(292, $representations[1]->getKiloBitrate());
-        $this->assertEquals(380, $representations[2]->getKiloBitrate());
+        $this->assertEquals(129, $representations[0]->getKiloBitrate());
+        $this->assertEquals(159, $representations[1]->getKiloBitrate());
+        $this->assertEquals(207, $representations[2]->getKiloBitrate());
     }
 
     public function testSetHlsTime()
@@ -75,20 +75,24 @@ class HLSTest extends TestCase
 
     public function testSave()
     {
+        $rep_1 = (new Representation())->setKiloBitrate(200)->setResize(640, 360);
+        $rep_2 = (new Representation())->setKiloBitrate(100)->setResize(480, 270);
+
         $hls = $this->getHLS();
         $hls->X264()
-            ->autoGenerateRepresentations()
+            ->addRepresentation($rep_1)
+            ->addRepresentation($rep_2)
             ->save($this->srcDir . '/hls/test.m3u8');
 
         $get_path_info = $hls->getPathInfo();
 
+        $this->assertInstanceOf(Representation::class, $rep_1);
+        $this->assertEquals($rep_1->getKiloBitrate(), 200);
+        $this->assertEquals($rep_2->getResize(), "480x270");
         $this->assertFileExists($this->srcDir . '/hls/test.m3u8');
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
         $this->assertArrayHasKey('filename', $get_path_info);
-
-        sleep(1);
-        $this->deleteDirectory($this->srcDir . '/hls');
     }
 
     public function testEncryptedHLS()
@@ -107,10 +111,26 @@ class HLSTest extends TestCase
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
         $this->assertArrayHasKey('filename', $get_path_info);
+    }
 
-        sleep(1);
-        $this->deleteDirectory($this->srcDir . '/enc_hls');
-        @unlink($this->srcDir . '/enc.keyinfo');
+    public function testRandomEncryptedHLS()
+    {
+        $url = "https://www.aminyazdanpanah.com/keys/test.key";
+        $path = $this->srcDir . DIRECTORY_SEPARATOR . "test2.key";
+
+        $hls = $this->getHLS();
+        $export_obj = $hls->generateRandomKeyInfo($url, $path)
+            ->X264()
+            ->autoGenerateRepresentations()
+            ->save($this->srcDir . '/enc_random__hls/test.m3u8', false);
+
+        $get_path_info = $hls->getPathInfo();
+
+        $this->assertInstanceOf(Export::class, $export_obj);
+        $this->assertFileExists($this->srcDir . '/enc_random__hls/test.m3u8');
+        $this->assertIsArray($get_path_info);
+        $this->assertArrayHasKey('dirname', $get_path_info);
+        $this->assertArrayHasKey('filename', $get_path_info);
     }
 
     private function getHLS()
@@ -128,30 +148,6 @@ class HLSTest extends TestCase
         } catch (\ReflectionException $e) {
             return null;
         }
-    }
-
-    public function deleteDirectory($dir)
-    {
-        if (!file_exists($dir)) {
-            return true;
-        }
-
-        if (!is_dir($dir)) {
-            return @unlink($dir);
-        }
-
-        foreach (scandir($dir) as $item) {
-            if ($item == '.' || $item == '..') {
-                continue;
-            }
-
-            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
-                return false;
-            }
-
-        }
-
-        return @rmdir($dir);
     }
 
     private function creatKeyInfoFile()

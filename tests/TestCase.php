@@ -9,7 +9,7 @@ class TestCase extends BaseTestCase
 {
     public $srcDir;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->srcDir = __DIR__ . '/files';
     }
@@ -22,7 +22,6 @@ class TestCase extends BaseTestCase
     public function getVideo()
     {
         $service = $this->getFFMpeg();
-        return $service->open($this->srcDir .'/test.mp4');
+        return $service->open($this->srcDir . '/test.mp4');
     }
-
 }

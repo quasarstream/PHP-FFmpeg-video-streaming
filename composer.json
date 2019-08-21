@@ -17,7 +17,6 @@
         "DynamicAdaptiveStreamingOverHTTP"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming",
-
     "license": "MIT",
     "authors": [
         {
@@ -39,7 +38,7 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "7.5.0"
+        "phpunit/phpunit": "~8.0"
     },
     "autoload-dev": {
         "psr-4": {
@@ -47,7 +46,7 @@
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "php-ffmpeg/php-ffmpeg": "^0.14",
         "guzzlehttp/guzzle": "~6.0",
         "aws/aws-sdk-php": "~3.0"

@@ -51,10 +51,9 @@ class DASHTest extends TestCase
         $this->assertEquals('426x240', $representations[1]->getResize());
         $this->assertEquals('640x360', $representations[2]->getResize());
 
-        $this->assertEquals(237, $representations[0]->getKiloBitrate());
-        $this->assertEquals(292, $representations[1]->getKiloBitrate());
-        $this->assertEquals(380, $representations[2]->getKiloBitrate());
-
+        $this->assertEquals(129, $representations[0]->getKiloBitrate());
+        $this->assertEquals(159, $representations[1]->getKiloBitrate());
+        $this->assertEquals(207, $representations[2]->getKiloBitrate());
     }
 
     public function testSet()
@@ -68,7 +67,7 @@ class DASHTest extends TestCase
     public function testSave()
     {
         $dash = $this->getDASH();
-        $dash->HEVC()
+        $streaming_analytics = $dash->HEVC()
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/dash/test.mpd');
 
@@ -76,11 +75,11 @@ class DASHTest extends TestCase
 
         $this->assertFileExists($this->srcDir . '/dash/test.mpd');
         $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname',$get_path_info);
-        $this->assertArrayHasKey('filename',$get_path_info);
-
-        sleep(1);
-        $this->deleteDirectory($this->srcDir . '/dash');
+        $this->assertArrayHasKey('dirname', $get_path_info);
+        $this->assertArrayHasKey('filename', $get_path_info);
+        $this->assertArrayHasKey('original', $streaming_analytics);
+        $this->assertArrayHasKey('streams', $streaming_analytics);
+        $this->assertArrayHasKey('general', $streaming_analytics);
     }
 
     private function getDASH()
@@ -99,28 +98,4 @@ class DASHTest extends TestCase
             return null;
         }
     }
-
-    public function deleteDirectory($dir) {
-        if (!file_exists($dir)) {
-            return true;
-        }
-
-        if (!is_dir($dir)) {
-            return @unlink($dir);
-        }
-
-        foreach (scandir($dir) as $item) {
-            if ($item == '.' || $item == '..') {
-                continue;
-            }
-
-            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
-                return false;
-            }
-
-        }
-
-        return @rmdir($dir);
-    }
-
 }

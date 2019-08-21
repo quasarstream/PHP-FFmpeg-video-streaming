@@ -1,15 +1,13 @@
 # 📼 PHP FFMPEG Video Streaming
 
 [![Build Status](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming)
-[![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/?branch=master)
-[![Code Intelligence Status](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
-[![Total Downloads](https://img.shields.io/packagist/dt/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat-square)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/?branch=master)[![Total Downloads](https://img.shields.io/packagist/dt/aminyazdanpanah/php-ffmpeg-video-streaming.svg?style=flat)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Latest Version on Packagist](https://img.shields.io/packagist/vpre/aminyazdanpanah/PHP-FFmpeg-video-streaming?color=success)](https://packagist.org/packages/aminyazdanpanah/php-ffmpeg-video-streaming)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides an integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also you can use DRM for HLS packaging.
+This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also, you can use DRM for HLS packaging.
 
 - Before you get started, please read the FFMpeg Document found **[here](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
@@ -45,33 +43,40 @@ This library requires a working FFMpeg. You will need both FFMpeg and FFProbe bi
 - Getting FFmpeg: https://ffmpeg.org/download.html
 
 #### 2. MediaInfo
-For auto generating representations and also for digital media analysis, this package needs a working MediaInfo.
+For auto-generating representations and also for digital media analysis, this package needs a working MediaInfo.
 - Getting MediaInfo: https://mediaarea.net/en/MediaInfo
 
-**NOTE:** You must download MediaInfo CLI. If you want this package autodetect the MediaInfo binary, you need to add the path of CLI to your system path. Otherwise, You have to pass the full path of binary to `setMediaInfoBinary` method.
+**NOTE:** You must download MediaInfo CLI. If you want this package autodetect the MediaInfo binary, you need to add the path of CLI to your system path. Otherwise, you have to pass the full path of binary to `setMediaInfoBinary` method.
 
 #### 3. OpenSSL
 For HLS encryption you will need a working OpenSSL:
 - Getting OpenSSL: https://www.openssl.org/source/
 - Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
 
-**NOTE:** Add the path of OpenSSL bin directory to system path to get the benefit of binary detection.
+**NOTE:** Add the path of OpenSSL bin directory to your system path to get the benefit of binary detection.
 
 ### Installing Package
-This version of the package is only compatible with PHP 7.1.0 and later.
+This version of the package is only compatible with PHP 7.2 or higher.
 
-Install the package via composer:
+Install the package via **[composer](https://getcomposer.org/)**:
 
 ``` bash
 composer require aminyazdanpanah/php-ffmpeg-video-streaming
 ```
 
 ## Usage
-You can find Full Documentation **[here](https://video.aminyazdanpanah.com/).**
+First of all, you need to include the package in Your Code:
+
+``` php
+require 'vendor/autoload.php'; // path to the autoload file
+```
+
+- If you are using such a framework(e.g. [Laravel](https://github.com/laravel/laravel)) that include the autoload automatically, then you can skip this step.
+- You can find Full Documentation **[here](https://video.aminyazdanpanah.com/).**
 
 ### Configuration
 
-FFMpeg will autodetect ffmpeg and ffprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
+FFMpeg will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
 
 ``` php
 $config = [
@@ -96,13 +101,13 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
 #### 2. From Cloud
-You can open a file by passing a URL to `fromURL` method:
+You can open a file by passing a URL to the `fromURL` method:
 
 ``` php
 $video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4");
 ```
 
-Also, the path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
+Also, the path to save the file, the method of the request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can be passed to the method.
 
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0';
@@ -140,7 +145,7 @@ Amazon S3 or Amazon Simple Storage Service is a service offered by [Amazon Web S
 - For getting credentials, you need to have an AWS account or you can [create one](https://portal.aws.amazon.com/billing/signup#/start).
 - Before you get started, please read the "AWS SDK for PHP" Document found **[here](https://aws.amazon.com/sdk-for-php/)**.
 
-For downloading a file from Amazon S3, you need to pass an array as configuration, name of the bucket, and the key of your bucket to `fromS3` method:
+For downloading a file from Amazon S3, you need to pass an associative array of options, the name of your bucket, and the key of your bucket to the `fromS3` method:
 
 ``` php
 $config = [
@@ -174,7 +179,7 @@ $video->DASH()
     ->save(); // It can be passed a path to the method or it can be null
 ```
 
-Also, You can create multi-representations video files using `Representation` object:
+Also, You can create multi-representations video files using the `Representation` object:
 
 ``` php
 use Streaming\Representation;
@@ -207,7 +212,7 @@ $video->HLS()
     ->save();
 ```
 
-Create multi-qualities video files using `Representation` object(set bit-rate and size manually):
+Create multi-qualities video files using the `Representation` object(set bit-rate and size manually):
 
 ``` php
 use Streaming\Representation;
@@ -235,7 +240,7 @@ See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more informa
 
 The encryption process requires some kind of secret (key) together with an encryption algorithm.
 
-HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
+HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 Before we can encrypt videos, we need an encryption key. However you can use any software that can generate a key, this package requires a working OpenSSL to create a key:
 
@@ -264,9 +269,9 @@ $video->HLS()
 
 ### Transcoding
 
-You can transcode videos using the `on` method in the format class.
- 
- Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
+A format can also extend FFMpeg\Format\ProgressableInterface to get realtime information about the transcoding. 
+
+Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
 
 ``` php
 $format = new Streaming\Format\HEVC();
@@ -303,7 +308,7 @@ $video->HLS()
 There are three options to save your packaged video files:
 
 #### 1. To a Local Path
-You can pass a local path to the `save` method. If there was no directory in the path, then the package auto make the directory.
+You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
 
 ``` php
 $dash = $video->DASH()
@@ -392,16 +397,16 @@ $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
 
-- **NOTE:** You can mix opening and saving options together. For Instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
+- **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
 
 ### Video Analysis
-This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. Why MediaInfo?! Although FFprobe can go way more in depth and is much more powerful, in some cases MediaInfo is much more reliable and more powerful. For instance, as it can be seen in this issue(#12), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameter and as a result, this package cannot calculate the value of `kilo bite rate` to auto generate representations. However, MediaInfo cannot obtain these value as well, it has a general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of video's bite rate.  
+This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. Why MediaInfo?! Although FFprobe can go way more in-depth and is much more powerful, in some cases MediaInfo is much more reliable and more powerful. For instance, as it can be seen in this issue([#12](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues/12)), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameters and as a result, this package cannot calculate the value of `kilo bite rate` to auto-generate representations. However, MediaInfo cannot obtain these value as well, it has general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of the video's bite rate.  
 
 - Please download and install the latest version of [MediaInfo](https://mediaarea.net/en/MediaInfo).
 
-You can extract the media info and analyze streams when packaging is done. It also puts a `analysis.json` file in the packaged video directory: 
+You can extract the media info and analyze streams when packaging was done. It also puts a `analysis.json` file in the packaged video directory: 
 
 ``` php
 $metadata = $hls->save();
@@ -428,7 +433,7 @@ var_dump($general->all(), $video->all(), $audio->all());
 ```
 
 ### Other Advanced Features
-You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
+You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
 
 For exploring other advanced features, please read the  [Full PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation).
 
@@ -451,7 +456,8 @@ $video
 ```
 
 ## Several Open Source Players
-You can use these players to play your packaged videos
+You can use these players to play your packaged videos.
+
 - **WEB**
     - DASH and HLS: [Plyr](https://github.com/sampotts/plyr)
     - DASH and HLS: [MediaElement.js](https://github.com/mediaelement/mediaelement)
@@ -465,7 +471,7 @@ You can use these players to play your packaged videos
 - **Android**
     - DASH and HLS: [ExoPlayer](https://github.com/google/ExoPlayer)
     
-## Contributing and Reporting bug
+## Contributing and Reporting Bugs
 
 I'd love your help in improving, correcting, adding to the specification.
 Please [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)
@@ -473,7 +479,7 @@ or [submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-s
 
 - Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
 
-- Please just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs. 
+- Please, just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs. 
 - If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
 contact [AT] aminyazdanpanah • com.
 
