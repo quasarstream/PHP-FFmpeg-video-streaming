@@ -400,7 +400,7 @@ For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-f
 
 - **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
-![schema](/docs/schema.gif?raw=true "schema" )
+![schema](http://video.aminyazdanpanah.com/asset/github/schema.gif "schema" )
 
 ### Video Analysis
 This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. Why MediaInfo?! Although FFprobe can go way more in-depth and is much more powerful, in some cases MediaInfo is much more reliable and more powerful. For instance, as it can be seen in this issue([#12](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues/12)), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameters and as a result, this package cannot calculate the value of `kilo bite rate` to auto-generate representations. However, MediaInfo cannot obtain these value as well, it has general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of the video's bite rate.  
