@@ -11,10 +11,13 @@
 
 namespace Streaming;
 
+use FFMpeg\Exception\ExceptionInterface;
 use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
+use Streaming\Exception\RuntimeException;
 
 class FFMpeg
 {
@@ -33,15 +36,18 @@ class FFMpeg
      * @param string $path
      * @param bool $is_tmp
      * @return Media
-     * @throws Exception
      */
     public function open(string $path, bool $is_tmp = false): Media
     {
         if (!is_file($path)) {
-            throw new Exception("There is no file in this path: " . $path);
+            throw new InvalidArgumentException("There is no file in this path: " . $path);
         }
 
-        return new Media($this->ffmpeg->open($path), $path, $is_tmp);
+        try{
+            return new Media($this->ffmpeg->open($path), $path, $is_tmp);
+        }catch (ExceptionInterface $e){
+            throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()));
+        }
     }
 
     /**

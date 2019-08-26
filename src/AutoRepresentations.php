@@ -30,19 +30,21 @@ class AutoRepresentations
      */
     private $side_values = [2160, 1080, 720, 480, 360, 240, 144];
 
+    /** @var array $k_bitrate_values */
+    private $k_bitrate_values;
+
     /**
      * AutoRepresentations constructor.
      * @param StreamCollection $streamCollection
      * @param null | array $side_values
+     * @param array $k_bitrate_values
      */
-    public function __construct(StreamCollection $streamCollection, $side_values)
+    public function __construct(StreamCollection $streamCollection, array $side_values = null, array $k_bitrate_values = null)
     {
-        if (null !== $side_values) {
-            $this->side_values = $side_values;
-        }
-
         $this->video = $streamCollection->videos()->first();
         $this->general = $streamCollection->general();
+        $this->getSideValues($side_values);
+        $this->getKiloBitrateValues($k_bitrate_values);
     }
 
     /**
@@ -67,8 +69,9 @@ class AutoRepresentations
                 throw new InvalidArgumentException("Invalid stream");
             }
 
-            return (int)($this->general->get('OverallBitRate') / 1024) * .9;
+            return intval(($this->general->get('OverallBitRate') / 1024) * .9);
         }
+
         return (int)$this->video->get('BitRate') / 1024;
     }
 
@@ -77,53 +80,70 @@ class AutoRepresentations
      */
     public function get(): array
     {
-        $kilobitrate = $this->getKiloBitRate();
-        list($width, $height, $ratio) = $this->getDimensions();
+        $k_bitrate = $this->getKiloBitRate();
+        list($w, $h, $r) = $this->getDimensions();
 
-        $representations[] = $this->addRepresentation($kilobitrate, $width, $height);
+        $reps[] = $this->addRep($k_bitrate, $w, $h);
 
-        $heights = array_filter($this->side_values, function ($value) use ($height) {
-            return $value < $height;
-        });
-
-        if (!empty($heights)) {
-            $kilobitrates = $this->getKiloBitRates($kilobitrate, count($heights));
-
-            foreach (array_values($heights) as $key => $height) {
-                $representations[] = $this->addRepresentation($kilobitrates[$key], Helper::roundToEven($ratio * $height), $height);
-            }
+        foreach ($this->side_values as $key => $height) {
+            $reps[] = $this->addRep($this->k_bitrate_values[$key], Helper::roundToEven($r * $height), $height);
         }
 
-        return array_reverse($representations);
+        return array_reverse($reps);
     }
 
     /**
      * @param $width
-     * @param $kilobitrate
+     * @param $k_bitrate
      * @param $height
      * @return Representation
      * @throws InvalidArgumentException
      */
-    private function addRepresentation($kilobitrate, $width, $height): Representation
+    private function addRep($k_bitrate, $width, $height): Representation
     {
-        return (new Representation())->setKiloBitrate($kilobitrate)->setResize($width, $height);
+        return (new Representation())->setKiloBitrate($k_bitrate)->setResize($width, $height);
     }
 
     /**
-     * @param $kilobitrate
-     * @param $count
-     * @return array
+     * @param array|null $k_bitrate_values
      */
-    private function getKiloBitRates($kilobitrate, $count): array
+    private function getKiloBitrateValues(?array $k_bitrate_values): void
     {
-        $divided_by = 1.3;
+        $count_sides = count($this->side_values);
 
-        while ($count) {
-            $kilobitrates[] = (($kbitrate = intval($kilobitrate / $divided_by)) < 64) ? 64 : $kbitrate;
-            $divided_by += .3;
-            $count--;
+        if ($k_bitrate_values) {
+            if ($count_sides !== count($k_bitrate_values)) {
+                throw new InvalidArgumentException("The count of side value array must be the same as the count of kilo bitrate array");
+            }
+
+            $this->k_bitrate_values = $k_bitrate_values;
+            return;
         }
 
-        return $kilobitrates;
+        $k_bitrate_value = $this->getKiloBitRate();
+        $divided_by = 1.5;
+
+        while ($count_sides) {
+            $this->k_bitrate_values[] = (($k_bitrate = intval($k_bitrate_value / $divided_by)) < 64) ? 64 : $k_bitrate;
+            $divided_by += .5;
+            $count_sides--;
+        }
+    }
+
+    /**
+     * @param array|null $side_values
+     */
+    private function getSideValues(?array $side_values): void
+    {
+        if ($side_values) {
+            $this->side_values = $side_values;
+            return;
+        }
+
+        $h = $this->getDimensions()[1];
+
+        $this->side_values = array_values(array_filter($this->side_values, function ($height) use ($h) {
+            return $height < $h;
+        }));
     }
 }

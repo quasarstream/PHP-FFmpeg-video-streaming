@@ -18,7 +18,6 @@ use Streaming\MediaInfo\Streams\StreamCollection;
 /**
  * @method mixed save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
  * @method mixed addFilter(\FFMpeg\Filters\FilterInterface $filter)
- * @method mixed getStreams()
  */
 class Media
 {

@@ -37,7 +37,7 @@ class Representation
     public function setResize(int $width, int $height): Representation
     {
         if ($width < 1 || $height < 1) {
-            throw new InvalidArgumentException('Wrong resize value');
+            throw new InvalidArgumentException('Invalid resize value');
         }
 
         $this->width = $width;
@@ -65,7 +65,7 @@ class Representation
     public function setKiloBitrate($kiloBitrate)
     {
         if ($kiloBitrate < 1) {
-            throw new InvalidArgumentException('Wrong kilo bit rate value');
+            throw new InvalidArgumentException('Invalid kilo bit rate value');
         }
 
         $this->kiloBitrate = (int)$kiloBitrate;

@@ -179,9 +179,11 @@ class FileManager
     /**
      * @param string $source
      * @param string $destination
+     * @throws Exception
      */
     public static function moveDir(string $source, string $destination)
     {
+        static::makeDir($destination);
         foreach (scandir($source) as $file) {
             if (in_array($file, [".", ".."])) continue;
             if (copy($source . $file, $destination . $file)) {

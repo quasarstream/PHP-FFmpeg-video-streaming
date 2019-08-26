@@ -52,8 +52,8 @@ class HLSTest extends TestCase
         $this->assertEquals('426x240', $representations[1]->getResize());
         $this->assertEquals('640x360', $representations[2]->getResize());
 
-        $this->assertEquals(129, $representations[0]->getKiloBitrate());
-        $this->assertEquals(159, $representations[1]->getKiloBitrate());
+        $this->assertEquals(103, $representations[0]->getKiloBitrate());
+        $this->assertEquals(138, $representations[1]->getKiloBitrate());
         $this->assertEquals(207, $representations[2]->getKiloBitrate());
     }
 

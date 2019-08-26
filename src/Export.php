@@ -11,8 +11,10 @@
 
 namespace Streaming;
 
+use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
+use Streaming\Exception\RuntimeException;
 use Streaming\Filters\Filter;
 use Streaming\Traits\Formats;
 
@@ -58,10 +60,20 @@ abstract class Export
             $this->getFilter()
         );
 
-        $this->media->save(
-            $this->getFormat(),
-            $path
-        );
+        try{
+            $this->media->save(
+                $this->getFormat(),
+                $path
+            );
+        }catch (ExceptionInterface $e){
+            throw new RuntimeException(sprintf(
+                "There was an error saving files: \n\n reason: \n %s",
+                $e->getMessage()
+            ),
+                $e->getCode(),
+                $e->getFile());
+        }
+
 
         $response = ($analyse) ? (new StreamingAnalytics($this))->analyse() : $this;
 
@@ -95,7 +107,7 @@ abstract class Export
 
         if (null === $path && $this->media->isTmp()) {
             $this->deleteOriginalFile();
-            throw new InvalidArgumentException("You need to specify a path. It is not possible to save to the tmp directory");
+            throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
         }
 
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
@@ -136,7 +148,7 @@ abstract class Export
     )
     {
         if ($this instanceof HLS && $this->getTsSubDirectory()) {
-            throw new InvalidArgumentException("It is not possible to create subdirectory in cloud saving");
+            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
         }
         list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
@@ -220,9 +232,7 @@ abstract class Export
     private function moveTmpFolder(?string $path, $tmp_dir)
     {
         if (null !== $path) {
-            $destination = pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR;
-            FileManager::makeDir($destination);
-            FileManager::moveDir($tmp_dir, $destination);
+            FileManager::moveDir($tmp_dir, pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR);
         } else {
             FileManager::deleteDirectory($tmp_dir);
         }

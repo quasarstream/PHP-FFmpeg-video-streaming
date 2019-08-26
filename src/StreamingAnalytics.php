@@ -77,7 +77,7 @@ class StreamingAnalytics
         } elseif ($this->export instanceof HLS) {
             $metadata["hls_time"] = $this->export->getHlsTime();
             $metadata["hls_cache"] = $this->export->isHlsAllowCache();
-            $metadata["encrypted_hls"] = ($this->export->getHlsKeyInfoFile() !== "") ? true : false;
+            $metadata["encrypted_hls"] = (bool)$this->export->getHlsKeyInfoFile();
         }
 
         return $metadata;

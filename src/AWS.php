@@ -52,7 +52,7 @@ class AWS
 
             return isset($result['ObjectURL']) ? $result['ObjectURL'] : "It is private";
         } catch (S3Exception $e) {
-            throw new RuntimeException("There was an error uploading the file.\n error: " . $e->getMessage());
+            throw new RuntimeException("There was an error uploading the file.\n error: " . $e->getMessage(), $e->getCode(), $e->getFile());
         }
     }
 
@@ -77,7 +77,7 @@ class AWS
                 throw new Exception("There is no file in the bucket");
             }
         } catch (S3Exception $e) {
-            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage());
+            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage(), $e->getCode(), $e->getFile());
         }
     }
 
@@ -87,7 +87,12 @@ class AWS
      */
     public function uploadAndDownloadDirectory(string $source, string $dest): void
     {
-        $manager = new Transfer($this->s3, $source, $dest);
-        $manager->transfer();
+        try {
+            $manager = new Transfer($this->s3, $source, $dest);
+            $manager->transfer();
+        } catch (S3Exception $e) {
+            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage(), $e->getCode(), $e->getFile());
+        }
+
     }
 }

@@ -180,7 +180,7 @@ $video->DASH()
     ->save(); // It can be passed a path to the method or it can be null
 ```
 
-Also, You can create multi-representations video files using the `Representation` object:
+You can also create multi-representations video files using the `Representation` object:
 
 ``` php
 use Streaming\Representation;
@@ -243,11 +243,7 @@ The encryption process requires some kind of secret (key) together with an encry
 
 HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-Before we can encrypt videos, we need an encryption key. However you can use any software that can generate a key, this package requires a working OpenSSL to create a key:
-
-Getting OpenSSL: https://www.openssl.org/source/
-
-Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
+Before we can encrypt videos, we need an encryption key. However you can use any software that can generate a key, this package requires a working OpenSSL to create a key.
 
 You need to pass both 'URL to the key' and 'path to save a random key' to the `generateRandomKeyInfo` method:
 ``` php
@@ -259,7 +255,7 @@ $url = "https://www.aminyazdanpanah.com/keys/enc.key";// or "/keys/enc.key";
 
 $video->HLS()
     ->X264()
-    ->setTsSubDirectory("ts_files")// put all ts files in subdirectory
+    ->setTsSubDirectory("ts_files")// put all ts files in a subdirectory
     ->generateRandomKeyInfo($url, $save_to)
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls/test.m3u8');
