@@ -13,75 +13,25 @@
 namespace Streaming;
 
 
-use Streaming\Process\Process;
-
 class KeyInfo
 {
-    private $url;
-
-    private $path;
-
-    private $path_info;
-
-    private $openssl;
-
-
     /**
-     * GenerateKeyInfo constructor.
      * @param $url
      * @param $path
-     * @param string $binary
-     * @throws Exception\RuntimeException
-     */
-    public function __construct(string $url, string $path, $binary = "openssl")
-    {
-        $this->url = $url;
-        $this->path = $path;
-        $this->path_info = pathinfo($path);
-        $this->openssl = new Process($binary);
-    }
-
-    /**
+     * @return string
      * @throws Exception\Exception
      */
-    public function generate(): string
+    public static function generate($url, $path): string
     {
-        $key_info[] = $this->url;
-        $key_info[] = $this->generateRandomKey();
-        $key_info[] = $this->generateIV();
+        FileManager::makeDir(pathinfo($path, PATHINFO_DIRNAME));
+        file_put_contents($path, openssl_random_pseudo_bytes(32));
+
+        $key_info[] = $url;
+        $key_info[] = $path;
+        $key_info[] = bin2hex(openssl_random_pseudo_bytes(32));
 
         file_put_contents($path = FileManager::tmpFile(), implode(PHP_EOL, $key_info));
 
         return $path;
-    }
-
-    /**
-     * @return string
-     * @throws Exception\Exception
-     */
-    public function __toString(): string
-    {
-        return $this->generate();
-    }
-
-    /**
-     * @return string
-     * @throws Exception\Exception
-     */
-    private function generateRandomKey(): string
-    {
-        FileManager::makeDir($this->path_info["dirname"]);
-        file_put_contents($this->path, $this->openssl->addCommand(['rand', '16'])->run());
-
-        return $this->path;
-    }
-
-    /**
-     * @return string
-     * @throws Exception\RuntimeException
-     */
-    private function generateIV(): string
-    {
-        return $this->openssl->reset()->addCommand(['rand', '-hex', '16'])->run();
     }
 }

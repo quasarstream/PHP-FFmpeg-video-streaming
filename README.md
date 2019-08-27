@@ -8,7 +8,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known live streaming techniques such as DASH and HLS. Also, you can use DRM for HLS packaging.
+This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known online streaming techniques such as DASH and HLS. You can also use DRM for HLS packaging.
 
 - Before you get started, please read the FFMpeg Document found **[here](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
@@ -44,17 +44,12 @@ This library requires a working FFMpeg. You will need both FFMpeg and FFProbe bi
 - Getting FFmpeg: https://ffmpeg.org/download.html
 
 #### 2. MediaInfo
-For auto-generating representations and also for digital media analysis, this package needs a working MediaInfo.
+For auto-generating representations and also digital media analysis, you will need a working MediaInfo. [Why MediaInfo?!](#why-mediainfo)
 - Getting MediaInfo: https://mediaarea.net/en/MediaInfo
 
-**NOTE:** You must download MediaInfo CLI. If you want this package autodetect the MediaInfo binary, you need to add the path of CLI to your system path. Otherwise, you have to pass the full path of binary to `setMediaInfoBinary` method.
+**NOTE:** You must download MediaInfo CLI.
 
-#### 3. OpenSSL
-For HLS encryption you will need a working OpenSSL:
-- Getting OpenSSL: https://www.openssl.org/source/
-- Getting OpenSSL(Windows): https://slproweb.com/products/Win32OpenSSL.html
-
-**NOTE:** Add the path of OpenSSL bin directory to your system path to get the benefit of binary detection.
+**NOTE:** If you are using `Windows`, download MediaInfo CLI from [here](https://mediaarea.net/en/MediaInfo/Download/Windows). Extract zip-archive and place MediaInfo.exe somewhere. If you want this package autodetect the MediaInfo binary, you need to add the path of MediaInfo.exe directory to your system path. Otherwise, you have to pass the full path of binary to `setMediaInfoBinary` method.
 
 ### Installing Package
 This version of the package is only compatible with PHP 7.2 or higher.
@@ -63,6 +58,14 @@ Install the package via **[composer](https://getcomposer.org/)**:
 
 ``` bash
 composer require aminyazdanpanah/php-ffmpeg-video-streaming
+```
+
+Alternatively, add the dependency directly to your `composer.json` file:
+
+``` json
+"require": {
+    "aminyazdanpanah/php-ffmpeg-video-streaming": "^1.1"
+}
 ```
 
 ## Usage
@@ -239,11 +242,7 @@ See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more informa
 
 #### Encrypted HLS
 
-The encryption process requires some kind of secret (key) together with an encryption algorithm.
-
-HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
-
-Before we can encrypt videos, we need an encryption key. However you can use any software that can generate a key, this package requires a working OpenSSL to create a key.
+The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You need to pass both 'URL to the key' and 'path to save a random key' to the `generateRandomKeyInfo` method:
 ``` php
@@ -260,9 +259,7 @@ $video->HLS()
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
-- **Note:** Alternatively, you can generate a key info using another library and pass the path of key info to the `setHlsKeyInfoFile` method.
 - **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
-- **NOTE:** For getting the benefit of the OpenSSL binary auto detection in the Windows, you need to add it to your system path otherwise, you have to pass the path to OpenSSL binary to the `generateRandomKeyInfo` method explicitly. 
 
 ### Transcoding
 
@@ -297,7 +294,7 @@ $video->HLS()
     ->setFormat($format)
     ->setTsSubDirectory("ts_files")
     ->setHlsBaseUrl("https://bucket.s3-us-west-1.amazonaws.com/videos")
-    ->autoGenerateRepresentations()
+    ->autoGenerateRepresentations([240, 144], [200, 100]) // You can alson set the kilo bite rate of each video
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
@@ -399,9 +396,11 @@ For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-f
 ![schema](/docs/schema.gif?raw=true "schema" )
 
 ### Video Analysis
-This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. Why MediaInfo?! Although FFprobe can go way more in-depth and is much more powerful, in some cases MediaInfo is much more reliable and more powerful. For instance, as it can be seen in this issue([#12](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues/12)), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameters and as a result, this package cannot calculate the value of `kilo bite rate` to auto-generate representations. However, MediaInfo cannot obtain these value as well, it has general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of the video's bite rate.  
+This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. 
 
-- Please download and install the latest version of [MediaInfo](https://mediaarea.net/en/MediaInfo).
+#### Why MediaInfo?! 
+
+Although FFprobe can go way more in-depth and is much more powerful, in some cases MediaInfo is much more reliable. For instance, as it can be seen in this issue([#12](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues/12)), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameters and as a result, this package cannot calculate the value of `kilo bite rate` to auto-generate representations. However, MediaInfo cannot obtain these value as well, it has general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of the video's bite rate.  
 
 You can extract the media info and analyze streams when packaging was done. It also puts a `analysis.json` file in the packaged video directory: 
 
@@ -411,8 +410,7 @@ $metadata = $hls->save();
 print_r($metadata);
 ```
 
-You can also pass a false boolean to not extract and analyze the video:
-
+If you do not want to extract metadata and put file in directory, then pass a false to the `save` method:
 ``` php
 $export_obj = $hls->save(null, false);
 ``` 

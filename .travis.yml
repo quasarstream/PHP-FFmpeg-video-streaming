@@ -28,5 +28,4 @@ install:
 script:
   - ffmpeg -version
   - mediainfo --version
-  - openssl version
   - vendor/bin/phpunit tests

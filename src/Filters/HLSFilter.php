@@ -66,7 +66,7 @@ class HLSFilter extends Filter
                 $filter[] = "-hls_time";
                 $filter[] = $media->getHlsTime();
                 $filter[] = "-hls_allow_cache";
-                $filter[] = $media->isHlsAllowCache() ? "1" : "0";
+                $filter[] = (int)$media->isHlsAllowCache();
                 $filter[] = "-b:v";
                 $filter[] = $representation->getKiloBitrate() . "k";
                 $filter[] = "-maxrate";

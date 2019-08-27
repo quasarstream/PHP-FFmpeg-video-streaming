@@ -122,7 +122,7 @@ class HLSTest extends TestCase
         $export_obj = $hls->generateRandomKeyInfo($url, $path)
             ->X264()
             ->autoGenerateRepresentations()
-            ->save($this->srcDir . '/enc_random__hls/test.m3u8', false);
+            ->save($this->srcDir . '/enc_random_hls/test.m3u8', false);
 
         $get_path_info = $hls->getPathInfo();
 

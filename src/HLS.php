@@ -101,18 +101,13 @@ class HLS extends Export
     /**
      * @param string $url
      * @param string $path
-     * @param string $binary
      * @return HLS
      * @throws Exception\InvalidArgumentException
+     * @throws Exception\Exception
      */
-    public function generateRandomKeyInfo(string $url = null, string $path = null, string $binary = "openssl"): HLS
+    public function generateRandomKeyInfo(string $url, string $path): HLS
     {
-        if (null === $url && null === $path) {
-            $key_name = $url = Helper::randomString() . ".key";
-            $path = $this->path_info["dirname"] . DIRECTORY_SEPARATOR . $key_name;
-        }
-
-        $this->setHlsKeyInfoFile(new KeyInfo($url, $path, $binary));
+        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path));
         return $this;
     }
 
