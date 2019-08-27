@@ -127,7 +127,7 @@ class HLSTest extends TestCase
         $get_path_info = $hls->getPathInfo();
 
         $this->assertInstanceOf(Export::class, $export_obj);
-        $this->assertFileExists($this->srcDir . '/enc_random__hls/test.m3u8');
+        $this->assertFileExists($this->srcDir . '/enc_random_hls/test.m3u8');
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
         $this->assertArrayHasKey('filename', $get_path_info);
