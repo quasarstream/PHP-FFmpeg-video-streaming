@@ -16,14 +16,11 @@ This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpe
 
 **Contents**
 - [Installation](#installation)
-  - [Requirement](#requirement)
-  - [Installing Package](#installing-package)
 - [Usage](#usage)
   - [Configuration](#configuration)
   - [Opening a File](#opening-a-file)
   - [DASH](#dash)
   - [HLS](#hls)
-    - [Create HLS Files](#create-hls-files)
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
@@ -35,13 +32,8 @@ This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpe
 
 
 ## Installation
-
-### Requirement
-This library requires a working FFMpeg. You will need both FFMpeg and FFProbe binaries to use it.
-- Getting FFmpeg: https://ffmpeg.org/download.html
-
-### Installing Package
-This version of the package is only compatible with PHP 7.2 or higher.
+- Before installing the package, you need to download and install the **[FFMpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
+- This version of the package is only compatible with PHP 7.2 or higher.
 
 Install the package via **[composer](https://getcomposer.org/)**:
 
@@ -94,6 +86,9 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
 #### 2. From Cloud
+This package uses [Guzzle](http://docs.guzzlephp.org/en/stable/index.html) to send and receive files.
+- Before you get started, please read the Guzzle Document found **[here](http://docs.guzzlephp.org/en/stable/index.html)**.
+
 You can open a file by passing a URL to the `fromURL` method:
 
 ``` php
@@ -196,7 +191,6 @@ For more information about **[FFMpeg](https://ffmpeg.org/)** and its **[dash opt
 
 HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
-#### Create HLS Files
 Create HLS files based on original video(auto generate qualities).
 ``` php
 $video->HLS()
@@ -230,7 +224,6 @@ $video->HLS()
 See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more information.
 
 #### Encrypted HLS
-
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You need to pass both 'URL to the key' and 'path to save a random key' to the `generateRandomKeyInfo` method:
@@ -251,11 +244,9 @@ $video->HLS()
 - **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
 ### Transcoding
-
 A format can also extend FFMpeg\Format\ProgressableInterface to get realtime information about the transcoding. 
 
 Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
-
 ``` php
 $format = new Streaming\Format\HEVC();
 
@@ -271,7 +262,6 @@ $video->DASH()
 ```
 
 HLS Transcoding:
-
 ``` php
 $format = new Streaming\Format\X264();
 
@@ -292,7 +282,6 @@ There are three options to save your packaged video files:
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
-
 ``` php
 $dash = $video->DASH()
             ->HEVC()
@@ -303,7 +292,6 @@ $dash->save('/var/www/media/videos/dash/test.mpd');
 ```
 
 It can also be null. The default path to save files is the input path.
-
 ``` php
 $hls = $video->HLS()
             ->X264()
@@ -314,11 +302,7 @@ $hls->save();
 - **NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
 
 #### 2. To a Cloud
-You can save your files to a cloud using the `saveToCloud` method. This package uses [Guzzle](http://docs.guzzlephp.org/en/stable/index.html) to send and receive files.
-
-- Before you get started, please read the Guzzle Document found **[here](http://docs.guzzlephp.org/en/stable/index.html)**.
-
-
+You can save your files to a cloud using the `saveToCloud` method. 
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
 $field_name = "MY_FILES";
@@ -379,7 +363,6 @@ $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 ```
 
 For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-for-php/) document.
-
 - **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
@@ -409,7 +392,6 @@ $video
 
 ## Several Open Source Players
 You can use these players to play your packaged videos.
-
 - **WEB**
     - DASH and HLS: [Plyr](https://github.com/sampotts/plyr)
     - DASH and HLS: [MediaElement.js](https://github.com/mediaelement/mediaelement)
@@ -419,26 +401,19 @@ You can use these players to play your packaged videos.
     - DASH and HLS: [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)
     - DASH: [dash.js](https://github.com/Dash-Industry-Forum/dash.js)
     - HLS: [hls.js](https://github.com/video-dev/hls.js)
-    
 - **Android**
     - DASH and HLS: [ExoPlayer](https://github.com/google/ExoPlayer)
     
 ## Contributing and Reporting Bugs
-
 I'd love your help in improving, correcting, adding to the specification.
 Please [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)
 or [submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls).
-
 - Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
-
-- Please, just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs. 
-- If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
-contact [AT] aminyazdanpanah • com.
+- Please, just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs or you have any question. 
+- If you discover a security vulnerability within this package, please see [SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md) for more information to help with that.
 
 ## Credits
-
 - [Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)
 
 ## License
-
 The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE) for more information.
