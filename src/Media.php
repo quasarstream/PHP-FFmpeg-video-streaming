@@ -12,8 +12,6 @@
 namespace Streaming;
 
 use FFMpeg\Media\MediaTypeInterface;
-use Streaming\MediaInfo\MediaInfo;
-use Streaming\MediaInfo\Streams\StreamCollection;
 
 /**
  * @method mixed save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
@@ -31,9 +29,6 @@ class Media
      * @var bool
      */
     private $is_tmp;
-
-    /** @var string */
-    private $mediaInfoBinary = 'mediainfo';
 
     /**
      * Media constructor.
@@ -64,12 +59,16 @@ class Media
         return new HLS($this);
     }
 
+
     /**
-     * @return StreamCollection
+     * @return array
      */
-    public function mediaInfo(): StreamCollection
+    public function probe(): array
     {
-        return MediaInfo::initialize($this->getPath(), $this->mediaInfoBinary);
+        return[
+            'format' => $this->getFormat(),
+            'streams' => $this->getStreams()
+        ];
     }
 
     /**
@@ -107,15 +106,5 @@ class Media
     public function isTmp(): bool
     {
         return $this->is_tmp;
-    }
-
-    /**
-     * @param string $mediaInfoBinary
-     * @return Media
-     */
-    public function setMediaInfoBinary(string $mediaInfoBinary)
-    {
-        $this->mediaInfoBinary = $mediaInfoBinary;
-        return $this;
     }
 }

@@ -12,16 +12,14 @@
 namespace Streaming;
 
 use Streaming\Exception\InvalidArgumentException;
-use Streaming\MediaInfo\Streams\Stream;
-use Streaming\MediaInfo\Streams\StreamCollection;
 
 class AutoRepresentations
 {
-    /** @var Stream $video */
+    /** @var \FFMpeg\FFProbe\DataMapping\Stream $video */
     private $video;
 
-    /** @var Stream $general */
-    private $general;
+    /** @var \FFMpeg\FFProbe\DataMapping\Format $format */
+    private $format;
 
     /**
      * regular video's heights
@@ -35,14 +33,14 @@ class AutoRepresentations
 
     /**
      * AutoRepresentations constructor.
-     * @param StreamCollection $streamCollection
+     * @param array $probe
      * @param null | array $side_values
      * @param array $k_bitrate_values
      */
-    public function __construct(StreamCollection $streamCollection, array $side_values = null, array $k_bitrate_values = null)
+    public function __construct(array $probe, array $side_values = null, array $k_bitrate_values = null)
     {
-        $this->video = $streamCollection->videos()->first();
-        $this->general = $streamCollection->general();
+        $this->video = $probe['streams']->videos()->first();
+        $this->format = $probe['format'];
         $this->getSideValues($side_values);
         $this->getKiloBitrateValues($k_bitrate_values);
     }
@@ -52,8 +50,8 @@ class AutoRepresentations
      */
     private function getDimensions(): array
     {
-        $width = $this->video->get('Width');
-        $height = $this->video->get('Height');
+        $width = $this->video->get('width');
+        $height = $this->video->get('height');
 
         return [$width, $height, $width / $height];
     }
@@ -64,15 +62,15 @@ class AutoRepresentations
      */
     private function getKiloBitRate(): int
     {
-        if (!$this->video->has('BitRate')) {
-            if (!$this->general->has('OverallBitRate')) {
-                throw new InvalidArgumentException("Invalid stream");
+        if (!$this->video->has('bit_rate')) {
+            if (!$this->format->has('bit_rate')) {
+                throw new InvalidArgumentException("We could determine the value of video bitrate");
             }
 
-            return intval(($this->general->get('OverallBitRate') / 1024) * .9);
+            return intval(($this->format->get('bit_rate') / 1024) * .9);
         }
 
-        return (int)$this->video->get('BitRate') / 1024;
+        return (int)$this->video->get('bit_rate') / 1024;
     }
 
     /**

@@ -27,8 +27,6 @@ If applicable, add screenshots to help explain your problem.
  - OS: [e.g. Linux]
  - Version [e.g. Ubuntu 18]
  - FFmpeg vesion
- - MediaInfo vesion
- - openSSL version
 
 **Additional context**
 Add any other context about the problem here.

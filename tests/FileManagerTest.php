@@ -12,7 +12,6 @@
 namespace Tests\FFMpegStreaming;
 
 use Streaming\FileManager;
-use Streaming\MediaInfo\Streams\Stream;
 
 class FileManagerTest extends TestCase
 {

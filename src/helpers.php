@@ -98,12 +98,11 @@ if (!function_exists('encrypted_hls')) {
      * @param callable|null $listener
      * @param string | null $url
      * @param string |null $path
-     * @param string $binary
      * @return mixed
      * @throws \Streaming\Exception\Exception
      * @deprecated this method has been deprecated
      */
-    function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null, $binary = 'openssl')
+    function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null)
     {
         $format = new X264();
 
@@ -121,7 +120,7 @@ if (!function_exists('encrypted_hls')) {
             return $video->HLS()
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
-                ->generateRandomKeyInfo($url, $path, $binary)
+                ->generateRandomKeyInfo($url, $path)
                 ->save($save_path);
         } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();

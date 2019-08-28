@@ -55,7 +55,7 @@ trait Representation
             throw new Exception('Format has not been set');
         }
 
-        $this->representations = (new AutoRepresentations($this->getMedia()->mediaInfo(), $side_values, $k_bitrate_values))
+        $this->representations = (new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))
             ->get();
 
         return $this;

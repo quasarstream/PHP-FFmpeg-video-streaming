@@ -8,8 +8,6 @@ You can use these versions of required libraries that are currently being suppor
 | -------------------- | ------------------ |
 | PHP > 7.2.x          | :white_check_mark: |
 | FFMpeg > 4.x.x       | :white_check_mark: |
-| MediaInfo > 19.x.x   | :white_check_mark: |
-| OpenSSL > 1.x.x      | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

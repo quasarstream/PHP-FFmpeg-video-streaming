@@ -16,7 +16,7 @@ This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpe
 
 **Contents**
 - [Installation](#installation)
-  - [Required Libraries](#required-libraries)
+  - [Requirement](#requirement)
   - [Installing Package](#installing-package)
 - [Usage](#usage)
   - [Configuration](#configuration)
@@ -27,29 +27,18 @@ This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpe
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
-  - [Video Analysis](#video-analysis)
   - [Other Advanced Features](#other-advanced-features)
 - [Several Open Source Players](#several-open-source-players)
-- [Contributing and Reporting Bug](#contributing-and-reporting-bug)
+- [Contributing and Reporting Bug](#contributing-and-reporting-bugs)
 - [Credits](#credits)
 - [License](#license)
 
 
 ## Installation
 
-### Required Libraries
-
-#### 1. FFMpeg
+### Requirement
 This library requires a working FFMpeg. You will need both FFMpeg and FFProbe binaries to use it.
 - Getting FFmpeg: https://ffmpeg.org/download.html
-
-#### 2. MediaInfo
-For auto-generating representations and also digital media analysis, you will need a working MediaInfo. [Why MediaInfo?!](#why-mediainfo)
-- Getting MediaInfo: https://mediaarea.net/en/MediaInfo
-
-**NOTE:** You must download MediaInfo CLI.
-
-**NOTE:** If you are using `Windows`, download MediaInfo CLI from [here](https://mediaarea.net/en/MediaInfo/Download/Windows). Extract zip-archive and place MediaInfo.exe somewhere. If you want this package autodetect the MediaInfo binary, you need to add the path of MediaInfo.exe directory to your system path. Otherwise, you have to pass the full path of binary to `setMediaInfoBinary` method.
 
 ### Installing Package
 This version of the package is only compatible with PHP 7.2 or higher.
@@ -394,38 +383,6 @@ For more information, please read [AWS SDK for PHP](https://aws.amazon.com/sdk-f
 - **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
-
-### Video Analysis
-This library uses [MediaInfo](https://mediaarea.net/en/MediaInfo) to analyze videos and extracting metadata. 
-
-#### Why MediaInfo?! 
-
-Although FFprobe can go way more in-depth and is much more powerful, in some cases MediaInfo is much more reliable. For instance, as it can be seen in this issue([#12](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues/12)), MKV format does not store some parameters such as duration, frame rate, and bit rate in its container. So FFprobe cannot obtain the value of these parameters and as a result, this package cannot calculate the value of `kilo bite rate` to auto-generate representations. However, MediaInfo cannot obtain these value as well, it has general info that contains the value of `OveralBitRate`. In spite of `OveralBitRate` is not equal to the video bite rate, it can estimate the value of the video's bite rate.  
-
-You can extract the media info and analyze streams when packaging was done. It also puts a `analysis.json` file in the packaged video directory: 
-
-``` php
-$metadata = $hls->save();
-
-print_r($metadata);
-```
-
-If you do not want to extract metadata and put file in directory, then pass a false to the `save` method:
-``` php
-$export_obj = $hls->save(null, false);
-``` 
-
-There is an option to extract media info without packaging:
-
-``` php
-$streams = $video->mediaInfo();
-
-$general = $streams->general();
-$video = $streams->videos()->first();
-$audio = $streams->audios()->first();
-
-var_dump($general->all(), $video->all(), $audio->all());
-```
 
 ### Other Advanced Features
 You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.

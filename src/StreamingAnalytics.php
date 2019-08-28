@@ -49,14 +49,18 @@ class StreamingAnalytics
      */
     private function getOriginalMetadata()
     {
-
-        $streams = $this->export->getMedia()->mediaInfo()->all();
+        $probe = $this->export->getMedia()->probe();
+        $streams = $probe['streams']->all();
+        $format = $probe['format']->all();
 
         foreach ($streams as $key => $stream) {
             $streams[$key] = $stream->all();
         }
 
-        return $streams;
+        return [
+            'format' => $format,
+            'streams' => $streams
+        ];
     }
 
     /**
@@ -78,6 +82,8 @@ class StreamingAnalytics
             $metadata["hls_time"] = $this->export->getHlsTime();
             $metadata["hls_cache"] = $this->export->isHlsAllowCache();
             $metadata["encrypted_hls"] = (bool)$this->export->getHlsKeyInfoFile();
+            $metadata["ts_sub_directory"] = $this->export->getTsSubDirectory();
+            $metadata["base_url"] = $this->export->getHlsBaseUrl();
         }
 
         return $metadata;
@@ -89,7 +95,7 @@ class StreamingAnalytics
         foreach ($this->export->getRepresentations() as $key => $representation) {
             if ($representation instanceof Representation) {
                 $qualities[$key]["dimensions"] = strtoupper($representation->getResize());
-                $qualities[$key]["kilobitrate"] = $representation->getKiloBitrate();
+                $qualities[$key]["video_bitrate"] = $representation->getKiloBitrate() * 1024;
             }
         }
 
