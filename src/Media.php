@@ -16,6 +16,8 @@ use FFMpeg\Media\MediaTypeInterface;
 /**
  * @method mixed save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
  * @method mixed addFilter(\FFMpeg\Filters\FilterInterface $filter)
+ * @method mixed getFormat()
+ * @method mixed getStreams()
  */
 class Media
 {

@@ -94,15 +94,15 @@ if (!function_exists('encrypted_hls')) {
      * Auto generate HLS M3U8 file
      *
      * @param string $input_path
+     * @param string | null $url
+     * @param string $key_path
      * @param string|null $save_path
      * @param callable|null $listener
-     * @param string | null $url
-     * @param string |null $path
      * @return mixed
      * @throws \Streaming\Exception\Exception
      * @deprecated this method has been deprecated
      */
-    function encrypted_hls(string $input_path, string $save_path = null, callable $listener = null, $url = null, $path = null)
+    function encrypted_hls(string $input_path, string $url, string $key_path, string $save_path = null, callable $listener = null)
     {
         $format = new X264();
 
@@ -120,7 +120,7 @@ if (!function_exists('encrypted_hls')) {
             return $video->HLS()
                 ->setFormat($format)
                 ->autoGenerateRepresentations()
-                ->generateRandomKeyInfo($url, $path)
+                ->generateRandomKeyInfo($url, $key_path)
                 ->save($save_path);
         } catch (ExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
