@@ -111,7 +111,7 @@ $options = [
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo '$percentage% is downloaded\n';
+            echo "$percentage% is downloaded\n";
             $current_percentage = $percentage;
         }
     },
@@ -238,7 +238,7 @@ $format->on('progress', function ($video, $format, $percentage) use (&$current_p
     if ($current_percentage !== intval($percentage)) {
         // You can update a field in your database
         // You can also create a socket connection and show the progress to users
-        echo '$percentage% is transcoded\n';
+        echo "$percentage% is transcoded\n";
         $current_percentage = intval($percentage);
     }
 });
@@ -256,7 +256,7 @@ $current_percentage = 0;
 
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
     if ($current_percentage !== intval($percentage)) {
-        echo '$percentage% is transcoded\n';
+        echo "$percentage% is transcoded\n";
         $current_percentage = intval($percentage);
     }
 });
@@ -316,7 +316,7 @@ $options = [
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo '$percentage% is uploaded\n';
+            echo "$percentage% is uploaded\n";
             $current_percentage = $percentage;
         }
     },
