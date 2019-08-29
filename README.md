@@ -8,7 +8,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with [PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) and packages well-known online streaming techniques such as DASH and HLS. You can also use DRM for HLS packaging.
+This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages well-known online streaming techniques such as DASH and HLS. You can also use DRM for HLS packaging.
 - Before you get started, please read the FFMpeg Document found **[here](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
 - For DRM and encryption(DASH and HLS), I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
@@ -52,7 +52,7 @@ First of all, you need to include the package in Your Code:
 ``` php
 require 'vendor/autoload.php'; // path to the autoload file
 ```
-**Note:** If you are using such a framework(e.g. [Laravel](https://github.com/laravel/laravel)) that include the autoload automatically, then you can skip this step.
+**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that include the autoload automatically, then you can skip this step.
 
 ### Configuration
 FFMpeg will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
@@ -80,10 +80,10 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 #### 2. From a Cloud
 You can open a file by passing a URL to the `fromURL` method:
 ``` php
-$video = $ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4");
+$video = $ffmpeg->fromURL('https://www.aminyazdanpanah.com/my_sweetie.mp4');
 ```
 
-A path to save the file, the method of request, and [request options](http://docs.guzzlephp.org/en/stable/request-options.html) can also be passed to the method.
+A path to save the file, the method of request, and **[request options](http://docs.guzzlephp.org/en/stable/request-options.html)** can also be passed to the method.
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0';
 $save_to = '/var/www/media/videos/my_sweetie.mp4';
@@ -111,7 +111,7 @@ $options = [
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo "$percentage% is downloaded\n";
+            echo '$percentage% is downloaded\n';
             $current_percentage = $percentage;
         }
     },
@@ -119,12 +119,12 @@ $options = [
 
 $video = $ffmpeg->fromURL($api, $save_to, $method, $options);
 ```
-**NOTE:** This package uses **[Guzzle](hhttps://github.com/guzzle/guzzle)** to send and receive files.  **[Learn more](http://docs.guzzlephp.org/en/stable/index.html)**.
+**NOTE:** This package uses **[Guzzle](https://github.com/guzzle/guzzle)** to send and receive files. [Learn more](http://docs.guzzlephp.org/en/stable/index.html).
 
 #### 3. From Amazon S3
-Amazon S3 or Amazon Simple Storage Service is a service offered by [Amazon Web Services (AWS)](https://aws.amazon.com/) that provides object storage through a web service interface. [learn more](https://en.wikipedia.org/wiki/Amazon_S3)
-- For getting credentials, you need to have an AWS account or you can [create one](https://portal.aws.amazon.com/billing/signup#/start).
-- Before you get started, please read the "AWS SDK for PHP" Document found **[here](https://aws.amazon.com/sdk-for-php/)**.
+Amazon S3 or Amazon Simple Storage Service is a service offered by **[Amazon Web Services (AWS)](https://aws.amazon.com/)** that provides object storage through a web service interface. [Learn more](https://en.wikipedia.org/wiki/Amazon_S3)
+- For getting credentials, you need to have an AWS account or you can **[create one](https://portal.aws.amazon.com/billing/signup#/start)**.
+- Before you get started, please read the AWS SDK for PHP Document found **[here](https://aws.amazon.com/sdk-for-php/)**.
 
 For downloading a file from Amazon S3, you need to pass an associative array of options, the name of your bucket, and the key of your bucket to the `fromS3` method:
 ``` php
@@ -137,8 +137,8 @@ $config = [
     ]
 ];
 
-$bucket = "my-bucket-name";
-$key = "/videos/my_sweetie.mp4";
+$bucket = 'my-bucket-name';
+$key = '/videos/my_sweetie.mp4';
 
 $video = $ffmpeg->fromS3($config, $bucket, $key);
 ```
@@ -171,7 +171,7 @@ $video->DASH()
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
     ->save('/var/www/media/videos/dash/test.mpd');
 ```
-See [DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2) for more information.
+See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
@@ -195,7 +195,7 @@ $rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 270);
 
 $video->HLS()
     ->X264()
-    ->setHlsBaseUrl("https://bucket.s3-us-west-1.amazonaws.com/videos") // Add a base URL
+    ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
     ->addRepresentation($rep_1)
     ->addRepresentation($rep_2)
     ->addRepresentation($rep_3)
@@ -205,32 +205,31 @@ $video->HLS()
 ```
 **NOTE:** You cannot use HEVC and VP9 formats for HLS packaging.
 
-See [HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2) for more information.
-
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You need to pass both `URL to the key` and `path to save a random key` to the `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
-$save_to = "/var/www/my_website_project/keys/enc.key";
+$save_to = '/var/www/my_website_project/keys/enc.key';
 
 //A URL (or a path) to access the key on your website
-$url = "https://www.aminyazdanpanah.com/keys/enc.key";// or "/keys/enc.key";
+$url = 'https://www.aminyazdanpanah.com/keys/enc.key';// or '/keys/enc.key';
 
 $video->HLS()
     ->X264()
-    ->setTsSubDirectory("ts_files")// put all ts files in a subdirectory
+    ->setTsSubDirectory('ts_files')// put all ts files in a subdirectory
     ->generateRandomKeyInfo($url, $save_to)
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls/test.m3u8');
 ```
-- **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
+**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
+See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 
-Transcoding progress can be monitored in realtime, see Format documentation in [FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation) for more information.
+Transcoding progress can be monitored in realtime, see Format documentation in **[PHP-FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation)** for more information.
 ``` php
 $format = new Streaming\Format\HEVC();
 $current_percentage = 0;
@@ -239,7 +238,7 @@ $format->on('progress', function ($video, $format, $percentage) use (&$current_p
     if ($current_percentage !== intval($percentage)) {
         // You can update a field in your database
         // You can also create a socket connection and show the progress to users
-        echo "$percentage% is transcoded\n";
+        echo '$percentage% is transcoded\n';
         $current_percentage = intval($percentage);
     }
 });
@@ -257,16 +256,16 @@ $current_percentage = 0;
 
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
     if ($current_percentage !== intval($percentage)) {
-        echo "$percentage% is transcoded\n";
+        echo '$percentage% is transcoded\n';
         $current_percentage = intval($percentage);
     }
 });
 
 $video->HLS()
     ->setFormat($format)
-    ->setTsSubDirectory("ts_files")
-    ->setHlsBaseUrl("https://bucket.s3-us-west-1.amazonaws.com/videos")
-    ->autoGenerateRepresentations([240, 144], [200, 100]) // You can alson set the kilo bite rate of each video
+    ->setTsSubDirectory('ts_files')
+    ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos')
+    ->autoGenerateRepresentations([240, 144], [200, 100]) // You can also set the kilo bite rate of each video
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
@@ -291,13 +290,13 @@ $hls = $video->HLS()
             
 $hls->save();
 ```
-- **NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
+**NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
 
 #### 2. To a Cloud
 You can save your files to a cloud using the `saveToCloud` method. 
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
-$field_name = "MY_FILES";
+$field_name = 'MY_FILES';
 $method = 'POST';
 $headers = [
     'User-Agent'        => 'testing/1.0',
@@ -317,7 +316,7 @@ $options = [
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo "$percentage% is uploaded\n";
+            echo '$percentage% is uploaded\n';
             $current_percentage = $percentage;
         }
     },
@@ -332,7 +331,7 @@ $hls->saveToCloud($api, $field_name, $save_to, $method, $headers, $options);
 ```
 
 #### 3. TO Amazon S3
-You can save and upload entire packaged video files to [Amazon S3](https://aws.amazon.com/). For uploading files, you need to have credentials.
+You can save and upload entire packaged video files to **[Amazon S3](https://aws.amazon.com/)**. For uploading files, you need to have credentials.
 ``` php
 $config = [
     'version' => 'latest',
@@ -358,50 +357,42 @@ $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 ![schema](/docs/schema.gif?raw=true "schema" )
 
 ### Other Advanced Features
-You can easily use other advanced features in the [PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg) library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
-
-For exploring other advanced features, please read the  [Full PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation).
+You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
 ``` php
 $ffmpeg = Streaming\FFMpeg::create()
-$video = $$ffmpeg->fromURL("https://www.aminyazdanpanah.com/my_sweetie.mp4", "/var/wwww/media/my/new/video.mp4");
+$video = $$ffmpeg->fromURL('https://www.aminyazdanpanah.com/my_sweetie.mp4', '/var/wwww/media/my/new/video.mp4');
 ```
 
 #### Example(Extracting image)
 You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
 ``` php
-$video
-    ->filters()
-    ->extractMultipleFrames(FFMpeg\Filters\Video\ExtractMultipleFramesFilter::FRAMERATE_EVERY_10SEC, '/path/to/destination/folder/')
-    ->synchronize();
-
-$video
-    ->save(new FFMpeg\Format\Video\X264(), '/path/to/new/file');
+$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
+$frame->save('image.jpg');
 ```
 
 ## Several Open Source Players
 You can use these players to play your packaged videos.
 - **WEB**
-    - DASH and HLS: [Plyr](https://github.com/sampotts/plyr)
-    - DASH and HLS: [MediaElement.js](https://github.com/mediaelement/mediaelement)
-    - DASH and HLS: [Clappr](https://github.com/clappr/clappr)
-    - DASH and HLS: [Flowplayer](https://flowplayer.com/)
-    - DASH and HLS: [Shaka Player](https://github.com/google/shaka-player)
-    - DASH and HLS: [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)
-    - DASH: [dash.js](https://github.com/Dash-Industry-Forum/dash.js)
-    - HLS: [hls.js](https://github.com/video-dev/hls.js)
+    - DASH and HLS: **[Plyr](https://github.com/sampotts/plyr)**
+    - DASH and HLS: **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+    - DASH and HLS: **[Clappr](https://github.com/clappr/clappr)**
+    - DASH and HLS: **[Flowplayer](https://flowplayer.com/)**
+    - DASH and HLS: **[Shaka Player](https://github.com/google/shaka-player)**
+    - DASH and HLS: **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+    - DASH: **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
+    - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
-    - DASH and HLS: [ExoPlayer](https://github.com/google/ExoPlayer)
+    - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
     
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
-Please [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)
-or [submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls).
-- Please see [Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
-- Please, just [file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues) for reporting bugs or if you have any question. 
-- If you discover a security vulnerability within this package, please see [SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md) for more information to help with that.
+Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.
+- Please see **[Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
+- Please, just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** for reporting bugs or if you have any question. 
+- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
 
 ## Credits
-- [Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)
+- **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**
 
 ## License
-The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)** for more information.
