@@ -50,6 +50,7 @@
         "php-ffmpeg/php-ffmpeg": "^0.14",
         "guzzlehttp/guzzle": "~6.0",
         "aws/aws-sdk-php": "~3.0",
+        "google/cloud-storage": "^1.14",
         "ext-openssl": "*"
     },
     "scripts": {

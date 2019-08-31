@@ -69,7 +69,7 @@ $ffmpeg = Streaming\FFMpeg::create($config);
 ```
 
 ### Opening a File
-There are three ways to open a file:
+There are several ways to open a file:
 
 #### 1. From a Local Path
 You can pass a local path of video to the `open` method:
@@ -141,6 +141,23 @@ $bucket = 'my-bucket-name';
 $key = '/videos/my_sweetie.mp4';
 
 $video = $ffmpeg->fromS3($config, $bucket, $key);
+```
+A path can also be passed to save the file on your local computer/server.
+
+
+#### 4. From Google Cloud Storage
+[Google Cloud Storage](https://console.cloud.google.com/storage) is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
+- For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can [create it](https://console.cloud.google.com/apis/credentials) directly.
+
+For downloading a file from Google Cloud Storage, you need to pass an associative array of config, the name of your bucket, and the name of your file in the bucket to the `fromGCS` method:
+``` php
+$config = [
+    'keyFilePath' => '/path/to/credentials.json'
+];
+$bucket = 'my_bucket';
+$name = 'my_sweetie.mp4';
+
+$video = $ffmpeg->fromGCS($config, $bucket, $name);
 ```
 A path can also be passed to save the file on your local computer/server.
 
@@ -270,7 +287,7 @@ $video->HLS()
 ```
 
 ### Saving Files
-There are three options to save your packaged video files:
+There are several options to save your packaged files.
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
@@ -352,6 +369,22 @@ A path can also be passed to save a copy of files on your local computer/server.
 ``` php
 $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 ```
+
+#### 4. TO Google Cloud Storage
+You can save and upload entire packaged video files to **[Google Cloud Storage](https://console.cloud.google.com/storage)**. For uploading files, you need to have credentials.
+``` php
+$config = [
+    'keyFilePath' => '/path/to/credentials.json'
+];
+$bucket = 'my_bucket';
+
+$dash->saveToGCS($config, $bucket)
+```
+A path can also be passed to save a copy of files on your local computer/server.
+``` php
+$hls->saveToGCS($config, $bucket, '/var/www/media/videos/hls/test.m3u8');
+```
+
 **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )

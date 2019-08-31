@@ -87,6 +87,17 @@ class FFMpeg
         return $this->open($save_to, $is_tmp);
     }
 
+
+    public function fromGCS(array $config, string $bucket, string $name, string $save_to = null, $userProject = false): Media
+    {
+        list($is_tmp, $save_to) = $this->isTmp($save_to);
+
+        $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
+        $google_cloud->download($name, $save_to);
+
+        return $this->open($save_to, $is_tmp);
+    }
+
     /**
      * @param $path
      * @return array

@@ -60,12 +60,12 @@ abstract class Export
             $this->getFilter()
         );
 
-        try{
+        try {
             $this->media->save(
                 $this->getFormat(),
                 $path
             );
-        }catch (ExceptionInterface $e){
+        } catch (ExceptionInterface $e) {
             throw new RuntimeException(sprintf(
                 "There was an error saving files: \n\n reason: \n %s",
                 $e->getMessage()
@@ -169,13 +169,48 @@ abstract class Export
      * @return mixed
      * @throws Exception
      */
-    public function saveToS3(array $config, string $dest, string $path = null, bool $analyse = true)
+    public function saveToS3(
+        array $config,
+        string $dest,
+        string $path = null,
+        bool $analyse = true
+    )
     {
         list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
         sleep(1);
 
         $aws = new AWS($config);
         $aws->uploadAndDownloadDirectory($tmp_dir, $dest);
+
+        $this->moveTmpFolder($path, $tmp_dir);
+
+        return $results;
+    }
+
+    /**
+     * @param array $config
+     * @param string $bucket
+     * @param string|null $path
+     * @param array $options
+     * @param bool $userProject
+     * @param bool $analyse
+     * @return mixed
+     * @throws Exception
+     */
+    public function saveToGCS(
+        array $config,
+        string $bucket,
+        string $path = null,
+        array $options = [],
+        $userProject = false,
+        bool $analyse = true
+    )
+    {
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
+        sleep(1);
+
+        $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
+        $google_cloud->uploadDirectory($tmp_dir, $options);
 
         $this->moveTmpFolder($path, $tmp_dir);
 
@@ -215,7 +250,7 @@ abstract class Export
         $basename = Helper::randomString();
 
         if (null !== $path) {
-            $basename = pathinfo($path)["basename"];
+            $basename = pathinfo($path, PATHINFO_BASENAME);
         }
 
         $tmp_dir = FileManager::tmpDir();
@@ -232,7 +267,7 @@ abstract class Export
     private function moveTmpFolder(?string $path, $tmp_dir)
     {
         if (null !== $path) {
-            FileManager::moveDir($tmp_dir, pathinfo($path)["dirname"] . DIRECTORY_SEPARATOR);
+            FileManager::moveDir($tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
         } else {
             FileManager::deleteDirectory($tmp_dir);
         }

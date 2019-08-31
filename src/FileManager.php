@@ -190,6 +190,8 @@ class FileManager
                 unlink($source . $file);
             }
         }
+
+        static::deleteDirectory($source);
     }
 
     /**
