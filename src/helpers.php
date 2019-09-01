@@ -9,8 +9,8 @@
  * file that was distributed with this source code.
  */
 
+use Streaming\Exception\StreamingExceptionInterface;
 use Streaming\FFMpeg;
-use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Format\HEVC;
 use Streaming\Format\X264;
 
@@ -22,7 +22,6 @@ if (!function_exists('dash')) {
      * @param string|null $save_path
      * @param callable $listener
      * @return mixed
-     * @throws \Streaming\Exception\Exception
      * @deprecated this method has been deprecated
      */
     function dash(string $input_path, string $save_path = null, callable $listener = null)
@@ -45,7 +44,7 @@ if (!function_exists('dash')) {
                 ->autoGenerateRepresentations()
                 ->setAdaption('id=0,streams=v id=1,streams=a')
                 ->save($save_path);
-        } catch (ExceptionInterface $e) {
+        } catch (StreamingExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
     }
@@ -60,7 +59,6 @@ if (!function_exists('hls')) {
      * @param callable|null $listener
      * @param string $hls_key
      * @return mixed
-     * @throws \Streaming\Exception\Exception
      * @deprecated this method has been deprecated
      */
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
@@ -83,7 +81,7 @@ if (!function_exists('hls')) {
                 ->autoGenerateRepresentations()
                 ->setHlsKeyInfoFile($hls_key)
                 ->save($save_path);
-        } catch (ExceptionInterface $e) {
+        } catch (StreamingExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
     }
@@ -99,7 +97,6 @@ if (!function_exists('encrypted_hls')) {
      * @param string|null $save_path
      * @param callable|null $listener
      * @return mixed
-     * @throws \Streaming\Exception\Exception
      * @deprecated this method has been deprecated
      */
     function encrypted_hls(string $input_path, string $url, string $key_path, string $save_path = null, callable $listener = null)
@@ -122,7 +119,7 @@ if (!function_exists('encrypted_hls')) {
                 ->autoGenerateRepresentations()
                 ->generateRandomKeyInfo($url, $key_path)
                 ->save($save_path);
-        } catch (ExceptionInterface $e) {
+        } catch (StreamingExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
     }

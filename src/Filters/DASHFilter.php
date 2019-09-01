@@ -28,14 +28,14 @@ class DASHFilter extends Filter
     }
 
     /**
-     * @param DASH $media
+     * @param DASH $dash
      * @return array
      */
-    private function DASHFilter(DASH $media)
+    private function DASHFilter(DASH $dash)
     {
-        $filter = $this->getAdditionalFilters($media->getFormat(), count($media->getRepresentations()));
+        $filter = $this->getAdditionalFilters($dash->getFormat(), count($dash->getRepresentations()));
 
-        foreach ($media->getRepresentations() as $key => $representation) {
+        foreach ($dash->getRepresentations() as $key => $representation) {
             if ($representation instanceof Representation) {
                 $filter[] = "-map";
                 $filter[] = "0";
@@ -49,9 +49,9 @@ class DASHFilter extends Filter
             }
         }
 
-        if ($media->getAdaption()) {
+        if ($dash->getAdaption()) {
             $filter[] = "-adaptation_sets";
-            $filter[] = $media->getAdaption();
+            $filter[] = $dash->getAdaption();
         }
 
         return $filter;

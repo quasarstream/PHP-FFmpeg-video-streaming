@@ -12,7 +12,7 @@
 namespace Streaming;
 
 use Streaming\Filters\DASHFilter;
-use Streaming\Traits\Representation as Representations;
+use Streaming\Traits\Representations;
 use Streaming\Filters\Filter;
 
 class DASH extends Export
@@ -45,14 +45,6 @@ class DASH extends Export
      */
     protected function getFilter(): Filter
     {
-        return $this->filter;
-    }
-
-    /**
-     * @return mixed|void
-     */
-    protected function setFilter()
-    {
-        $this->filter = new DASHFilter($this);
+        return new DASHFilter($this);
     }
 }

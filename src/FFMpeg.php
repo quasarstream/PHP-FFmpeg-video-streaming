@@ -43,10 +43,10 @@ class FFMpeg
             throw new InvalidArgumentException("There is no file in this path: " . $path);
         }
 
-        try{
+        try {
             return new Media($this->ffmpeg->open($path), $path, $is_tmp);
-        }catch (ExceptionInterface $e){
-            throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()));
+        } catch (ExceptionInterface $e) {
+            throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
 
@@ -87,7 +87,15 @@ class FFMpeg
         return $this->open($save_to, $is_tmp);
     }
 
-
+    /**
+     * @param array $config
+     * @param string $bucket
+     * @param string $name
+     * @param string|null $save_to
+     * @param bool $userProject
+     * @return Media
+     * @throws Exception
+     */
     public function fromGCS(array $config, string $bucket, string $name, string $save_to = null, $userProject = false): Media
     {
         list($is_tmp, $save_to) = $this->isTmp($save_to);

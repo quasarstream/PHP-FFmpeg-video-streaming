@@ -24,11 +24,6 @@ class DASHTest extends TestCase
         $this->assertInstanceOf(Export::class, $this->getDASH());
     }
 
-    public function testFilter()
-    {
-        $this->assertNotNull($this->getDASHMethod('setFilter'));
-    }
-
     public function testFormat()
     {
         $dash = $this->getDASH();
@@ -77,25 +72,14 @@ class DASHTest extends TestCase
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
         $this->assertArrayHasKey('filename', $get_path_info);
-        $this->assertArrayHasKey('original', $streaming_analytics);
-        $this->assertArrayHasKey('streams', $streaming_analytics);
-        $this->assertArrayHasKey('general', $streaming_analytics);
+        $this->assertArrayHasKey('metadata', $streaming_analytics);
+        $metadata = $streaming_analytics['metadata'];
+        $this->assertArrayHasKey('video', $metadata);
+        $this->assertArrayHasKey('streams', $metadata);
     }
 
     private function getDASH()
     {
         return new DASH($this->getVideo());
-    }
-
-    private function getDASHMethod($name)
-    {
-        try {
-            $class = new ReflectionClass(DASH::class);
-            $method = $class->getMethod($name);
-            $method->setAccessible(true);
-            return $method;
-        } catch (\ReflectionException $e) {
-            return null;
-        }
     }
 }

@@ -13,19 +13,19 @@ namespace Streaming\Traits;
 
 use Streaming\AutoRepresentations;
 use Streaming\Exception\Exception;
-use Streaming\Representation as Rep;
+use Streaming\Representation;
 
-trait Representation
+trait Representations
 {
     /** @var array */
     protected $representations = [];
 
     /**
-     * @param Rep $rep
+     * @param Representation $rep
      * @return $this
      * @throws Exception
      */
-    public function addRepresentation(Rep $rep)
+    public function addRepresentation(Representation $rep)
     {
         if (!$this->format) {
             throw new Exception('Format has not been set');

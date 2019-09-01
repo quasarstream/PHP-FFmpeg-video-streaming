@@ -67,7 +67,7 @@ class Media
      */
     public function probe(): array
     {
-        return[
+        return [
             'format' => $this->getFormat(),
             'streams' => $this->getStreams()
         ];

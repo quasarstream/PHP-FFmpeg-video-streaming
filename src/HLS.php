@@ -12,7 +12,7 @@
 namespace Streaming;
 
 use Streaming\Filters\HLSFilter;
-use Streaming\Traits\Representation as Representations;
+use Streaming\Traits\Representations;
 use Streaming\Filters\Filter;
 
 class HLS extends Export
@@ -101,13 +101,13 @@ class HLS extends Export
     /**
      * @param string $url
      * @param string $path
+     * @param int $length
      * @return HLS
-     * @throws Exception\InvalidArgumentException
      * @throws Exception\Exception
      */
-    public function generateRandomKeyInfo(string $url, string $path): HLS
+    public function generateRandomKeyInfo(string $url, string $path, int $length = 32): HLS
     {
-        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path));
+        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path, $length));
         return $this;
     }
 
@@ -142,14 +142,6 @@ class HLS extends Export
      */
     protected function getFilter(): Filter
     {
-        return $this->filter;
-    }
-
-    /**
-     * @return mixed|void
-     */
-    protected function setFilter()
-    {
-        $this->filter = new HLSFilter($this);
+        return new HLSFilter($this);
     }
 }

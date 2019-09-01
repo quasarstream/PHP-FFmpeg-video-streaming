@@ -136,7 +136,6 @@ $config = [
         'secret' => 'my-secret-access-key',
     ]
 ];
-
 $bucket = 'my-bucket-name';
 $key = '/videos/my_sweetie.mp4';
 
@@ -319,7 +318,7 @@ $headers = [
     'User-Agent'        => 'testing/1.0',
     'Accept'            => 'application/json',
     'X-Authentication'  => 'Bearer x1234'
-]
+];
 $current_percentage = 0;
 $options = [
     'auth' => ['username', 'password', 'digest'],
@@ -358,7 +357,6 @@ $config = [
         'secret' => 'my-secret-access-key',
     ]
 ];
-
 $dest = 's3://bucket'; 
 ```
 Upload DASH files to Amazon Simple Storage Service:
@@ -378,7 +376,7 @@ $config = [
 ];
 $bucket = 'my_bucket';
 
-$dash->saveToGCS($config, $bucket)
+$dash->saveToGCS($config, $bucket);
 ```
 A path can also be passed to save a copy of files on your local computer/server.
 ``` php
@@ -388,6 +386,16 @@ $hls->saveToGCS($config, $bucket, '/var/www/media/videos/hls/test.m3u8');
 **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
+
+### Metadata Extraction
+After saving files(wherever you saved them), you can extract the metadata from the video and streams:
+``` php
+$metadata = $hls->save();
+
+echo $metadata['filename']; // path to metadata.json
+var_dump($metadata['metadata']); // dump all metadata
+```
+**NOTE:** You can save these metadata in your database.
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -404,19 +412,23 @@ $frame->save('image.jpg');
 ```
 
 ## Several Open Source Players
-You can use these players to play your packaged videos.
+You can use these libraries to play your streams.
 - **WEB**
+    - DASH and HLS: **[video.js](https://github.com/videojs/video.js)**
+    - DASH and HLS: **[DPlayer](https://github.com/MoePlayer/DPlayer)**
     - DASH and HLS: **[Plyr](https://github.com/sampotts/plyr)**
     - DASH and HLS: **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
     - DASH and HLS: **[Clappr](https://github.com/clappr/clappr)**
-    - DASH and HLS: **[Flowplayer](https://flowplayer.com/)**
+    - DASH and HLS: **[Flowplayer](https://github.com/flowplayer/flowplayer)**
     - DASH and HLS: **[Shaka Player](https://github.com/google/shaka-player)**
     - DASH and HLS: **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
     - DASH: **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
     - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
     - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
-    
+
+**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
+
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
 Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.

@@ -25,9 +25,6 @@ abstract class Export
     /** @var object */
     protected $media;
 
-    /** @var Filter */
-    protected $filter;
-
     /** @var array */
     protected $path_info;
 
@@ -46,36 +43,26 @@ abstract class Export
 
     /**
      * @param string $path
-     * @param bool $analyse
+     * @param bool $metadata
      * @return mixed
      * @throws Exception
      */
-    public function save(string $path = null, $analyse = true)
+    public function save(string $path = null, $metadata = true)
     {
         $path = $this->getPath($path);
 
-        $this->setFilter();
-
-        $this->media->addFilter(
-            $this->getFilter()
-        );
-
         try {
-            $this->media->save(
-                $this->getFormat(),
-                $path
-            );
+            $this->media
+                ->addFilter($this->getFilter())
+                ->save($this->getFormat(), $path);
         } catch (ExceptionInterface $e) {
-            throw new RuntimeException(sprintf(
-                "There was an error saving files: \n\n reason: \n %s",
-                $e->getMessage()
-            ),
+            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()),
                 $e->getCode(),
-                $e->getFile());
+                $e
+            );
         }
 
-
-        $response = ($analyse) ? (new StreamingAnalytics($this))->analyse() : $this;
+        $response = ($metadata) ? (new Metadata($this))->extract() : $this;
 
         if ($this->media->isTmp()) {
             $this->deleteOriginalFile();
@@ -88,11 +75,6 @@ abstract class Export
      * @return Filter
      */
     abstract protected function getFilter(): Filter;
-
-    /**
-     * @return mixed
-     */
-    abstract protected function setFilter();
 
     /**
      * @param $path
@@ -133,7 +115,7 @@ abstract class Export
      * @param string $method
      * @param array $headers
      * @param array $options
-     * @param bool $analyse
+     * @param bool $metadata
      * @return mixed
      * @throws Exception
      */
@@ -144,13 +126,13 @@ abstract class Export
         string $method = 'GET',
         array $headers = [],
         array $options = [],
-        bool $analyse = true
+        bool $metadata = true
     )
     {
         if ($this instanceof HLS && $this->getTsSubDirectory()) {
             throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
         }
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
         $file_manager = new FileManager($url, $method, $options);
@@ -165,7 +147,7 @@ abstract class Export
      * @param array $config
      * @param string $dest
      * @param string|null $path
-     * @param bool $analyse
+     * @param bool $metadata
      * @return mixed
      * @throws Exception
      */
@@ -173,10 +155,10 @@ abstract class Export
         array $config,
         string $dest,
         string $path = null,
-        bool $analyse = true
+        bool $metadata = true
     )
     {
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
         $aws = new AWS($config);
@@ -193,7 +175,7 @@ abstract class Export
      * @param string|null $path
      * @param array $options
      * @param bool $userProject
-     * @param bool $analyse
+     * @param bool $metadata
      * @return mixed
      * @throws Exception
      */
@@ -203,10 +185,14 @@ abstract class Export
         string $path = null,
         array $options = [],
         $userProject = false,
-        bool $analyse = true
+        bool $metadata = true
     )
     {
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $analyse);
+        if ($this instanceof HLS && $this->getTsSubDirectory()) {
+            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
+        }
+
+        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
         $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
@@ -241,11 +227,11 @@ abstract class Export
 
     /**
      * @param $path
-     * @param $analyse
+     * @param $metadata
      * @return array
      * @throws Exception
      */
-    private function saveToTemporaryFolder($path, $analyse)
+    private function saveToTemporaryFolder($path, $metadata)
     {
         $basename = Helper::randomString();
 
@@ -256,7 +242,7 @@ abstract class Export
         $tmp_dir = FileManager::tmpDir();
         $tmp_file = $tmp_dir . $basename;
 
-        return [$this->save($tmp_file, $analyse), $tmp_dir];
+        return [$this->save($tmp_file, $metadata), $tmp_dir];
     }
 
     /**

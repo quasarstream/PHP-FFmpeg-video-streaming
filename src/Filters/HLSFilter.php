@@ -29,24 +29,24 @@ class HLSFilter extends Filter
     }
 
     /**
-     * @param HLS $media
+     * @param HLS $hls
      * @return array
      * @throws \Streaming\Exception\Exception
      */
-    private function HLSFilter(HLS $media)
+    private function HLSFilter(HLS $hls)
     {
         $filter = [];
-        $total_count = count($representations = $media->getRepresentations());
+        $total_count = count($representations = $hls->getRepresentations());
         $counter = 0;
-        $path_parts = $media->getPathInfo();
+        $path_parts = $hls->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
         $filename = substr($path_parts["filename"], -50);
-        $ts_sub_dir = Helper::appendSlash($media->getTsSubDirectory());
-        $base_url = Helper::appendSlash($media->getHlsBaseUrl());
+        $ts_sub_dir = Helper::appendSlash($hls->getTsSubDirectory());
+        $base_url = Helper::appendSlash($hls->getHlsBaseUrl());
 
         if ($ts_sub_dir) {
             FileManager::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);
-            $base_url = $base_url . $media->getTsSubDirectory() . "/";
+            $base_url = $base_url . $hls->getTsSubDirectory() . "/";
         }
 
         foreach ($representations as $representation) {
@@ -64,9 +64,9 @@ class HLSFilter extends Filter
                 $filter[] = "-hls_list_size";
                 $filter[] = "0";
                 $filter[] = "-hls_time";
-                $filter[] = $media->getHlsTime();
+                $filter[] = $hls->getHlsTime();
                 $filter[] = "-hls_allow_cache";
-                $filter[] = (int)$media->isHlsAllowCache();
+                $filter[] = (int)$hls->isHlsAllowCache();
                 $filter[] = "-b:v";
                 $filter[] = $representation->getKiloBitrate() . "k";
                 $filter[] = "-maxrate";
@@ -79,13 +79,13 @@ class HLSFilter extends Filter
                     $filter[] = $base_url;
                 }
 
-                if ($media->getHlsKeyInfoFile()) {
+                if ($hls->getHlsKeyInfoFile()) {
                     $filter[] = "-hls_key_info_file";
-                    $filter[] = $media->getHlsKeyInfoFile();
+                    $filter[] = $hls->getHlsKeyInfoFile();
                 }
 
                 $filter[] = "-strict";
-                $filter[] = $media->getStrict();
+                $filter[] = $hls->getStrict();
 
                 if (++$counter !== $total_count) {
                     $filter[] = $dirname . "/" . $filename . "_" . $representation->getHeight() . "p.m3u8";

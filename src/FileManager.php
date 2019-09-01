@@ -106,7 +106,7 @@ class FileManager
                 (method_exists($e->getResponse(), 'getBody')) ? $e->getResponse()->getBody()->getContents() : ""
             );
 
-            throw new RuntimeException($error);
+            throw new RuntimeException($error, $e->getCode(), $e);
         }
     }
 
@@ -122,7 +122,7 @@ class FileManager
         try {
             $filesystem->mkdir($dirname, $mode);
         } catch (IOExceptionInterface $exception) {
-            throw new Exception("An error occurred while creating your directory at " . $exception->getPath());
+            throw new Exception("An error occurred while creating your directory at " . $exception->getPath(), $exception->getCode(), $exception);
         }
     }
 

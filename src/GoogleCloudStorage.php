@@ -13,6 +13,8 @@
 namespace Streaming;
 
 use Google\Cloud\Storage\StorageClient;
+use Streaming\Exception\InvalidArgumentException;
+use Streaming\Exception\RuntimeException;
 
 class GoogleCloudStorage
 {
@@ -29,8 +31,12 @@ class GoogleCloudStorage
      */
     public function __construct(array $config, string $bucket, $userProject = false)
     {
-        $storage = new StorageClient($config);
-        $this->bucket = $storage->bucket($bucket, $userProject);
+        try{
+            $storage = new StorageClient($config);
+            $this->bucket = $storage->bucket($bucket, $userProject);
+        }catch (\Exception $e){
+            throw new InvalidArgumentException(sprintf("Invalid inputs:\n %s", $e->getMessage()), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -39,18 +45,31 @@ class GoogleCloudStorage
      */
     public function uploadDirectory(string $dir, array $options = [])
     {
-        foreach (scandir($dir) as $key => $filename) {
-            $path = $dir . DIRECTORY_SEPARATOR . $filename;
+        try{
+            foreach (scandir($dir) as $key => $filename) {
+                $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
-            if (is_file($path)) {
-                $this->bucket->upload(fopen($path, 'r'), $options);
+                if (is_file($path)) {
+                    $this->bucket->upload(fopen($path, 'r'), $options);
+                }
             }
+        }catch (\Exception $e){
+            throw new RuntimeException(sprintf("There wan an error during uploading files:\n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
 
+    /**
+     * @param string $name
+     * @param string $save_to
+     * @return \Psr\Http\Message\StreamInterface
+     */
     public function download(string $name, string $save_to)
     {
-        return $this->bucket->object($name)
-            ->downloadToFile($save_to);
+        try{
+            return $this->bucket->object($name)
+                ->downloadToFile($save_to);
+        }catch (\Exception $e){
+            throw new RuntimeException(sprintf("There wan an error during fetch the file:\n %s", $e->getMessage()), $e->getCode(), $e);
+        }
     }
 }

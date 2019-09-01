@@ -24,11 +24,6 @@ class HLSTest extends TestCase
         $this->assertInstanceOf(Export::class, $this->getHLS());
     }
 
-    public function testFilter()
-    {
-        $this->assertNotNull($this->getHLSMethod('setFilter'));
-    }
-
     public function testFormat()
     {
         $hls = $this->getHLS();
@@ -136,18 +131,6 @@ class HLSTest extends TestCase
     private function getHLS()
     {
         return new HLS($this->getVideo());
-    }
-
-    private function getHLSMethod($name)
-    {
-        try {
-            $class = new ReflectionClass(HLS::class);
-            $method = $class->getMethod($name);
-            $method->setAccessible(true);
-            return $method;
-        } catch (\ReflectionException $e) {
-            return null;
-        }
     }
 
     private function creatKeyInfoFile()

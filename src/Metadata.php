@@ -13,7 +13,7 @@
 namespace Streaming;
 
 
-class StreamingAnalytics
+class Metadata
 {
     /**
      * @var Export
@@ -21,7 +21,7 @@ class StreamingAnalytics
     private $export;
 
     /**
-     * StreamingAnalytics constructor.
+     * Metadata constructor.
      * @param Export $export
      */
     public function __construct(Export $export)
@@ -32,22 +32,24 @@ class StreamingAnalytics
     /**
      * @return mixed
      */
-    public function analyse()
+    public function extract()
     {
-        $metadata["original"] = $this->getOriginalMetadata();
+        $metadata["video"] = $this->getVideoMetadata();
         $metadata["streams"] = $this->getStreamsMetadata();
-        $metadata["general"] = $this->getGeneralMetadata();
 
-        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . "analyse.json";
-        file_put_contents($filename, json_encode($metadata));
+        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . "_" . Helper::randomString(20) . "_metadata.json";
+        file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
 
-        return $metadata;
+        return [
+            'filename' => $filename,
+            'metadata' => $metadata
+        ];
     }
 
     /**
      * @return mixed
      */
-    private function getOriginalMetadata()
+    private function getVideoMetadata()
     {
         $probe = $this->export->getMedia()->probe();
         $streams = $probe['streams']->all();
@@ -68,6 +70,11 @@ class StreamingAnalytics
      */
     private function getStreamsMetadata()
     {
+        $stream_path = $this->export->getPathInfo();
+        $metadata["filename"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
+        $metadata["size_of_stream_dir"] = FileManager::directorySize($stream_path["dirname"]);
+        $metadata["created_at"] = date("Y-m-d H:i:s");
+
         $metadata["qualities"] = $this->getQualities();
 
         $format_class = explode("\\", get_class($this->export->getFormat()));
@@ -89,6 +96,9 @@ class StreamingAnalytics
         return $metadata;
     }
 
+    /**
+     * @return array
+     */
     private function getQualities()
     {
         $qualities = [];
@@ -100,25 +110,5 @@ class StreamingAnalytics
         }
 
         return $qualities;
-    }
-
-    private function getGeneralMetadata()
-    {
-        $video_path = $this->export->getMedia()->getPath();
-        $metadata["path_to_video"] = $video_path;
-        $metadata["dir_path_to_video"] = pathinfo($video_path)["dirname"];
-        $metadata["basename_of_video"] = pathinfo($video_path)["basename"];
-        $metadata["extension_of_video"] = pathinfo($video_path)["extension"];
-        $metadata["mime_content_type_of_video"] = !is_file($video_path) ?: mime_content_type($video_path);
-        $metadata["size_of_video"] = !is_file($video_path) ?: filesize($video_path);
-
-        $stream_path = $this->export->getPathInfo();
-        $metadata["dir_path_to_stream"] = $stream_path["dirname"];
-        $metadata["path_to_stream"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
-        $metadata["size_of_stream_dir"] = FileManager::directorySize($stream_path["dirname"]);
-        $metadata["datetime"] = date("Y-m-d H:i:s");
-        $metadata["time"] = time();
-
-        return $metadata;
     }
 }

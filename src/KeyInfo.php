@@ -18,17 +18,18 @@ class KeyInfo
     /**
      * @param $url
      * @param $path
+     * @param int $length
      * @return string
      * @throws Exception\Exception
      */
-    public static function generate($url, $path): string
+    public static function generate(string $url, string $path, int $length = 32): string
     {
         FileManager::makeDir(pathinfo($path, PATHINFO_DIRNAME));
-        file_put_contents($path, openssl_random_pseudo_bytes(32));
+        file_put_contents($path, openssl_random_pseudo_bytes($length));
 
         $key_info[] = $url;
         $key_info[] = $path;
-        $key_info[] = bin2hex(openssl_random_pseudo_bytes(32));
+        $key_info[] = bin2hex(openssl_random_pseudo_bytes($length));
 
         file_put_contents($path = FileManager::tmpFile(), implode(PHP_EOL, $key_info));
 
