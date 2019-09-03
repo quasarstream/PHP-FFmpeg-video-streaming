@@ -418,7 +418,7 @@ Packaging process will may take a while and it is recommended to run it in the b
 
 - **[Google Cloud Tasks](https://github.com/googleapis/google-cloud-php-tasks):** Google Cloud Tasks is a fully managed service that allows you to manage the execution, dispatch and delivery of a large number of distributed tasks. You can asynchronously perform work outside of a user request. [Learn more](https://cloud.google.com/tasks/)
 
-**NOTE:** It is not necessary to use this library. It is just a suggestion. You can also create a script to create packaged video files and run it in a cron-job.  
+**NOTE:** It is not necessary to use these libraries. It is just a suggestion. You can also create a script to create packaged video files and run it in a cron-job.  
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
