@@ -15,6 +15,8 @@ use Streaming\Format\HEVC;
 use Streaming\Format\X264;
 
 if (!function_exists('dash')) {
+    @trigger_error('dash method is deprecated and will be removed in a future release. Use Streaming\DASH instead', E_USER_DEPRECATED);
+
     /**
      * Auto generate dash MPD file
      *
@@ -22,10 +24,11 @@ if (!function_exists('dash')) {
      * @param string|null $save_path
      * @param callable $listener
      * @return mixed
-     * @deprecated this method has been deprecated
+     * @deprecated this method is deprecated
      */
     function dash(string $input_path, string $save_path = null, callable $listener = null)
     {
+
         $format = new HEVC();
 
         if (is_callable($listener)) {
@@ -51,6 +54,8 @@ if (!function_exists('dash')) {
 }
 
 if (!function_exists('hls')) {
+    @trigger_error('hls method is deprecated and will be removed in a future release. Use Streaming\HLS instead', E_USER_DEPRECATED);
+
     /**
      * Auto generate HLS M3U8 file
      *
@@ -59,7 +64,7 @@ if (!function_exists('hls')) {
      * @param callable|null $listener
      * @param string $hls_key
      * @return mixed
-     * @deprecated this method has been deprecated
+     * @deprecated this method is deprecated
      */
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
     {
@@ -88,6 +93,8 @@ if (!function_exists('hls')) {
 }
 
 if (!function_exists('encrypted_hls')) {
+    @trigger_error('encrypted_hls method is deprecated and will be removed in a future release. Use Streaming\HLS instead', E_USER_DEPRECATED);
+
     /**
      * Auto generate HLS M3U8 file
      *
@@ -97,7 +104,7 @@ if (!function_exists('encrypted_hls')) {
      * @param string|null $save_path
      * @param callable|null $listener
      * @return mixed
-     * @deprecated this method has been deprecated
+     * @deprecated this method is deprecated
      */
     function encrypted_hls(string $input_path, string $url, string $key_path, string $save_path = null, callable $listener = null)
     {

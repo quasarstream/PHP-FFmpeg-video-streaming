@@ -26,7 +26,7 @@ If applicable, add screenshots to help explain your problem.
 **Desktop/Server (please complete the following information):**
  - OS: [e.g. Linux]
  - Version [e.g. Ubuntu 18]
- - FFmpeg vesion
+ - FFmpeg vesion [e.g. 4.1]
 
 **Additional context**
 Add any other context about the problem here.

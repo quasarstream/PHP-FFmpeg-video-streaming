@@ -1,5 +1,4 @@
 # 📼 PHP FFMPEG Video Streaming
-
 [![Build Status](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming)
 [![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/?branch=master)
@@ -8,10 +7,10 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages well-known online streaming techniques such as DASH and HLS. You can also use DRM for HLS packaging.
-- Before you get started, please read the FFMpeg Document found **[here](https://ffmpeg.org/ffmpeg-formats.html)**.
+This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use DRM for HLS packaging. There are options to open a file from clouds and also save files to clouds.
+- This package uses FFMpeg, so before you get started, take the time to read the **[FFMpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
-- For DRM and encryption(DASH and HLS), I **strongly recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
+- For DRM and encryption, I **recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
 - [Requirements](#requirements)
@@ -24,7 +23,9 @@ This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFM
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
+  - [Metadata Extraction](#metadata-extraction)
   - [Other Advanced Features](#other-advanced-features)
+- [Asynchronous Task Execution](#asynchronous-task-execution)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bug](#contributing-and-reporting-bugs)
 - [Credits](#credits)
@@ -52,7 +53,7 @@ First of all, you need to include the package in Your Code:
 ``` php
 require 'vendor/autoload.php'; // path to the autoload file
 ```
-**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that include the autoload automatically, then you can skip this step.
+**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that auto include the autoload in your code, then you can skip this step.
 
 ### Configuration
 FFMpeg will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
@@ -92,14 +93,14 @@ $current_percentage = 0;
 $options = [
     'auth' => ['username', 'password', 'digest'],
     'form_params' => [
-        'token'  => 'YOR_TOKEN',
-        'method' => 'download',
-        'path'   => ['dir3', 'videos', 'my_sweetie.mp4']
+        'user'      => 'USER_ID',
+        'method'    => 'download',
+        'file'      => ['dir3', 'videos', 'my_sweetie.mp4']
     ],
     'headers' => [
-        'User-Agent'        => 'testing/1.0',
+        'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
         'Accept'            => 'application/json',
-        'X-Authentication'  => 'Bearer x1234'
+        'Authorization'     => 'Bearer ACCESS_TOKEN'
     ],
     'progress' => function(
         $downloadTotal,
@@ -124,7 +125,6 @@ $video = $ffmpeg->fromURL($api, $save_to, $method, $options);
 #### 3. From Amazon S3
 Amazon S3 or Amazon Simple Storage Service is a service offered by **[Amazon Web Services (AWS)](https://aws.amazon.com/)** that provides object storage through a web service interface. [Learn more](https://en.wikipedia.org/wiki/Amazon_S3)
 - For getting credentials, you need to have an AWS account or you can **[create one](https://portal.aws.amazon.com/billing/signup#/start)**.
-- Before you get started, please read the AWS SDK for PHP Document found **[here](https://aws.amazon.com/sdk-for-php/)**.
 
 For downloading a file from Amazon S3, you need to pass an associative array of options, the name of your bucket, and the key of your bucket to the `fromS3` method:
 ``` php
@@ -141,24 +141,23 @@ $key = '/videos/my_sweetie.mp4';
 
 $video = $ffmpeg->fromS3($config, $bucket, $key);
 ```
-A path can also be passed to save the file on your local computer/server.
-
+A path can also be passed to save the file on your local machine.
 
 #### 4. From Google Cloud Storage
-[Google Cloud Storage](https://console.cloud.google.com/storage) is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
-- For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can [create it](https://console.cloud.google.com/apis/credentials) directly.
+**[Google Cloud Storage](https://console.cloud.google.com/storage)** is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
+- For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can **[create it](https://console.cloud.google.com/apis/credentials)** directly (Select the "Service account key" option).
 
 For downloading a file from Google Cloud Storage, you need to pass an associative array of config, the name of your bucket, and the name of your file in the bucket to the `fromGCS` method:
 ``` php
 $config = [
-    'keyFilePath' => '/path/to/credentials.json'
+    'keyFilePath' => '/path/to/credentials.json' // Alternativaely, you can authenticate by setting the environment variable. See https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 ];
 $bucket = 'my_bucket';
 $name = 'my_sweetie.mp4';
 
 $video = $ffmpeg->fromGCS($config, $bucket, $name);
 ```
-A path can also be passed to save the file on your local computer/server.
+A path can also be passed to save the file on your local machine.
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -315,9 +314,9 @@ $api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
 $field_name = 'MY_FILES';
 $method = 'POST';
 $headers = [
-    'User-Agent'        => 'testing/1.0',
+    'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
     'Accept'            => 'application/json',
-    'X-Authentication'  => 'Bearer x1234'
+    'Authorization'     => 'Bearer ACCESS_TOKEN'
 ];
 $current_percentage = 0;
 $options = [
@@ -340,7 +339,7 @@ $options = [
 
 $dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
 ```
-A path can also be passed to save a copy of files on your local server/computer:
+A path can also be passed to save a copy of files on your local machine:
 ``` php
 $save_to = '/var/www/media/videos/hls/test.m3u8';
 $hls->saveToCloud($api, $field_name, $save_to, $method, $headers, $options);
@@ -363,7 +362,7 @@ Upload DASH files to Amazon Simple Storage Service:
 ``` php
 $dash->saveToS3($config, $dest);
 ```
-A path can also be passed to save a copy of files on your local computer/server.
+A path can also be passed to save a copy of files on your local machine.
 ``` php
 $hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
 ```
@@ -378,12 +377,12 @@ $bucket = 'my_bucket';
 
 $dash->saveToGCS($config, $bucket);
 ```
-A path can also be passed to save a copy of files on your local computer/server.
+A path can also be passed to save a copy of files on your local machine.
 ``` php
 $hls->saveToGCS($config, $bucket, '/var/www/media/videos/hls/test.m3u8');
 ```
 
-**NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local computer/server and save packaged files to a Cloud (or vice versa).   
+**NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local machine and save packaged files to a Cloud (or vice versa).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
 
@@ -395,7 +394,7 @@ $metadata = $hls->save();
 echo $metadata['filename']; // path to metadata.json
 var_dump($metadata['metadata']); // dump all metadata
 ```
-**NOTE:** You can save these metadata in your database.
+**NOTE:** You can save these metadata to your database.
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -410,6 +409,16 @@ You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` me
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
 $frame->save('image.jpg');
 ```
+
+## Asynchronous Task Execution
+Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.
+- **[Symphony(The Console Component)](https://github.com/symfony/console):** You can use this library to create command-line commands. Your console commands can be used for any recurring task, such as cronjobs, imports, or other batch jobs. [Learn more](https://symfony.com/doc/current/components/console.html#learn-more)
+
+- **[Laravel(Queues)](https://symfony.com/doc/current/components/console.html):** If you are using laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/6.0/queues)
+
+- **[Google Cloud Tasks](https://github.com/googleapis/google-cloud-php-tasks):** Google Cloud Tasks is a fully managed service that allows you to manage the execution, dispatch and delivery of a large number of distributed tasks. You can asynchronously perform work outside of a user request. [Learn more](https://cloud.google.com/tasks/)
+
+**NOTE:** It is not necessary to use this library. It is just a suggestion. You can also create a script to create packaged video files and run it in a cron-job.  
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
@@ -433,8 +442,10 @@ You can use these libraries to play your streams.
 I'd love your help in improving, correcting, adding to the specification.
 Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.
 - Please see **[Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
-- Please, just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** for reporting bugs or if you have any question. 
+- If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)**
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
+
+**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form in my website. Emails related to these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**

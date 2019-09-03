@@ -37,7 +37,8 @@ class Metadata
         $metadata["video"] = $this->getVideoMetadata();
         $metadata["streams"] = $this->getStreamsMetadata();
 
-        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . "_" . Helper::randomString(20) . "_metadata.json";
+        $name = $this->export->getPathInfo()["filename"] . "-" . Helper::randomString(12) . ".json";
+        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
         file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
 
         return [
