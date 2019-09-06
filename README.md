@@ -7,10 +7,10 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use DRM for HLS packaging. There are options to open a file from clouds and also save files to clouds.
-- This package uses FFMpeg, so before you get started, take the time to read the **[FFMpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
+This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use DRM for HLS packaging. There are options to open a file from clouds and also save files to clouds.
+- This package uses FFmpeg, so before you get started, take the time to read the **[FFmpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
-- For DRM and encryption, I **recommend** to try **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
+- For DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
 - [Requirements](#requirements)
@@ -34,7 +34,7 @@ This package provides integration with **[PHP-FFmpeg](https://github.com/PHP-FFM
 ## Requirements
 1. This version of the package is only compatible with PHP 7.2 or higher.
 
-2. To use this package, you need to install the **[FFMpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
+2. To use this package, you need to install the **[FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
 
 ## Installation
 Install the package via **[composer](https://getcomposer.org/)**:
@@ -56,14 +56,14 @@ require 'vendor/autoload.php'; // path to the autoload file
 **Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that auto include the autoload in your code, then you can skip this step.
 
 ### Configuration
-FFMpeg will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
+This package will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
 
 ``` php
 $config = [
     'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
     'ffprobe.binaries' => '/usr/bin/ffprobe',
     'timeout'          => 3600, // The timeout for the underlying process
-    'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
+    'ffmpeg.threads'   => 12,   // The number of threads that FFmpeg should use
 ];
     
 $ffmpeg = Streaming\FFMpeg::create($config);
@@ -193,7 +193,7 @@ See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more i
 
 HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
-Create HLS files based on original video(auto generate qualities).
+Create HLS files based on original video(auto-generate qualities).
 ``` php
 $video->HLS()
     ->X264()
@@ -244,7 +244,6 @@ See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more inf
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 
-Transcoding progress can be monitored in realtime, see Format documentation in **[PHP-FFMpeg documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg#documentation)** for more information.
 ``` php
 $format = new Streaming\Format\HEVC();
 $current_percentage = 0;
@@ -283,6 +282,7 @@ $video->HLS()
     ->autoGenerateRepresentations([240, 144], [200, 100]) // You can also set the kilo bite rate of each video
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
+See **[Formats](https://github.com/PHP-FFMpeg/PHP-FFMpeg#formats)** for more information.
 
 ### Saving Files
 There are several options to save your packaged files.
@@ -305,7 +305,7 @@ $hls = $video->HLS()
             
 $hls->save();
 ```
-**NOTE:** If you opened a file from cloud and did not pass a path to save a file, then you have to pass a local path to the `save` method.
+**NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
 #### 2. To a Cloud
 You can save your files to a cloud using the `saveToCloud` method. 
@@ -414,11 +414,11 @@ $frame->save('image.jpg');
 Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.
 - **[Symphony(The Console Component)](https://github.com/symfony/console):** You can use this library to create command-line commands. Your console commands can be used for any recurring task, such as cronjobs, imports, or other batch jobs. [Learn more](https://symfony.com/doc/current/components/console.html#learn-more)
 
-- **[Laravel(Queues)](https://symfony.com/doc/current/components/console.html):** If you are using laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/6.0/queues)
+- **[Laravel(Queues)](https://github.com/illuminate/queue):** If you are using Laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/6.0/queues)
 
-- **[Google Cloud Tasks](https://github.com/googleapis/google-cloud-php-tasks):** Google Cloud Tasks is a fully managed service that allows you to manage the execution, dispatch and delivery of a large number of distributed tasks. You can asynchronously perform work outside of a user request. [Learn more](https://cloud.google.com/tasks/)
+- **[Google Cloud Tasks](https://github.com/googleapis/google-cloud-php-tasks):** Google Cloud Tasks is a fully managed service that allows you to manage the execution, dispatch, and delivery of a large number of distributed tasks. You can asynchronously perform work outside of a user request. [Learn more](https://cloud.google.com/tasks/)
 
-**NOTE:** It is not necessary to use these libraries. It is just a suggestion. You can also create a script to create packaged video files and run it in a cron-job.  
+**NOTE:** It is not necessary to use these libraries. It is just a suggestion. You can also create a script to create packaged video files and run a job in the cron job.  
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
@@ -436,7 +436,7 @@ You can use these libraries to play your streams.
 - **Android**
     - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
 
-**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
+**NOTE:** You should pass a manifest of streams(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
@@ -445,7 +445,7 @@ Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-str
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)**
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
 
-**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form in my website. Emails related to these issues **will be ignored**.
+**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me or submit the contact form on my website. Emails related to these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**
