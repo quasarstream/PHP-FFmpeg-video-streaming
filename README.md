@@ -108,11 +108,11 @@ $options = [
         $uploadTotal,
         $uploadedBytes
     ) use (&$current_percentage) {
-        $percentage = ($downloadTotal > 200) ? intval(($downloadedBytes / $downloadTotal) * 100) : 0;
+        $percentage = ($downloadTotal > 500) ? intval(($downloadedBytes / $downloadTotal) * 100) : 0;
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo "$percentage% is downloaded\n";
+            echo sprintf("\r Downloading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
             $current_percentage = $percentage;
         }
     },
@@ -249,11 +249,12 @@ $format = new Streaming\Format\HEVC();
 $current_percentage = 0;
 
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
-    if ($current_percentage !== intval($percentage)) {
+    $percentage = intval($percentage);
+    if ($current_percentage !== $percentage) {
         // You can update a field in your database
         // You can also create a socket connection and show the progress to users
-        echo "$percentage% is transcoded\n";
-        $current_percentage = intval($percentage);
+        echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
+        $current_percentage = $percentage;
     }
 });
 
@@ -269,9 +270,10 @@ $format = new Streaming\Format\X264();
 $current_percentage = 0;
 
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
-    if ($current_percentage !== intval($percentage)) {
-        echo "$percentage% is transcoded\n";
-        $current_percentage = intval($percentage);
+    $percentage = intval($percentage);
+    if ($current_percentage !== $percentage) {
+        echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
+        $current_percentage = $percentage;
     }
 });
 
@@ -282,6 +284,10 @@ $video->HLS()
     ->autoGenerateRepresentations([240, 144], [200, 100]) // You can also set the kilo bite rate of each video
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
+
+##### Output From a Shell:
+![transcoding](/docs/transcoding.gif?raw=true "transcoding" )
+
 See **[Formats](https://github.com/PHP-FFMpeg/PHP-FFMpeg#formats)** for more information.
 
 ### Saving Files
@@ -327,11 +333,11 @@ $options = [
         $uploadTotal,
         $uploadedBytes
     ) use (&$current_percentage) {
-        $percentage = ($uploadTotal > 200) ? intval(($uploadedBytes / $uploadTotal) * 100) : 0;
+        $percentage = ($uploadTotal > 500) ? intval(($uploadedBytes / $uploadTotal) * 100) : 0;
         if ($current_percentage !== $percentage) {
             // You can update a field in your database
             // You can also create a socket connection and show the progress to users
-            echo "$percentage% is uploaded\n";
+            echo sprintf("\r Uploading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
             $current_percentage = $percentage;
         }
     },
