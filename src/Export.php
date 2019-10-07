@@ -12,6 +12,10 @@
 namespace Streaming;
 
 use FFMpeg\Exception\ExceptionInterface;
+use Streaming\Clouds\AWS;
+use Streaming\Clouds\Cloud;
+use Streaming\Clouds\GoogleCloudStorage;
+use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
@@ -31,6 +35,9 @@ abstract class Export
     /** @var string */
     protected $strict = "-2";
 
+    /** @var string */
+    protected $tmp_dir;
+
     /**
      * Export constructor.
      * @param Media $media
@@ -47,10 +54,9 @@ abstract class Export
      * @return mixed
      * @throws Exception
      */
-    public function save(string $path = null, $metadata = true)
+    public function save(string $path = null, bool $metadata = true)
     {
         $path = $this->getPath($path);
-
         try {
             $this->media
                 ->addFilter($this->getFilter())
@@ -62,13 +68,7 @@ abstract class Export
             );
         }
 
-        $response = ($metadata) ? (new Metadata($this))->extract() : $this;
-
-        if ($this->media->isTmp()) {
-            $this->deleteOriginalFile();
-        }
-
-        return $response;
+        return ($metadata) ? (new Metadata($this))->extract() : $this;
     }
 
     /**
@@ -88,7 +88,6 @@ abstract class Export
         }
 
         if (null === $path && $this->media->isTmp()) {
-            $this->deleteOriginalFile();
             throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
         }
 
@@ -132,13 +131,13 @@ abstract class Export
         if ($this instanceof HLS && $this->getTsSubDirectory()) {
             throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
         }
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
+        $results = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
-        $file_manager = new FileManager($url, $method, $options);
-        $file_manager->uploadDirectory($tmp_dir, $name, $headers);
+        $cloud = new Cloud($url, $method, $options);
+        $cloud->uploadDirectory($this->tmp_dir, ['name' => $name, 'headers' => $headers]);
 
-        $this->moveTmpFolder($path, $tmp_dir);
+        $this->moveTmpFolder($path);
 
         return $results;
     }
@@ -158,13 +157,13 @@ abstract class Export
         bool $metadata = true
     )
     {
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
+        $results = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
         $aws = new AWS($config);
-        $aws->uploadAndDownloadDirectory($tmp_dir, $dest);
+        $aws->uploadDirectory($this->tmp_dir, ['dest' => $dest]);
 
-        $this->moveTmpFolder($path, $tmp_dir);
+        $this->moveTmpFolder($path);
 
         return $results;
     }
@@ -184,7 +183,7 @@ abstract class Export
         string $bucket,
         string $path = null,
         array $options = [],
-        $userProject = false,
+        bool $userProject = false,
         bool $metadata = true
     )
     {
@@ -192,13 +191,43 @@ abstract class Export
             throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
         }
 
-        list($results, $tmp_dir) = $this->saveToTemporaryFolder($path, $metadata);
+        $results = $this->saveToTemporaryFolder($path, $metadata);
         sleep(1);
 
         $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
-        $google_cloud->uploadDirectory($tmp_dir, $options);
+        $google_cloud->uploadDirectory($this->tmp_dir, $options);
 
-        $this->moveTmpFolder($path, $tmp_dir);
+        $this->moveTmpFolder($path);
+
+        return $results;
+    }
+
+    /**
+     * @param string $connectionString
+     * @param string $container
+     * @param string|null $path
+     * @param bool $metadata
+     * @return mixed
+     * @throws Exception
+     */
+    public function saveToMAS(
+        string $connectionString,
+        string $container,
+        string $path = null,
+        bool $metadata = true
+    )
+    {
+        if ($this instanceof HLS && $this->getTsSubDirectory()) {
+            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
+        }
+
+        $results = $this->saveToTemporaryFolder($path, $metadata);
+        sleep(1);
+
+        $google_cloud = new MicrosoftAzure($connectionString);
+        $google_cloud->uploadDirectory($this->tmp_dir, ['container' => $container]);
+
+        $this->moveTmpFolder($path);
 
         return $results;
     }
@@ -219,12 +248,6 @@ abstract class Export
         return $this->media;
     }
 
-    private function deleteOriginalFile()
-    {
-        sleep(1);
-        @unlink($this->media->getPath());
-    }
-
     /**
      * @param $path
      * @param $metadata
@@ -239,23 +262,35 @@ abstract class Export
             $basename = pathinfo($path, PATHINFO_BASENAME);
         }
 
-        $tmp_dir = FileManager::tmpDir();
-        $tmp_file = $tmp_dir . $basename;
+        $this->tmp_dir = FileManager::tmpDir();
 
-        return [$this->save($tmp_file, $metadata), $tmp_dir];
+        return $this->save($this->tmp_dir . $basename, $metadata);
+    }
+
+    /**
+     * clear tmp files
+     */
+    public function __destruct()
+    {
+        sleep(1);
+
+        if ($this->media->isTmp()) {
+            @unlink($this->media->getPath());
+        }
+
+        if ($this->tmp_dir) {
+            FileManager::deleteDirectory($this->tmp_dir);
+        }
     }
 
     /**
      * @param string|null $path
-     * @param $tmp_dir
      * @throws Exception
      */
-    private function moveTmpFolder(?string $path, $tmp_dir)
+    private function moveTmpFolder(?string $path)
     {
-        if (null !== $path) {
-            FileManager::moveDir($tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
-        } else {
-            FileManager::deleteDirectory($tmp_dir);
+        if ($path) {
+            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
         }
     }
 

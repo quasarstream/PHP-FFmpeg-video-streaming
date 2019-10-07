@@ -15,6 +15,10 @@ use FFMpeg\Exception\ExceptionInterface;
 use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
+use Streaming\Clouds\AWS;
+use Streaming\Clouds\Cloud;
+use Streaming\Clouds\GoogleCloudStorage;
+use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
@@ -63,8 +67,8 @@ class FFMpeg
         Helper::isURL($url);
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
-        $file_manager = new FileManager($url, $method, $request_options);
-        $file_manager->downloadFile($save_to);
+        $cloud = new Cloud($url, $method, $request_options);
+        $cloud->download($save_to);
 
         return $this->open($save_to, $is_tmp);
     }
@@ -82,7 +86,7 @@ class FFMpeg
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $aws = new AWS($config);
-        $aws->downloadFile($bucket, $key, $save_to);
+        $aws->download($save_to, ['bucket' => $bucket, 'key' => $key]);
 
         return $this->open($save_to, $is_tmp);
     }
@@ -101,7 +105,25 @@ class FFMpeg
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
-        $google_cloud->download($name, $save_to);
+        $google_cloud->download($save_to, ['name' => $name]);
+
+        return $this->open($save_to, $is_tmp);
+    }
+
+    /**
+     * @param string $connectionString
+     * @param string $container
+     * @param string $blob
+     * @param string|null $save_to
+     * @return Media
+     * @throws Exception
+     */
+    public function fromMAS(string $connectionString, string $container, string $blob, string $save_to = null): Media
+    {
+        list($is_tmp, $save_to) = $this->isTmp($save_to);
+
+        $google_cloud = new MicrosoftAzure($connectionString);
+        $google_cloud->download($save_to, ['container' => $container, 'blob' => $blob]);
 
         return $this->open($save_to, $is_tmp);
     }

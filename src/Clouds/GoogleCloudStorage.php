@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the ******* package.
+ * This file is part of the PHP-FFmpeg-video-streaming package.
  *
  * (c) Amin Yazdanpanah <contact@aminyazdanpanah.com>
  *
@@ -10,13 +10,13 @@
  */
 
 
-namespace Streaming;
+namespace Streaming\Clouds;
 
 use Google\Cloud\Storage\StorageClient;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 
-class GoogleCloudStorage
+class GoogleCloudStorage implements CloudInterface
 {
     /**
      * @var \Google\Cloud\Storage\Bucket $bucket
@@ -43,10 +43,10 @@ class GoogleCloudStorage
      * @param string $dir
      * @param array $options
      */
-    public function uploadDirectory(string $dir, array $options = [])
+    public function uploadDirectory(string $dir, array $options = []): void
     {
         try {
-            foreach (scandir($dir) as $key => $filename) {
+            foreach (scandir($dir) as $filename) {
                 $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
                 if (is_file($path)) {
@@ -54,22 +54,23 @@ class GoogleCloudStorage
                 }
             }
         } catch (\Exception $e) {
-            throw new RuntimeException(sprintf("There wan an error during uploading files:\n %s", $e->getMessage()), $e->getCode(), $e);
+            throw new RuntimeException(sprintf("There was an error during uploading files:\n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
 
     /**
-     * @param string $name
      * @param string $save_to
-     * @return \Psr\Http\Message\StreamInterface
+     * @param array $options
      */
-    public function download(string $name, string $save_to)
+    public function download(string $save_to, array $options): void
     {
+        $name = $options['name'];
+
         try {
-            return $this->bucket->object($name)
+            $this->bucket->object($name)
                 ->downloadToFile($save_to);
         } catch (\Exception $e) {
-            throw new RuntimeException(sprintf("There wan an error during fetch the file:\n %s", $e->getMessage()), $e->getCode(), $e);
+            throw new RuntimeException(sprintf("There was an error during fetch the file:\n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
 }

@@ -38,7 +38,7 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "8.3.4"
+        "phpunit/phpunit": "^8.4"
     },
     "autoload-dev": {
         "psr-4": {
@@ -51,6 +51,7 @@
         "guzzlehttp/guzzle": "~6.0",
         "aws/aws-sdk-php": "~3.0",
         "google/cloud-storage": "^1.14",
+        "microsoft/azure-storage-blob": "*",
         "ext-openssl": "*"
     },
     "scripts": {

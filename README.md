@@ -7,10 +7,10 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use DRM for HLS packaging. There are options to open a file from clouds and also save files to clouds.
+This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
 - This package uses FFmpeg, so before you get started, take the time to read the **[FFmpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
-- For DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
+- For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
 - [Requirements](#requirements)
@@ -53,7 +53,7 @@ First of all, you need to include the package in Your Code:
 ``` php
 require 'vendor/autoload.php'; // path to the autoload file
 ```
-**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that auto include the autoload in your code, then you can skip this step.
+**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that auto-include the autoload in your code, then you can skip this step.
 
 ### Configuration
 This package will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
@@ -110,7 +110,7 @@ $options = [
     ) use (&$current_percentage) {
         $percentage = ($downloadTotal > 500) ? intval(($downloadedBytes / $downloadTotal) * 100) : 0;
         if ($current_percentage !== $percentage) {
-            // You can update a field in your database
+            // You can update a field in your database or log it into a file
             // You can also create a socket connection and show the progress to users
             echo sprintf("\r Downloading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
             $current_percentage = $percentage;
@@ -159,8 +159,23 @@ $video = $ffmpeg->fromGCS($config, $bucket, $name);
 ```
 A path can also be passed to save the file on your local machine.
 
+
+#### 5. From Microsoft Azure Storage
+**[Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)** is Microsoft's cloud storage solution for modern data storage scenarios. Azure Storage offers a massively scalable object store for data objects, a file system service for the cloud, a messaging store for reliable messaging, and a NoSQL store. [Learn more](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
+- To authenticate the service, please click **[here](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)**.
+
+For downloading a file from Microsoft Azure Storage, you need to pass string connection, the name of your container, and the name of your file in the container to the `fromMAS` method:
+``` php
+$connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
+$container = 'your_container';
+$blob = 'my_sweetie.mp4';
+
+$video = $ffmpeg->fromMAS($connectionString, $container, $blob);
+```
+A path can also be passed to save the file on your local machine.
+
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
+**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
 Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
@@ -189,7 +204,7 @@ $video->DASH()
 See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
 ### HLS
-**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
+**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
 
 HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
@@ -251,7 +266,7 @@ $current_percentage = 0;
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
     $percentage = intval($percentage);
     if ($current_percentage !== $percentage) {
-        // You can update a field in your database
+        // You can update a field in your database or log it into a file
         // You can also create a socket connection and show the progress to users
         echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
         $current_percentage = $percentage;
@@ -285,7 +300,7 @@ $video->HLS()
     ->save('/var/www/media/videos/dash/test.m3u8');
 ```
 
-##### Output From a Shell:
+##### Output From Terminal:
 ![transcoding](/docs/transcoding.gif?raw=true "transcoding" )
 
 See **[Formats](https://github.com/PHP-FFMpeg/PHP-FFMpeg#formats)** for more information.
@@ -335,7 +350,7 @@ $options = [
     ) use (&$current_percentage) {
         $percentage = ($uploadTotal > 500) ? intval(($uploadedBytes / $uploadTotal) * 100) : 0;
         if ($current_percentage !== $percentage) {
-            // You can update a field in your database
+            // You can update a field in your database or log it into a file
             // You can also create a socket connection and show the progress to users
             echo sprintf("\r Uploading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
             $current_percentage = $percentage;
@@ -386,6 +401,19 @@ $dash->saveToGCS($config, $bucket);
 A path can also be passed to save a copy of files on your local machine.
 ``` php
 $hls->saveToGCS($config, $bucket, '/var/www/media/videos/hls/test.m3u8');
+```
+
+#### 5. TO Microsoft Azure Storage
+You can save and upload the entire files to **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**. For uploading files, you need to have credentials.
+``` php
+$connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
+$container = 'your_container';
+
+$dash->saveToMAS($connectionString, $container);
+```
+A path can also be passed to save a copy of files on your local machine.
+``` php
+$hls->saveToMAS($connectionString, $container, '/var/www/media/videos/hls/test.m3u8');
 ```
 
 **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local machine and save packaged files to a Cloud (or vice versa).   
@@ -449,9 +477,9 @@ I'd love your help in improving, correcting, adding to the specification.
 Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.
 - Please see **[Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)**
-- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
+- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
 
-**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me or submit the contact form on my website. Emails related to these issues **will be ignored**.
+**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me (or submit the contact form on my website). Emails regarding these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**

@@ -37,7 +37,7 @@ class Metadata
         $metadata["video"] = $this->getVideoMetadata();
         $metadata["streams"] = $this->getStreamsMetadata();
 
-        $name = $this->export->getPathInfo()["filename"] . "-" . Helper::randomString(12) . ".json";
+        $name = $this->export->getPathInfo()["filename"] . "-" . bin2hex(openssl_random_pseudo_bytes(6)) . ".json";
         $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
         file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
 
@@ -76,7 +76,7 @@ class Metadata
         $metadata["size_of_stream_dir"] = FileManager::directorySize($stream_path["dirname"]);
         $metadata["created_at"] = date("Y-m-d H:i:s");
 
-        $metadata["qualities"] = $this->getQualities();
+        $metadata["resolutions"] = $this->getResolutions();
 
         $format_class = explode("\\", get_class($this->export->getFormat()));
         $metadata["format"] = end($format_class);
@@ -100,16 +100,16 @@ class Metadata
     /**
      * @return array
      */
-    private function getQualities()
+    private function getResolutions()
     {
-        $qualities = [];
+        $resolutions = [];
         foreach ($this->export->getRepresentations() as $key => $representation) {
             if ($representation instanceof Representation) {
-                $qualities[$key]["dimensions"] = strtoupper($representation->getResize());
-                $qualities[$key]["video_bitrate"] = $representation->getKiloBitrate() * 1024;
+                $resolutions[$key]["dimension"] = strtoupper($representation->getResize());
+                $resolutions[$key]["video_bitrate"] = $representation->getKiloBitrate() * 1024;
             }
         }
 
-        return $qualities;
+        return $resolutions;
     }
 }
