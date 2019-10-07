@@ -29,8 +29,8 @@ install:
   - ps: cinst php --params '""/InstallDir:C:\tools\php""' --ignore-checksums
   - ps: Start-FileDownload $env:ffmpeg_download
 
-  - 7z x ffmpeg-20190725-923d5c4-win64-static.zip
-  - PATH=%PATH%;%cd%\ffmpeg-20190725-923d5c4-win64-static\bin
+  - 7z x ffmpeg-4.2.1-win64-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-4.2.1-win64-static\bin
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
   - echo date.timezone="UTC" >> php.ini
