@@ -117,11 +117,10 @@ class HLSTest extends TestCase
         $export_obj = $hls->generateRandomKeyInfo($url, $path)
             ->X264()
             ->autoGenerateRepresentations()
-            ->save($this->srcDir . '/enc_random_hls/test.m3u8', false);
+            ->save($this->srcDir . '/enc_random_hls/test.m3u8');
 
         $get_path_info = $hls->getPathInfo();
 
-        $this->assertInstanceOf(Export::class, $export_obj);
         $this->assertFileExists($this->srcDir . '/enc_random_hls/test.m3u8');
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
