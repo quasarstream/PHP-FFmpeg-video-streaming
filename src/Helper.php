@@ -53,7 +53,9 @@ class Helper
     /**
      * @param $url
      * @return bool
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public static function isURL(string $url)
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {

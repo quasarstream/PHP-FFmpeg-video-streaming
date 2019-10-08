@@ -33,33 +33,6 @@ class AWS implements CloudInterface
     }
 
     /**
-     * @param string $save_to
-     * @param array $options
-     * @throws Exception
-     */
-    public function download(string $save_to, array $options): void
-    {
-        $bucket = $options['bucket'];
-        $key = $options['key'];
-
-        try {
-            $file = $this->s3->getObject([
-                'Bucket' => $bucket,
-                'Key' => $key
-            ]);
-
-            if ($file['ContentLength'] > 0 && !empty($file['ContentType'])) {
-                $body = $file->get('Body');
-                file_put_contents($save_to, $body);
-            } else {
-                throw new Exception("There is no file in the bucket");
-            }
-        } catch (S3Exception $e) {
-            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
      * @param string $dir
      * @param array $options
      */
@@ -70,6 +43,27 @@ class AWS implements CloudInterface
         try {
             $manager = new Transfer($this->s3, $dir, $dest);
             $manager->transfer();
+        } catch (S3Exception $e) {
+            throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param string $save_to
+     * @param array $options
+     * @throws Exception
+     */
+    public function download(string $save_to, array $options): void
+    {
+        try {
+            $file = $this->s3->getObject($options);
+
+            if ($file['ContentLength'] > 0 && !empty($file['ContentType'])) {
+                $body = $file->get('Body');
+                file_put_contents($save_to, $body);
+            } else {
+                throw new Exception("There is no file in the bucket");
+            }
         } catch (S3Exception $e) {
             throw new RuntimeException("There was an error downloading the file.\n error: " . $e->getMessage(), $e->getCode(), $e);
         }

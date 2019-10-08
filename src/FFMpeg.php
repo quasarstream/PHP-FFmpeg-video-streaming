@@ -17,6 +17,7 @@ use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Clouds\AWS;
 use Streaming\Clouds\Cloud;
+use Streaming\Clouds\CloudInterface;
 use Streaming\Clouds\GoogleCloudStorage;
 use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
@@ -55,15 +56,42 @@ class FFMpeg
     }
 
     /**
+     * @param array $cloud
+     * @param string|null $save_to
+     * @return Media
+     * @throws Exception
+     */
+    public function openFromCloud(array $cloud, string $save_to = null): Media
+    {
+        list($is_tmp, $save_to) = $this->isTmp($save_to);
+
+        if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
+            $cloud_obj = $cloud['cloud'];
+            $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
+
+            $cloud_obj->download($save_to, $options);
+        } else {
+            throw new InvalidArgumentException('You must pass an array of a cloud to the openFromCloud method. 
+                    and the cloud must be instance of CloudInterface');
+        }
+
+        return $this->open($save_to, $is_tmp);
+    }
+
+    /**
      * @param string $url
      * @param string|null $save_to
      * @param string $method
      * @param $request_options
      * @return Media
      * @throws Exception
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function fromURL(string $url, string $save_to = null, string $method = "GET", array $request_options = []): Media
     {
+        @trigger_error('fromURL method is deprecated and will be removed in a future release. Use Cloud instead', E_USER_DEPRECATED);
+
         Helper::isURL($url);
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
@@ -80,9 +108,13 @@ class FFMpeg
      * @param string|null $save_to
      * @return Media
      * @throws Exception
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function fromS3(array $config, string $bucket, string $key, string $save_to = null): Media
     {
+        @trigger_error('fromS3 method is deprecated and will be removed in a future release. Use AWS instead', E_USER_DEPRECATED);
+
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $aws = new AWS($config);
@@ -99,9 +131,12 @@ class FFMpeg
      * @param bool $userProject
      * @return Media
      * @throws Exception
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function fromGCS(array $config, string $bucket, string $name, string $save_to = null, $userProject = false): Media
     {
+        @trigger_error('fromMAS method is deprecated and will be removed in a future release. Use MicrosoftAzure instead', E_USER_DEPRECATED);
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
@@ -117,9 +152,12 @@ class FFMpeg
      * @param string|null $save_to
      * @return Media
      * @throws Exception
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function fromMAS(string $connectionString, string $container, string $blob, string $save_to = null): Media
     {
+        @trigger_error('fromMAS method is deprecated and will be removed in a future release. Use MicrosoftAzure instead', E_USER_DEPRECATED);
         list($is_tmp, $save_to) = $this->isTmp($save_to);
 
         $google_cloud = new MicrosoftAzure($connectionString);

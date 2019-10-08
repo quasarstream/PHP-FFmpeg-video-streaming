@@ -105,7 +105,7 @@ class HLS extends Export
      * @return HLS
      * @throws Exception\Exception
      */
-    public function generateRandomKeyInfo(string $url, string $path, int $length = 32): HLS
+    public function generateRandomKeyInfo(string $url, string $path, int $length = 16): HLS
     {
         $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path, $length));
         return $this;

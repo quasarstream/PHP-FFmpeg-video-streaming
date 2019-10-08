@@ -64,10 +64,11 @@ class GoogleCloudStorage implements CloudInterface
      */
     public function download(string $save_to, array $options): void
     {
-        $name = $options['name'];
+        $name = $options['filename'];
+        unset($options['filename']);
 
         try {
-            $this->bucket->object($name)
+            $this->bucket->object($name, $options)
                 ->downloadToFile($save_to);
         } catch (\Exception $e) {
             throw new RuntimeException(sprintf("There was an error during fetch the file:\n %s", $e->getMessage()), $e->getCode(), $e);

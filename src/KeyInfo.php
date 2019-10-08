@@ -13,6 +13,8 @@
 namespace Streaming;
 
 
+use Streaming\Exception\RuntimeException;
+
 class KeyInfo
 {
     /**
@@ -22,8 +24,12 @@ class KeyInfo
      * @return string
      * @throws Exception\Exception
      */
-    public static function generate(string $url, string $path, int $length = 32): string
+    public static function generate(string $url, string $path, int $length = 16): string
     {
+        if (!extension_loaded('openssl')) {
+            throw new RuntimeException('OpenSSL is not installed.');
+        }
+
         FileManager::makeDir(pathinfo($path, PATHINFO_DIRNAME));
         file_put_contents($path, openssl_random_pseudo_bytes($length));
 

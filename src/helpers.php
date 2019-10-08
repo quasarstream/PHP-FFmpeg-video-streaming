@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+use FFMpeg\FFProbe;
+use Psr\Log\LoggerInterface;
 use Streaming\Exception\StreamingExceptionInterface;
 use Streaming\FFMpeg;
 use Streaming\Format\HEVC;
@@ -26,6 +28,7 @@ if (!function_exists('dash')) {
      * @return mixed
      * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     function dash(string $input_path, string $save_path = null, callable $listener = null)
     {
 
@@ -66,6 +69,7 @@ if (!function_exists('hls')) {
      * @return mixed
      * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     function hls(string $input_path, string $save_path = null, callable $listener = null, $hls_key = "")
     {
         $format = new X264();
@@ -106,6 +110,7 @@ if (!function_exists('encrypted_hls')) {
      * @return mixed
      * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     function encrypted_hls(string $input_path, string $url, string $key_path, string $save_path = null, callable $listener = null)
     {
         $format = new X264();
@@ -129,5 +134,19 @@ if (!function_exists('encrypted_hls')) {
         } catch (StreamingExceptionInterface $e) {
             return "Failed: error: " . $e->getMessage();
         }
+    }
+}
+
+if (!function_exists('ffmpeg')) {
+
+    /**
+     * @param array $config
+     * @param LoggerInterface|null $logger
+     * @param FFProbe|null $probe
+     * @return FFMpeg
+     */
+    function ffmpeg($config = array(), LoggerInterface $logger = null, FFProbe $probe = null)
+    {
+        return Streaming\FFMpeg::create($config, $logger, $probe);
     }
 }

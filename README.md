@@ -78,10 +78,15 @@ You can pass a local path of video to the `open` method:
 $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
-#### 2. From a Cloud
+#### 2. From Clouds
+
+##### Form a Cloud
 You can open a file by passing a URL to the `fromURL` method:
 ``` php
-$video = $ffmpeg->fromURL('https://www.aminyazdanpanah.com/my_sweetie.mp4');
+$cloud = new \Streaming\Clouds\Cloud('https://www.aminyazdanpanah.com/my_sweetie.mp4');
+$from_cloud = ['cloud' => $cloud];
+
+$video = $ffmpeg->openFromCloud($from_cloud);
 ```
 
 A path to save the file, the method of request, and **[request options](http://docs.guzzlephp.org/en/stable/request-options.html)** can also be passed to the method.
@@ -118,11 +123,14 @@ $options = [
     },
 ];
 
-$video = $ffmpeg->fromURL($api, $save_to, $method, $options);
+$cloud = new \Streaming\Clouds\Cloud($api, $method, $options);
+$from_cloud = ['cloud' => $cloud];
+
+$video = $ffmpeg->openFromCloud($from_cloud, $save_to);
 ```
 **NOTE:** This package uses **[Guzzle](https://github.com/guzzle/guzzle)** to send and receive files. [Learn more](http://docs.guzzlephp.org/en/stable/index.html).
 
-#### 3. From Amazon S3
+##### From Amazon S3
 Amazon S3 or Amazon Simple Storage Service is a service offered by **[Amazon Web Services (AWS)](https://aws.amazon.com/)** that provides object storage through a web service interface. [Learn more](https://en.wikipedia.org/wiki/Amazon_S3)
 - For getting credentials, you need to have an AWS account or you can **[create one](https://portal.aws.amazon.com/billing/signup#/start)**.
 
@@ -136,14 +144,23 @@ $config = [
         'secret' => 'my-secret-access-key',
     ]
 ];
-$bucket = 'my-bucket-name';
-$key = '/videos/my_sweetie.mp4';
 
-$video = $ffmpeg->fromS3($config, $bucket, $key);
+$aws_cloud = new \Streaming\Clouds\AWS($config);
+$aws_cloud_download_options = [
+    'Bucket' => 'my-bucket-name',
+    'Key' => '/videos/my_sweetie.mp4'
+];
+
+$from_aws_cloud = [
+    'cloud' => $aws_cloud,
+    'options' => $aws_cloud_download_options
+];
+
+$video = $ffmpeg->openFromCloud($from_aws_cloud);
 ```
 A path can also be passed to save the file on your local machine.
 
-#### 4. From Google Cloud Storage
+##### From Google Cloud Storage
 **[Google Cloud Storage](https://console.cloud.google.com/storage)** is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
 - For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can **[create it](https://console.cloud.google.com/apis/credentials)** directly (Select the "Service account key" option).
 
@@ -152,27 +169,92 @@ For downloading a file from Google Cloud Storage, you need to pass an associativ
 $config = [
     'keyFilePath' => '/path/to/credentials.json' // Alternativaely, you can authenticate by setting the environment variable. See https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 ];
-$bucket = 'my_bucket';
-$name = 'my_sweetie.mp4';
+$bucket = 'yourbucket';
 
-$video = $ffmpeg->fromGCS($config, $bucket, $name);
+$google_cloud = new GoogleCloudStorage($config, $bucket);
+$google_cloud_download_options = [
+    'filename' => 'my_sweetie.mp4',
+    OTHER_OPTION => OTHER_VALUE_OPTION
+];
+
+$from_google_cloud = [
+    'cloud' => $google_cloud,
+    'options' => $google_cloud_download_options
+];
+
+$video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
 A path can also be passed to save the file on your local machine.
 
 
-#### 5. From Microsoft Azure Storage
+##### From Microsoft Azure Storage
 **[Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)** is Microsoft's cloud storage solution for modern data storage scenarios. Azure Storage offers a massively scalable object store for data objects, a file system service for the cloud, a messaging store for reliable messaging, and a NoSQL store. [Learn more](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
 - To authenticate the service, please click **[here](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)**.
 
 For downloading a file from Microsoft Azure Storage, you need to pass string connection, the name of your container, and the name of your file in the container to the `fromMAS` method:
 ``` php
 $connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
-$container = 'your_container';
-$blob = 'my_sweetie.mp4';
 
-$video = $ffmpeg->fromMAS($connectionString, $container, $blob);
+$microsoft_azure = new \Streaming\Clouds\MicrosoftAzure($connectionString);
+$microsoft_azure_download_options = [
+    'container' => 'your_container',
+    'blob' => 'my_sweetie.mp4'
+];
+
+$from_microsoft_azure = [
+    'cloud' => $microsoft_azure,
+    'options' => $microsoft_azure_download_options
+];
+
+$video = $ffmpeg->openFromCloud($from_microsoft_azure);
 ```
 A path can also be passed to save the file on your local machine.
+
+##### From a Custom Cloud
+You can create a custom cloud by implementing `CloudInterface`:
+``` php
+use Streaming\Clouds\CloudInterface;
+
+class CustomCloud implements CloudInterface
+{
+
+    /**
+     * Upload a entire directory to a cloud
+     * @param string $dir
+     * @param array $options
+     */
+    public function uploadDirectory(string $dir, array $options): void
+    {
+        // TODO: Implement uploadDirectory() method.
+    }
+
+    /**
+     * Download a file from a cloud
+     * @param string $save_to
+     * @param array $options
+     */
+    public function download(string $save_to, array $options): void
+    {
+        // TODO: Implement download() method.
+    }
+}
+```
+
+After creating your own cloud class, you can easily pass the cloud options to the `openFromCloud` method:
+``` php
+$custom_cloud = new CustomCloud();
+// The array below will be passed to the `download` method in the `CustomCloud` class.
+$custom_cloud_download_options = [
+    YOUR_OPTIONS => YOUR_VALUE_OPTIONS
+];
+
+$from_custom_cloud = [
+    'cloud' => $custom_cloud,
+    'options' => $custom_cloud_download_options
+];
+
+$video = $ffmpeg->openFromCloud($from_custom_cloud);
+``` 
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -328,17 +410,13 @@ $hls->save();
 ```
 **NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
-#### 2. To a Cloud
+#### 2. To Clouds
+
+##### To a Cloud
 You can save your files to a cloud using the `saveToCloud` method. 
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
-$field_name = 'MY_FILES';
 $method = 'POST';
-$headers = [
-    'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
-    'Accept'            => 'application/json',
-    'Authorization'     => 'Bearer ACCESS_TOKEN'
-];
 $current_percentage = 0;
 $options = [
     'auth' => ['username', 'password', 'digest'],
@@ -358,62 +436,113 @@ $options = [
     },
 ];
 
-$dash->saveToCloud($api, $field_name, null, $method, $headers, $options);
+$cloud = new \Streaming\Clouds\Cloud($api, $method, $options);
+$cloud_upload_options = [
+    'name' => MY_FILES_name
+    'headers' => [
+        'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
+        'Accept'            => 'application/json',
+        'Authorization'     => 'Bearer ACCESS_TOKEN'
+    ]
+];
+
+$to_cloud = [
+    'cloud' => $cloud,
+    'options' => $cloud_upload_options
+];
+
+$dash->save(null, $to_cloud);
 ```
 A path can also be passed to save a copy of files on your local machine:
 ``` php
-$save_to = '/var/www/media/videos/hls/test.m3u8';
-$hls->saveToCloud($api, $field_name, $save_to, $method, $headers, $options);
+$hls->save('/var/www/media/videos/hls/test.m3u8', $to_cloud);
 ```
 
-#### 3. TO Amazon S3
+##### TO Amazon S3
 You can save and upload entire packaged video files to **[Amazon S3](https://aws.amazon.com/)**. For uploading files, you need to have credentials.
 ``` php
 $config = [
-    'version' => 'latest',
-    'region' => 'us-west-1',
+    'version'     => 'latest',
+    'region'      => 'us-west-1',
     'credentials' => [
-        'key' => 'my-access-key-id',
+        'key'    => 'my-access-key-id',
         'secret' => 'my-secret-access-key',
     ]
 ];
-$dest = 's3://bucket'; 
-```
-Upload DASH files to Amazon Simple Storage Service:
-``` php
-$dash->saveToS3($config, $dest);
+
+$aws_cloud = new \Streaming\Clouds\AWS($config);
+$aws_cloud_upload_options = [
+    'dest' => 's3://bucket'
+];
+
+$to_aws_cloud = [
+    'cloud' => $aws_cloud,
+    'options' => $aws_cloud_upload_options
+];
+
+$dash->save(null, $to_aws_cloud);
 ```
 A path can also be passed to save a copy of files on your local machine.
 ``` php
-$hls->saveToS3($config, $dest, '/var/www/media/videos/hls/test.m3u8');
+$hls->save('/var/www/media/videos/hls/test.m3u8', $to_aws_cloud);
 ```
 
-#### 4. TO Google Cloud Storage
+##### TO Google Cloud Storage
 You can save and upload entire packaged video files to **[Google Cloud Storage](https://console.cloud.google.com/storage)**. For uploading files, you need to have credentials.
 ``` php
 $config = [
-    'keyFilePath' => '/path/to/credentials.json'
+    'keyFilePath' => __DIR__ . "/amin-723b115176e9.json"
 ];
-$bucket = 'my_bucket';
+$bucket = 'staging.amin-158006.appspot.com';
 
-$dash->saveToGCS($config, $bucket);
+$google_cloud = new \Streaming\Clouds\GoogleCloudStorage($config, $bucket);
+// You can add options to the upload/download method(e.g. encryption) or it can be null
+$google_cloud_upload_options = [
+    'encryptionKey' => base64EncryptionKey,
+    OTHER_OPTION => OTHER_VALUE_OPTIONS
+];
+
+$to_google_cloud= [
+    'cloud' => $google_cloud,
+    'options' => $google_cloud_upload_options
+];
+
+$dash->save(null, $to_google_cloud);
 ```
 A path can also be passed to save a copy of files on your local machine.
 ``` php
-$hls->saveToGCS($config, $bucket, '/var/www/media/videos/hls/test.m3u8');
+$hls->save('/var/www/media/videos/hls/test.m3u8', $to_google_cloud);
 ```
 
-#### 5. TO Microsoft Azure Storage
+##### TO Microsoft Azure Storage
 You can save and upload the entire files to **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**. For uploading files, you need to have credentials.
 ``` php
 $connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
-$container = 'your_container';
 
-$dash->saveToMAS($connectionString, $container);
+$microsoft_azure = new \Streaming\Clouds\MicrosoftAzure($connectionString);
+$microsoft_azure_upload_options = [
+    'container' => 'your_container'
+];
+
+$to_microsoft_azure = [
+    'cloud' => $microsoft_azure,
+    'options' => $microsoft_azure_upload_options
+];
+
+$dash->save(null, $to_microsoft_azure);
 ```
+
+##### TO a Custom Cloud
+You can upload your file to a custom cloud. Please see [Custom Cloud](#from-a-custom-cloud) for more information
+
+##### TO multiple Clouds
+You can save your files to multiple clouds:
+``` php
+$dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
+``` 
 A path can also be passed to save a copy of files on your local machine.
 ``` php
-$hls->saveToMAS($connectionString, $container, '/var/www/media/videos/hls/test.m3u8');
+$hls->save('/var/www/media/videos/hls/test.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
 **NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local machine and save packaged files to a Cloud (or vice versa).   
@@ -469,6 +598,8 @@ You can use these libraries to play your streams.
     - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
     - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
+- **Windows, Linux, and macOS**
+    - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
 
 **NOTE:** You should pass a manifest of streams(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
 

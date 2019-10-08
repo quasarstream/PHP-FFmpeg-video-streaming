@@ -47,15 +47,6 @@ class Cloud implements CloudInterface
     }
 
     /**
-     * @param string $save_to
-     * @param array $options
-     */
-    public function download(string $save_to, array $options = []): void
-    {
-        $this->sendRequest(array_merge($this->options, ['sink' => $save_to]));
-    }
-
-    /**
      * @param string $dir
      * @param array $options
      */
@@ -81,6 +72,15 @@ class Cloud implements CloudInterface
         }
 
         $this->sendRequest(array_merge($this->options, ['multipart' => array_values($multipart)]));
+    }
+
+    /**
+     * @param string $save_to
+     * @param array $options
+     */
+    public function download(string $save_to, array $options = []): void
+    {
+        $this->sendRequest(array_merge($this->options, ['sink' => $save_to]));
     }
 
     /**
