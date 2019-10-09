@@ -79,9 +79,9 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
 #### 2. From Clouds
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method.
 
 ##### Form a Cloud
-You can open a file by passing a URL to the `fromURL` method:
 ``` php
 $cloud = new \Streaming\Clouds\Cloud('https://www.aminyazdanpanah.com/my_sweetie.mp4');
 $from_cloud = ['cloud' => $cloud];
@@ -134,7 +134,6 @@ $video = $ffmpeg->openFromCloud($from_cloud, $save_to);
 Amazon S3 or Amazon Simple Storage Service is a service offered by **[Amazon Web Services (AWS)](https://aws.amazon.com/)** that provides object storage through a web service interface. [Learn more](https://en.wikipedia.org/wiki/Amazon_S3)
 - For getting credentials, you need to have an AWS account or you can **[create one](https://portal.aws.amazon.com/billing/signup#/start)**.
 
-For downloading a file from Amazon S3, you need to pass an associative array of options, the name of your bucket, and the key of your bucket to the `fromS3` method:
 ``` php
 $config = [
     'version'     => 'latest',
@@ -164,14 +163,13 @@ A path can also be passed to save the file on your local machine.
 **[Google Cloud Storage](https://console.cloud.google.com/storage)** is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
 - For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can **[create it](https://console.cloud.google.com/apis/credentials)** directly (Select the "Service account key" option).
 
-For downloading a file from Google Cloud Storage, you need to pass an associative array of config, the name of your bucket, and the name of your file in the bucket to the `fromGCS` method:
 ``` php
 $config = [
     'keyFilePath' => '/path/to/credentials.json' // Alternativaely, you can authenticate by setting the environment variable. See https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 ];
 $bucket = 'yourbucket';
 
-$google_cloud = new GoogleCloudStorage($config, $bucket);
+$google_cloud = new \Streaming\Clouds\GoogleCloudStorage($config, $bucket);
 $google_cloud_download_options = [
     'filename' => 'my_sweetie.mp4',
     OTHER_OPTION => OTHER_VALUE_OPTION
@@ -191,7 +189,6 @@ A path can also be passed to save the file on your local machine.
 **[Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)** is Microsoft's cloud storage solution for modern data storage scenarios. Azure Storage offers a massively scalable object store for data objects, a file system service for the cloud, a messaging store for reliable messaging, and a NoSQL store. [Learn more](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
 - To authenticate the service, please click **[here](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)**.
 
-For downloading a file from Microsoft Azure Storage, you need to pass string connection, the name of your container, and the name of your file in the container to the `fromMAS` method:
 ``` php
 $connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
 
@@ -388,7 +385,7 @@ $video->HLS()
 See **[Formats](https://github.com/PHP-FFMpeg/PHP-FFMpeg#formats)** for more information.
 
 ### Saving Files
-There are several options to save your packaged files.
+There are several options to save your files.
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
@@ -411,9 +408,9 @@ $hls->save();
 **NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
+You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
 ##### To a Cloud
-You can save your files to a cloud using the `saveToCloud` method. 
 ``` php
 $api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
 $method = 'POST';
@@ -560,10 +557,10 @@ var_dump($metadata['metadata']); // dump all metadata
 **NOTE:** You can save these metadata to your database.
 
 ### Other Advanced Features
-You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `fromURL`), it holds the Media object that belongs to the PHP-FFMpeg.
+You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
 ``` php
 $ffmpeg = Streaming\FFMpeg::create()
-$video = $$ffmpeg->fromURL('https://www.aminyazdanpanah.com/my_sweetie.mp4', '/var/wwww/media/my/new/video.mp4');
+$video = $$ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4');
 ```
 
 #### Example(Extracting image)

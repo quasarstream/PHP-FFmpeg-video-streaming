@@ -58,40 +58,36 @@ abstract class Export
      */
     public function save(string $path = null, array $clouds = [], bool $metadata = true)
     {
-        $save_to = $this->getPath($path, $clouds);
+        /**
+         * Synopsis
+         * ------------------------------------------------------------------------------
+         * 1. Create directory path, path info array, and temporary folders(if it is required).
+         * 2. Build object and run FFmpeg to package media content and save on the local machine.
+         * 3. If the cloud is specified, entire packaged files will be uploaded to clouds.
+         * 4. If files were saved into a tmp folder, then they will be moved to the local path(if the path is specified).
+         * 5. Return all video and also streams' metadata and save as a json file on the local machine(it won't save metadata to clouds because of some security concerns).
+         * 6. In the end, clear all tmp files.
+         * ------------------------------------------------------------------------------
+         */
 
-        try {
-            $this->media
-                ->addFilter($this->getFilter())
-                ->save($this->getFormat(), $save_to);
-        } catch (ExceptionInterface $e) {
-            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()),
-                $e->getCode(),
-                $e
-            );
-        }
-
+        $this->createPathInfoAndTmpDir($path, $clouds);
+        $this->runFFmpeg();
         $this->saveToClouds($clouds);
         $this->moveTmpFolder($path);
 
-        return ($metadata) ? (new Metadata($this))->extract() : $this;
+        return $metadata ? (new Metadata($this))->extract() : $this;
     }
-
-    /**
-     * @return Filter
-     */
-    abstract protected function getFilter(): Filter;
 
     /**
      * @param $path
      * @param $clouds
-     * @return string
      * @throws Exception
      */
-    private function getPath($path, $clouds): string
+    private function createPathInfoAndTmpDir($path, $clouds): void
     {
         if (null !== $path) {
             $this->path_info = pathinfo($path);
+            FileManager::makeDir($this->path_info["dirname"]);
         }
 
         if ($clouds) {
@@ -101,11 +97,54 @@ abstract class Export
         if (null === $path && $this->media->isTmp() && !$clouds) {
             throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
         }
+    }
 
+    /**
+     * @param $path
+     * @throws Exception
+     */
+    private function tmpDirectory($path)
+    {
+        if (null !== $path) {
+            $basename = pathinfo($path, PATHINFO_BASENAME);
+        } else {
+            $basename = Helper::randomString();
+        }
+
+        $this->tmp_dir = FileManager::tmpDir();
+        $this->path_info = pathinfo($this->tmp_dir . $basename);
+    }
+
+    /**
+     * Run FFmpeg to package media content
+     */
+    private function runFFmpeg(): void
+    {
+        try {
+            $this->media
+                ->addFilter($this->getFilter())
+                ->save($this->getFormat(), $this->getPath());
+        } catch (ExceptionInterface $e) {
+            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
+    }
+
+    /**
+     * @return Filter
+     */
+    abstract protected function getFilter(): Filter;
+
+    /**
+     * @return string
+     */
+    private function getPath(): string
+    {
         $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
-        $filename = substr($this->path_info["filename"], -50);
-
-        FileManager::makeDir($dirname);
+        $filename = substr($this->path_info["filename"], -100);
+        $path = '';
 
         if ($this instanceof DASH) {
             $path = $dirname . "/" . $filename . ".mpd";
@@ -116,6 +155,98 @@ abstract class Export
         }
 
         return $path;
+    }
+
+    /**
+     * @param array $clouds
+     */
+    private function saveToClouds(array $clouds): void
+    {
+        if ($clouds) {
+
+            if (!is_array(current($clouds))) {
+                $clouds = [$clouds];
+            }
+
+            sleep(1);
+
+            foreach ($clouds as $cloud) {
+                if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
+                    $cloud_obj = $cloud['cloud'];
+                    $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
+
+                    $cloud_obj->uploadDirectory($this->tmp_dir, $options);
+                } else {
+                    throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
+                    and the cloud must be instance of CloudInterface');
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string|null $path
+     * @throws Exception
+     */
+    private function moveTmpFolder(?string $path)
+    {
+        if ($this->tmp_dir && $path) {
+            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getPathInfo(): array
+    {
+        return $this->path_info;
+    }
+
+    /**
+     * @return object|Media
+     */
+    public function getMedia(): Media
+    {
+        return $this->media;
+    }
+
+    /**
+     * @param string $strict
+     * @return Export
+     */
+    public function setStrict(string $strict): Export
+    {
+        $this->strict = $strict;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrict(): string
+    {
+        return $this->strict;
+    }
+
+    /**
+     * clear tmp files
+     */
+    public function __destruct()
+    {
+        sleep(1);
+
+        if ($this->media->isTmp()) {
+            @unlink($this->media->getPath());
+        }
+
+        if ($this->tmp_dir) {
+            FileManager::deleteDirectory($this->tmp_dir);
+        }
+
+        if ($this instanceof HLS && $this->tmp_key_info_file) {
+            @unlink($this->getHlsKeyInfoFile());
+        }
     }
 
     /**
@@ -249,22 +380,6 @@ abstract class Export
     }
 
     /**
-     * @return array
-     */
-    public function getPathInfo(): array
-    {
-        return $this->path_info;
-    }
-
-    /**
-     * @return object|Media
-     */
-    public function getMedia(): Media
-    {
-        return $this->media;
-    }
-
-    /**
      * @param $path
      * @return array
      * @throws Exception
@@ -282,93 +397,5 @@ abstract class Export
         $this->tmp_dir = FileManager::tmpDir();
 
         return $this->save($this->tmp_dir . $basename);
-    }
-
-    /**
-     * clear tmp files
-     */
-    public function __destruct()
-    {
-        sleep(1);
-
-        if ($this->media->isTmp()) {
-            @unlink($this->media->getPath());
-        }
-
-        if ($this->tmp_dir) {
-            FileManager::deleteDirectory($this->tmp_dir);
-        }
-    }
-
-    /**
-     * @param string|null $path
-     * @throws Exception
-     */
-    private function moveTmpFolder(?string $path)
-    {
-        if ($this->tmp_dir && $path) {
-            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
-        }
-    }
-
-    /**
-     * @param string $strict
-     * @return Export
-     */
-    public function setStrict(string $strict): Export
-    {
-        $this->strict = $strict;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStrict(): string
-    {
-        return $this->strict;
-    }
-
-    /**
-     * @param $path
-     * @throws Exception
-     */
-    private function tmpDirectory($path)
-    {
-        if (null !== $path) {
-            $basename = pathinfo($path, PATHINFO_BASENAME);
-        } else {
-            $basename = Helper::randomString();
-        }
-
-        $this->tmp_dir = FileManager::tmpDir();
-        $this->path_info = pathinfo($this->tmp_dir . $basename);
-    }
-
-    /**
-     * @param array $clouds
-     */
-    private function saveToClouds(array $clouds): void
-    {
-        if ($clouds) {
-
-            if (!is_array(current($clouds))) {
-                $clouds = [$clouds];
-            }
-
-            sleep(1);
-
-            foreach ($clouds as $cloud) {
-                if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-                    $cloud_obj = $cloud['cloud'];
-                    $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-
-                    $cloud_obj->uploadDirectory($this->tmp_dir, $options);
-                } else {
-                    throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
-                    and the cloud must be instance of CloudInterface');
-                }
-            }
-        }
     }
 }

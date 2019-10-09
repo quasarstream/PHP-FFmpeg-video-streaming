@@ -34,6 +34,9 @@ class HLS extends Export
     /** @var string */
     private $hls_base_url = "";
 
+    /** @var bool */
+    public $tmp_key_info_file = false;
+
     /**
      * @return string
      */
@@ -108,6 +111,8 @@ class HLS extends Export
     public function generateRandomKeyInfo(string $url, string $path, int $length = 16): HLS
     {
         $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path, $length));
+        $this->tmp_key_info_file = true;
+
         return $this;
     }
 
