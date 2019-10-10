@@ -79,179 +79,12 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method.
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and custom cloud. 
 
-##### Form a Cloud
+Please go to the **[Wiki page](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/wiki/Open-a-File-From-Clouds)** to see more examples and usage of these clouds.
 ``` php
-$cloud = new \Streaming\Clouds\Cloud('https://www.aminyazdanpanah.com/my_sweetie.mp4');
-$from_cloud = ['cloud' => $cloud];
-
-$video = $ffmpeg->openFromCloud($from_cloud);
-```
-
-A path to save the file, the method of request, and **[request options](http://docs.guzzlephp.org/en/stable/request-options.html)** can also be passed to the method.
-``` php
-$api = 'https://www.aminyazdanpanah.com/api/v1.0';
-$save_to = '/var/www/media/videos/my_sweetie.mp4';
-$method = 'POST';
-$current_percentage = 0;
-$options = [
-    'auth' => ['username', 'password', 'digest'],
-    'form_params' => [
-        'user'      => 'USER_ID',
-        'method'    => 'download',
-        'file'      => ['dir3', 'videos', 'my_sweetie.mp4']
-    ],
-    'headers' => [
-        'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
-        'Accept'            => 'application/json',
-        'Authorization'     => 'Bearer ACCESS_TOKEN'
-    ],
-    'progress' => function(
-        $downloadTotal,
-        $downloadedBytes,
-        $uploadTotal,
-        $uploadedBytes
-    ) use (&$current_percentage) {
-        $percentage = ($downloadTotal > 500) ? intval(($downloadedBytes / $downloadTotal) * 100) : 0;
-        if ($current_percentage !== $percentage) {
-            // You can update a field in your database or log it into a file
-            // You can also create a socket connection and show the progress to users
-            echo sprintf("\r Downloading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
-            $current_percentage = $percentage;
-        }
-    },
-];
-
-$cloud = new \Streaming\Clouds\Cloud($api, $method, $options);
-$from_cloud = ['cloud' => $cloud];
-
-$video = $ffmpeg->openFromCloud($from_cloud, $save_to);
-```
-**NOTE:** This package uses **[Guzzle](https://github.com/guzzle/guzzle)** to send and receive files. [Learn more](http://docs.guzzlephp.org/en/stable/index.html).
-
-##### From Amazon S3
-Amazon S3 or Amazon Simple Storage Service is a service offered by **[Amazon Web Services (AWS)](https://aws.amazon.com/)** that provides object storage through a web service interface. [Learn more](https://en.wikipedia.org/wiki/Amazon_S3)
-- For getting credentials, you need to have an AWS account or you can **[create one](https://portal.aws.amazon.com/billing/signup#/start)**.
-
-``` php
-$config = [
-    'version'     => 'latest',
-    'region'      => 'us-west-1',
-    'credentials' => [
-        'key'    => 'my-access-key-id',
-        'secret' => 'my-secret-access-key',
-    ]
-];
-
-$aws_cloud = new \Streaming\Clouds\AWS($config);
-$aws_cloud_download_options = [
-    'Bucket' => 'my-bucket-name',
-    'Key' => '/videos/my_sweetie.mp4'
-];
-
-$from_aws_cloud = [
-    'cloud' => $aws_cloud,
-    'options' => $aws_cloud_download_options
-];
-
-$video = $ffmpeg->openFromCloud($from_aws_cloud);
-```
-A path can also be passed to save the file on your local machine.
-
-##### From Google Cloud Storage
-**[Google Cloud Storage](https://console.cloud.google.com/storage)** is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure. The service combines the performance and scalability of Google's cloud with advanced security and sharing capabilities. It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service. Contrary to Google Drive and according to different service specifications, Google Cloud Storage appears to be more suitable for enterprises. [Learn more](https://en.wikipedia.org/wiki/Google_Storage)
-- For creating credentials, read the Cloud Storage Authentication found **[here](https://cloud.google.com/storage/docs/authentication)** or you can **[create it](https://console.cloud.google.com/apis/credentials)** directly (Select the "Service account key" option).
-
-``` php
-$config = [
-    'keyFilePath' => '/path/to/credentials.json' // Alternativaely, you can authenticate by setting the environment variable. See https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
-];
-$bucket = 'yourbucket';
-
-$google_cloud = new \Streaming\Clouds\GoogleCloudStorage($config, $bucket);
-$google_cloud_download_options = [
-    'filename' => 'my_sweetie.mp4',
-    OTHER_OPTION => OTHER_VALUE_OPTION
-];
-
-$from_google_cloud = [
-    'cloud' => $google_cloud,
-    'options' => $google_cloud_download_options
-];
-
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
-A path can also be passed to save the file on your local machine.
-
-
-##### From Microsoft Azure Storage
-**[Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)** is Microsoft's cloud storage solution for modern data storage scenarios. Azure Storage offers a massively scalable object store for data objects, a file system service for the cloud, a messaging store for reliable messaging, and a NoSQL store. [Learn more](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
-- To authenticate the service, please click **[here](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)**.
-
-``` php
-$connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
-
-$microsoft_azure = new \Streaming\Clouds\MicrosoftAzure($connectionString);
-$microsoft_azure_download_options = [
-    'container' => 'your_container',
-    'blob' => 'my_sweetie.mp4'
-];
-
-$from_microsoft_azure = [
-    'cloud' => $microsoft_azure,
-    'options' => $microsoft_azure_download_options
-];
-
-$video = $ffmpeg->openFromCloud($from_microsoft_azure);
-```
-A path can also be passed to save the file on your local machine.
-
-##### From a Custom Cloud
-You can create a custom cloud by implementing `CloudInterface`:
-``` php
-use Streaming\Clouds\CloudInterface;
-
-class CustomCloud implements CloudInterface
-{
-
-    /**
-     * Upload a entire directory to a cloud
-     * @param string $dir
-     * @param array $options
-     */
-    public function uploadDirectory(string $dir, array $options): void
-    {
-        // TODO: Implement uploadDirectory() method.
-    }
-
-    /**
-     * Download a file from a cloud
-     * @param string $save_to
-     * @param array $options
-     */
-    public function download(string $save_to, array $options): void
-    {
-        // TODO: Implement download() method.
-    }
-}
-```
-
-After creating your own cloud class, you can easily pass the cloud options to the `openFromCloud` method:
-``` php
-$custom_cloud = new CustomCloud();
-// The array below will be passed to the `download` method in the `CustomCloud` class.
-$custom_cloud_download_options = [
-    YOUR_OPTIONS => YOUR_VALUE_OPTIONS
-];
-
-$from_custom_cloud = [
-    'cloud' => $custom_cloud,
-    'options' => $custom_cloud_download_options
-];
-
-$video = $ffmpeg->openFromCloud($from_custom_cloud);
-``` 
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -270,7 +103,7 @@ You can also create multi-representations video files using the `Representation`
 ``` php
 use Streaming\Representation;
 
-$rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1080 , 720);
+$rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1280 , 720);
 $rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
 
 $video->DASH()
@@ -294,13 +127,13 @@ $video->HLS()
     ->autoGenerateRepresentations([720, 360]) // You can limit the numbers of representatons
     ->save();
 ```
-Create multi-qualities video files using the `Representation` object(set bit-rate and size manually):
+Generate `Representation` object(set bit-rate and size manually):
 ``` php
 use Streaming\Representation;
 
-$rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1080 , 720);
-$rep_2 = (new Representation())->setKiloBitrate(500)->setResize(640 , 360);
-$rep_3 = (new Representation())->setKiloBitrate(200)->setResize(480 , 270);
+$rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1280 , 720);
+$rep_2 = (new Representation())->setKiloBitrate(500)->setResize(854 , 480);
+$rep_3 = (new Representation())->setKiloBitrate(200)->setResize(640 , 360);
 
 $video->HLS()
     ->X264()
@@ -335,6 +168,7 @@ $video->HLS()
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
 See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
+
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 
@@ -358,31 +192,9 @@ $video->DASH()
     ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save();
 ```
-HLS Transcoding:
-``` php
-$format = new Streaming\Format\X264();
-$current_percentage = 0;
 
-$format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
-    $percentage = intval($percentage);
-    if ($current_percentage !== $percentage) {
-        echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
-        $current_percentage = $percentage;
-    }
-});
-
-$video->HLS()
-    ->setFormat($format)
-    ->setTsSubDirectory('ts_files')
-    ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos')
-    ->autoGenerateRepresentations([240, 144], [200, 100]) // You can also set the kilo bite rate of each video
-    ->save('/var/www/media/videos/dash/test.m3u8');
-```
-
-##### Output From Terminal:
+##### Output From a Terminal:
 ![transcoding](/docs/transcoding.gif?raw=true "transcoding" )
-
-See **[Formats](https://github.com/PHP-FFMpeg/PHP-FFMpeg#formats)** for more information.
 
 ### Saving Files
 There are several options to save your files.
@@ -408,132 +220,9 @@ $hls->save();
 **NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
+You can save your files to a cloud by passing an array of cloud configuration to the `save` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-##### To a Cloud
-``` php
-$api = 'https://www.aminyazdanpanah.com/api/v1.0/video/uploading';
-$method = 'POST';
-$current_percentage = 0;
-$options = [
-    'auth' => ['username', 'password', 'digest'],
-    'progress' => function(
-        $downloadTotal,
-        $downloadedBytes,
-        $uploadTotal,
-        $uploadedBytes
-    ) use (&$current_percentage) {
-        $percentage = ($uploadTotal > 500) ? intval(($uploadedBytes / $uploadTotal) * 100) : 0;
-        if ($current_percentage !== $percentage) {
-            // You can update a field in your database or log it into a file
-            // You can also create a socket connection and show the progress to users
-            echo sprintf("\r Uploading... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
-            $current_percentage = $percentage;
-        }
-    },
-];
-
-$cloud = new \Streaming\Clouds\Cloud($api, $method, $options);
-$cloud_upload_options = [
-    'name' => MY_FILES_name
-    'headers' => [
-        'User-Agent'        => 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
-        'Accept'            => 'application/json',
-        'Authorization'     => 'Bearer ACCESS_TOKEN'
-    ]
-];
-
-$to_cloud = [
-    'cloud' => $cloud,
-    'options' => $cloud_upload_options
-];
-
-$dash->save(null, $to_cloud);
-```
-A path can also be passed to save a copy of files on your local machine:
-``` php
-$hls->save('/var/www/media/videos/hls/test.m3u8', $to_cloud);
-```
-
-##### TO Amazon S3
-You can save and upload entire packaged video files to **[Amazon S3](https://aws.amazon.com/)**. For uploading files, you need to have credentials.
-``` php
-$config = [
-    'version'     => 'latest',
-    'region'      => 'us-west-1',
-    'credentials' => [
-        'key'    => 'my-access-key-id',
-        'secret' => 'my-secret-access-key',
-    ]
-];
-
-$aws_cloud = new \Streaming\Clouds\AWS($config);
-$aws_cloud_upload_options = [
-    'dest' => 's3://bucket'
-];
-
-$to_aws_cloud = [
-    'cloud' => $aws_cloud,
-    'options' => $aws_cloud_upload_options
-];
-
-$dash->save(null, $to_aws_cloud);
-```
-A path can also be passed to save a copy of files on your local machine.
-``` php
-$hls->save('/var/www/media/videos/hls/test.m3u8', $to_aws_cloud);
-```
-
-##### TO Google Cloud Storage
-You can save and upload entire packaged video files to **[Google Cloud Storage](https://console.cloud.google.com/storage)**. For uploading files, you need to have credentials.
-``` php
-$config = [
-    'keyFilePath' => __DIR__ . "/amin-723b115176e9.json"
-];
-$bucket = 'staging.amin-158006.appspot.com';
-
-$google_cloud = new \Streaming\Clouds\GoogleCloudStorage($config, $bucket);
-// You can add options to the upload/download method(e.g. encryption) or it can be null
-$google_cloud_upload_options = [
-    'encryptionKey' => base64EncryptionKey,
-    OTHER_OPTION => OTHER_VALUE_OPTIONS
-];
-
-$to_google_cloud= [
-    'cloud' => $google_cloud,
-    'options' => $google_cloud_upload_options
-];
-
-$dash->save(null, $to_google_cloud);
-```
-A path can also be passed to save a copy of files on your local machine.
-``` php
-$hls->save('/var/www/media/videos/hls/test.m3u8', $to_google_cloud);
-```
-
-##### TO Microsoft Azure Storage
-You can save and upload the entire files to **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**. For uploading files, you need to have credentials.
-``` php
-$connectionString = 'DefaultEndpointsProtocol=https;AccountName=<yourAccount>;AccountKey=<yourKey>';
-
-$microsoft_azure = new \Streaming\Clouds\MicrosoftAzure($connectionString);
-$microsoft_azure_upload_options = [
-    'container' => 'your_container'
-];
-
-$to_microsoft_azure = [
-    'cloud' => $microsoft_azure,
-    'options' => $microsoft_azure_upload_options
-];
-
-$dash->save(null, $to_microsoft_azure);
-```
-
-##### TO a Custom Cloud
-You can upload your file to a custom cloud. Please see [Custom Cloud](#from-a-custom-cloud) for more information
-
-##### TO multiple Clouds
-You can save your files to multiple clouds:
+Please go to the **[Wiki page](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/wiki/Save-Files-To-Clouds)** to see more examples and usage of these clouds.
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
@@ -542,19 +231,19 @@ A path can also be passed to save a copy of files on your local machine.
 $hls->save('/var/www/media/videos/hls/test.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
-**NOTE:** You can mix opening and saving options together. For instance, you can open a file on your local machine and save packaged files to a Cloud (or vice versa).   
+**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds).   
 
 ![schema](/docs/schema.gif?raw=true "schema" )
 
 ### Metadata Extraction
-After saving files(wherever you saved them), you can extract the metadata from the video and streams:
+After saving files(wherever you saved them), you can extract the metadata from the video and streams. You can save these metadata to your database.
 ``` php
 $metadata = $hls->save();
 
 echo $metadata['filename']; // path to metadata.json
 var_dump($metadata['metadata']); // dump all metadata
 ```
-**NOTE:** You can save these metadata to your database.
+**NOTE:** It won't save metadata to clouds because of some security concerns.
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -569,6 +258,7 @@ You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` me
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
 $frame->save('image.jpg');
 ```
+To see more example, please go to the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** 
 
 ## Asynchronous Task Execution
 Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.
