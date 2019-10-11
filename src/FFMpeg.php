@@ -29,9 +29,6 @@ class FFMpeg
     /** @var BFFMpeg */
     protected $ffmpeg;
 
-    /** @var string */
-    private $tmp_file;
-
     /**
      * @param $ffmpeg
      */
@@ -54,6 +51,7 @@ class FFMpeg
         try {
             return new Media($this->ffmpeg->open($path), $path, $is_tmp);
         } catch (ExceptionInterface $e) {
+            @unlink($path);
             throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
@@ -92,7 +90,7 @@ class FFMpeg
 
         if (null === $path) {
             $is_tmp = true;
-            $this->tmp_file = $path = FileManager::tmpFile();
+            $path = FileManager::tmpFile();
         }
 
         return [$is_tmp, $path];
@@ -106,16 +104,6 @@ class FFMpeg
     public function __call($method, $parameters)
     {
         return call_user_func_array([$this->ffmpeg, $method], $parameters);
-    }
-
-    /**
-     * if there is tmp file, then delete it
-     */
-    public function __destruct()
-    {
-        if($this->tmp_file){
-            @unlink($this->tmp_file);
-        }
     }
 
     /**
