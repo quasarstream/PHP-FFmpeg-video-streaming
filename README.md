@@ -79,9 +79,9 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and custom cloud. 
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please go to the **[Wiki page](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/wiki/Open-a-File-From-Clouds)** to see more examples and usage of these clouds.
+Please **[see here](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
@@ -222,7 +222,7 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please go to the **[Wiki page](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/wiki/Save-Files-To-Clouds)** to see more examples and usage of these clouds.
+Please **[see here](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 

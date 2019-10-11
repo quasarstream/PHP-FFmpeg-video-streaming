@@ -29,6 +29,9 @@ class FFMpeg
     /** @var BFFMpeg */
     protected $ffmpeg;
 
+    /** @var string */
+    private $tmp_file;
+
     /**
      * @param $ffmpeg
      */
@@ -76,6 +79,54 @@ class FFMpeg
         }
 
         return $this->open($save_to, $is_tmp);
+    }
+
+    /**
+     * @param $path
+     * @return array
+     * @throws Exception
+     */
+    private function isTmp($path)
+    {
+        $is_tmp = false;
+
+        if (null === $path) {
+            $is_tmp = true;
+            $this->tmp_file = $path = FileManager::tmpFile();
+        }
+
+        return [$is_tmp, $path];
+    }
+
+    /**
+     * @param $method
+     * @param $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this->ffmpeg, $method], $parameters);
+    }
+
+    /**
+     * if there is tmp file, then delete it
+     */
+    public function __destruct()
+    {
+        if($this->tmp_file){
+            @unlink($this->tmp_file);
+        }
+    }
+
+    /**
+     * @param array $config
+     * @param LoggerInterface $logger
+     * @param FFProbe|null $probe
+     * @return FFMpeg
+     */
+    public static function create($config = array(), LoggerInterface $logger = null, FFProbe $probe = null)
+    {
+        return new static(BFFMpeg::create($config, $logger, $probe));
     }
 
     /**
@@ -164,43 +215,5 @@ class FFMpeg
         $google_cloud->download($save_to, ['container' => $container, 'blob' => $blob]);
 
         return $this->open($save_to, $is_tmp);
-    }
-
-    /**
-     * @param $path
-     * @return array
-     * @throws Exception
-     */
-    private function isTmp($path)
-    {
-        $is_tmp = false;
-
-        if (null === $path) {
-            $is_tmp = true;
-            $path = FileManager::tmpFile();
-        }
-
-        return [$is_tmp, $path];
-    }
-
-    /**
-     * @param $method
-     * @param $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array([$this->ffmpeg, $method], $parameters);
-    }
-
-    /**
-     * @param array $config
-     * @param LoggerInterface $logger
-     * @param FFProbe|null $probe
-     * @return FFMpeg
-     */
-    public static function create($config = array(), LoggerInterface $logger = null, FFProbe $probe = null)
-    {
-        return new static(BFFMpeg::create($config, $logger, $probe));
     }
 }
