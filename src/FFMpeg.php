@@ -17,7 +17,7 @@ use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Clouds\AWS;
 use Streaming\Clouds\Cloud;
-use Streaming\Clouds\CloudInterface;
+use Streaming\Clouds\CloudManager;
 use Streaming\Clouds\GoogleCloudStorage;
 use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
@@ -51,7 +51,11 @@ class FFMpeg
         try {
             return new Media($this->ffmpeg->open($path), $path, $is_tmp);
         } catch (ExceptionInterface $e) {
-            @unlink($path);
+            if($is_tmp){
+                sleep(1);
+                unlink($path);
+            }
+
             throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
@@ -64,36 +68,7 @@ class FFMpeg
      */
     public function openFromCloud(array $cloud, string $save_to = null): Media
     {
-        list($is_tmp, $save_to) = $this->isTmp($save_to);
-
-        if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-            $cloud_obj = $cloud['cloud'];
-            $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-
-            $cloud_obj->download($save_to, $options);
-        } else {
-            throw new InvalidArgumentException('You must pass an array of a cloud to the openFromCloud method. 
-                    and the cloud must be instance of CloudInterface');
-        }
-
-        return $this->open($save_to, $is_tmp);
-    }
-
-    /**
-     * @param $path
-     * @return array
-     * @throws Exception
-     */
-    private function isTmp($path)
-    {
-        $is_tmp = false;
-
-        if (null === $path) {
-            $is_tmp = true;
-            $path = FileManager::tmpFile();
-        }
-
-        return [$is_tmp, $path];
+        return call_user_func_array([$this, 'open'], CloudManager::downloadFromCloud($cloud, $save_to));
     }
 
     /**
@@ -115,6 +90,25 @@ class FFMpeg
     public static function create($config = array(), LoggerInterface $logger = null, FFProbe $probe = null)
     {
         return new static(BFFMpeg::create($config, $logger, $probe));
+    }
+
+    /**
+     * @param $path
+     * @return array
+     * @throws Exception
+     * @deprecated this method is deprecated
+     */
+    // @TODO: should be removed in the next releases.
+    private function isTmp($path)
+    {
+        $is_tmp = false;
+
+        if (null === $path) {
+            $is_tmp = true;
+            $path = FileManager::tmpFile();
+        }
+
+        return [$is_tmp, $path];
     }
 
     /**

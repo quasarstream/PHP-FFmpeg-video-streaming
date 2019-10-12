@@ -7,7 +7,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
+This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
 - This package uses FFmpeg, so before you get started, take the time to read the **[FFmpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
 - For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
@@ -32,9 +32,9 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
 - [License](#license)
 
 ## Requirements
-1. This version of the package is only compatible with PHP 7.2 or higher.
+1. This version of the package is only compatible with **[PHP 7.2](https://www.php.net/releases/)** or higher.
 
-2. To use this package, you need to install the **[FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
+2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
 
 ## Installation
 Install the package via **[composer](https://getcomposer.org/)**:
@@ -81,7 +81,7 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 #### 2. From Clouds
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[see here](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
+Please **[visit the 'open a file from a cloud' page](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
@@ -222,7 +222,7 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[see here](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
+Please **[visit the 'save files to clouds' page](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 

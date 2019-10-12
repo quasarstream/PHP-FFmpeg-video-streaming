@@ -14,7 +14,7 @@ namespace Streaming;
 use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Clouds\AWS;
 use Streaming\Clouds\Cloud;
-use Streaming\Clouds\CloudInterface;
+use Streaming\Clouds\CloudManager;
 use Streaming\Clouds\GoogleCloudStorage;
 use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
@@ -72,7 +72,7 @@ abstract class Export
 
         $this->createPathInfoAndTmpDir($path, $clouds);
         $this->runFFmpeg();
-        $this->saveToClouds($clouds);
+        CloudManager::saveToClouds($clouds, $this->tmp_dir);
         $this->moveTmpFolder($path);
 
         return $metadata ? (new Metadata($this))->extract() : $this;
@@ -158,33 +158,6 @@ abstract class Export
     }
 
     /**
-     * @param array $clouds
-     */
-    private function saveToClouds(array $clouds): void
-    {
-        if ($clouds) {
-
-            if (!is_array(current($clouds))) {
-                $clouds = [$clouds];
-            }
-
-            sleep(1);
-
-            foreach ($clouds as $cloud) {
-                if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-                    $cloud_obj = $cloud['cloud'];
-                    $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-
-                    $cloud_obj->uploadDirectory($this->tmp_dir, $options);
-                } else {
-                    throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
-                    and the cloud must be instance of CloudInterface');
-                }
-            }
-        }
-    }
-
-    /**
      * @param string|null $path
      * @throws Exception
      */
@@ -192,6 +165,7 @@ abstract class Export
     {
         if ($this->tmp_dir && $path) {
             FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
+            $this->path_info = pathinfo($path);
         }
     }
 
