@@ -81,7 +81,7 @@ $video = $ffmpeg->open('/var/www/media/videos/test.mp4');
 #### 2. From Clouds
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[visit the 'open a file from a cloud' page](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
+Please visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
@@ -179,7 +179,7 @@ $current_percentage = 0;
 $format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
     $percentage = intval($percentage);
     if ($current_percentage !== $percentage) {
-        // You can update a field in your database or log it into a file
+        // You can update a field in your database or log it to a file
         // You can also create a socket connection and show the progress to users
         echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
         $current_percentage = $percentage;
@@ -222,7 +222,7 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[visit the 'save files to clouds' page](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
+Please visit **[this page](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
@@ -231,9 +231,10 @@ A path can also be passed to save a copy of files on your local machine.
 $hls->save('/var/www/media/videos/hls/test.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
-**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds).   
+**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
 
-![schema](/docs/schema.gif?raw=true "schema" )
+<p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
+
 
 ### Metadata Extraction
 After saving files(wherever you saved them), you can extract the metadata from the video and streams. You can save these metadata to your database.

@@ -166,6 +166,7 @@ abstract class Export
         if ($this->tmp_dir && $path) {
             FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
             $this->path_info = pathinfo($path);
+            $this->tmp_dir = '';
         }
     }
 
@@ -201,6 +202,14 @@ abstract class Export
     public function getStrict(): string
     {
         return $this->strict;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTmpDir(): bool
+    {
+        return (bool)$this->tmp_dir;
     }
 
     /**

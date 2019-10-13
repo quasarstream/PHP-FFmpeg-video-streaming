@@ -37,9 +37,10 @@ class Metadata
         $metadata["video"] = $this->getVideoMetadata();
         $metadata["streams"] = $this->getStreamsMetadata();
 
-        $name = $this->export->getPathInfo()["filename"] . "-" . bin2hex(openssl_random_pseudo_bytes(6)) . ".json";
-        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
-        file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
+        $filename = 'It is not possible to save metadata to clouds.';
+        if(!$this->export->isTmpDir()){
+            $filename = $this->saveAsJson($metadata);
+        }
 
         return [
             'filename' => $filename,
@@ -111,5 +112,14 @@ class Metadata
         }
 
         return $resolutions;
+    }
+
+    private function saveAsJson($metadata)
+    {
+        $name = $this->export->getPathInfo()["filename"] . "-" . bin2hex(openssl_random_pseudo_bytes(6)) . ".json";
+        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
+        file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
+
+        return $filename;
     }
 }
