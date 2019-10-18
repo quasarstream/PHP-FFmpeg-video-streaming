@@ -75,7 +75,7 @@ There are several ways to open a file:
 #### 1. From a Local Path
 You can pass a local path of video to the `open` method:
 ``` php
-$video = $ffmpeg->open('/var/www/media/videos/test.mp4');
+$video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 ```
 
 #### 2. From Clouds
@@ -111,7 +111,7 @@ $video->DASH()
     ->addRepresentation($rep_1) // Add a representation
     ->addRepresentation($rep_2) 
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
-    ->save('/var/www/media/videos/dash/test.mpd');
+    ->save('/var/www/media/videos/dash-stream.mpd');
 ```
 See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
@@ -163,7 +163,7 @@ $video->HLS()
     ->setTsSubDirectory('ts_files')// put all ts files in a subdirectory
     ->generateRandomKeyInfo($url, $save_to)
     ->autoGenerateRepresentations([1080, 480, 240])
-    ->save('/var/www/media/videos/hls/test.m3u8');
+    ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
@@ -174,16 +174,25 @@ A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime i
 
 ``` php
 $format = new Streaming\Format\HEVC();
-$current_percentage = 0;
+$start_time = time();
 
-$format->on('progress', function ($video, $format, $percentage) use (&$current_percentage) {
-    $percentage = intval($percentage);
-    if ($current_percentage !== $percentage) {
-        // You can update a field in your database or log it to a file
-        // You can also create a socket connection and show the progress to users
-        echo sprintf("\r Transcoding... (%s%%)[%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
-        $current_percentage = $percentage;
+$percentage_to_time_left = function ($percentage) use ($start_time)
+{
+    if ($percentage != 0) {
+        $diff_time = time() - $start_time;
+        $seconds_left = 100 * $diff_time / $percentage - $diff_time;
+        $time_left = gmdate("H:i:s", $seconds_left) . ' left';
+    } else {
+        $time_left = 'calculating...';
     }
+
+    return $time_left;
+};
+
+$format->on('progress', function ($video, $format, $percentage) use($percentage_to_time_left) {
+    // You can update a field in your database or can log it to a file
+    // You can also create a socket connection and show a progress bar to users
+    echo sprintf("\rTranscoding...(%s%%) %s [%s%s]", $percentage, $percentage_to_time_left($percentage), str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
 });
 
 $video->DASH()
@@ -207,7 +216,7 @@ $dash = $video->DASH()
             ->autoGenerateRepresentations()
             ->setAdaption('id=0,streams=v id=1,streams=a');
             
-$dash->save('/var/www/media/videos/dash/test.mpd');
+$dash->save('/var/www/media/videos/dash-stream.mpd');
 ```
 It can also be null. The default path to save files is the input path.
 ``` php
@@ -228,7 +237,7 @@ $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_cus
 ``` 
 A path can also be passed to save a copy of files on your local machine.
 ``` php
-$hls->save('/var/www/media/videos/hls/test.m3u8', [$to_google_cloud, $to_custom_cloud]);
+$hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
 **NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
@@ -289,7 +298,7 @@ You can use these libraries to play your streams.
 - **Windows, Linux, and macOS**
     - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
 
-**NOTE:** You should pass a manifest of streams(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
+**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
