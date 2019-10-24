@@ -24,7 +24,9 @@ class MicrosoftAzure implements CloudInterface
     /**
      * MicrosoftAzure constructor.
      * @param $connectionString
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function __construct($connectionString)
     {
         @trigger_error(

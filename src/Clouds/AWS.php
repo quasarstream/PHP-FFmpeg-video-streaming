@@ -26,7 +26,9 @@ class AWS implements CloudInterface
     /**
      * AWS constructor.
      * @param $config
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function __construct(array $config)
     {
         @trigger_error(

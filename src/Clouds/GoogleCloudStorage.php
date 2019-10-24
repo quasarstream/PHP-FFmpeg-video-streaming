@@ -28,7 +28,9 @@ class GoogleCloudStorage implements CloudInterface
      * @param string $bucket
      * @param bool $userProject
      * @param array $config
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function __construct(array $config, string $bucket, $userProject = false)
     {
         @trigger_error(

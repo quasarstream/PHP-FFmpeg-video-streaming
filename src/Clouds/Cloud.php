@@ -37,7 +37,9 @@ class Cloud implements CloudInterface
      * @param string $url
      * @param string $method
      * @param array $options
+     * @deprecated this method is deprecated
      */
+    // @TODO: should be removed in the next releases.
     public function __construct(string $url, string $method = "GET", $options = [])
     {
         @trigger_error(
