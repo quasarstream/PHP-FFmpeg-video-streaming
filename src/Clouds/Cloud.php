@@ -40,6 +40,12 @@ class Cloud implements CloudInterface
      */
     public function __construct(string $url, string $method = "GET", $options = [])
     {
+        @trigger_error(
+            'Cloud class is deprecated and will be removed in a future release. Use CloudInterface instead.
+            For more information see https://video.aminyazdanpanah.com/start/open-clouds and https://video.aminyazdanpanah.com/start/save-clouds',
+            E_USER_DEPRECATED
+        );
+
         $this->client = new Client();
         $this->url = $url;
         $this->method = $method;

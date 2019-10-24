@@ -29,6 +29,11 @@ class AWS implements CloudInterface
      */
     public function __construct(array $config)
     {
+        @trigger_error(
+            'AWS class is deprecated and will be removed in a future release. Use CloudInterface instead.
+            For more information see https://video.aminyazdanpanah.com/start/open-clouds and https://video.aminyazdanpanah.com/start/save-clouds',
+            E_USER_DEPRECATED
+        );
         $this->s3 = new S3Client($config);;
     }
 

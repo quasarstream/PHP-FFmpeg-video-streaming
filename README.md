@@ -8,8 +8,8 @@
 
 ## Overview
 This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
-- This package uses FFmpeg, so before you get started, take the time to read the **[FFmpeg documentation](https://ffmpeg.org/ffmpeg-formats.html)**.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
+- **[A complete example](https://video.aminyazdanpanah.com/start/example) is provided. It contains server-side(Transcoding + cloud + progress + web socket) and client-side(progress bar + web socket + player).
 - For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
@@ -79,9 +79,10 @@ $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
-Please visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see more examples and usage of these clouds.
+In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
@@ -176,19 +177,18 @@ A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime i
 $format = new Streaming\Format\HEVC();
 $start_time = time();
 
-$percentage_to_time_left = function ($percentage) use ($start_time)
-{
-    if ($percentage != 0) {
-        $diff_time = time() - $start_time;
-        $seconds_left = 100 * $diff_time / $percentage - $diff_time;
-        $time_left = gmdate("H:i:s", $seconds_left) . ' left';
-    } else {
-        $time_left = 'calculating...';
+$start_time = 0;
+$percentage_to_time_left = function ($percentage) use (&$start_time) {
+    if($start_time === 0){
+        $start_time = time();
+        return "Calculating...";
     }
 
-    return $time_left;
-};
+    $diff_time = time() - $start_time;
+    $seconds_left = 100 * $diff_time / $percentage - $diff_time;
 
+    return gmdate("H:i:s", $seconds_left);
+};
 $format->on('progress', function ($video, $format, $percentage) use($percentage_to_time_left) {
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
@@ -229,9 +229,9 @@ $hls->save();
 **NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing an array of cloud configuration to the `save` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
-Please visit **[this page](https://video.aminyazdanpanah.com/start/save-clouds)** to see more examples and usage of these clouds.
+In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 

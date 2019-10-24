@@ -27,6 +27,12 @@ class MicrosoftAzure implements CloudInterface
      */
     public function __construct($connectionString)
     {
+        @trigger_error(
+            'MicrosoftAzure class is deprecated and will be removed in a future release. Use CloudInterface instead.
+            For more information see https://video.aminyazdanpanah.com/start/open-clouds and https://video.aminyazdanpanah.com/start/save-clouds',
+            E_USER_DEPRECATED
+        );
+
         $this->blobClient = BlobRestProxy::createBlobService($connectionString);
     }
 

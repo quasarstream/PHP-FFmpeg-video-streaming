@@ -31,6 +31,12 @@ class GoogleCloudStorage implements CloudInterface
      */
     public function __construct(array $config, string $bucket, $userProject = false)
     {
+        @trigger_error(
+            'GoogleCloudStorage class is deprecated and will be removed in a future release. Use CloudInterface instead.
+            For more information see https://video.aminyazdanpanah.com/start/open-clouds and https://video.aminyazdanpanah.com/start/save-clouds',
+            E_USER_DEPRECATED
+        );
+
         try {
             $storage = new StorageClient($config);
             $this->bucket = $storage->bucket($bucket, $userProject);
