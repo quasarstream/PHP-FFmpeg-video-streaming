@@ -12,7 +12,6 @@
 namespace Streaming\Filters;
 
 use Streaming\FileManager;
-use Streaming\Helper;
 use Streaming\HLS;
 use Streaming\Representation;
 use Streaming\Utilities;
