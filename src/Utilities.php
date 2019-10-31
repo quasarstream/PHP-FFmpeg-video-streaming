@@ -12,10 +12,7 @@
 namespace Streaming;
 
 
-
-use Streaming\Exception\InvalidArgumentException;
-
-class Helper
+class Utilities
 {
     /**
      * round a number to nearest even number
@@ -44,24 +41,6 @@ class Helper
      */
     public static function appendSlash(string $word)
     {
-        if ($word) {
-            return rtrim($word, '/') . '/';
-        }
-        return $word;
-    }
-
-    /**
-     * @param $url
-     * @return bool
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    public static function isURL(string $url)
-    {
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new InvalidArgumentException("Your URL($url) is not valid! Your URL should start with (http://) or (https://).");
-        }
-
-        return true;
+        return $word ? rtrim($word, '/') . '/' : '';
     }
 }

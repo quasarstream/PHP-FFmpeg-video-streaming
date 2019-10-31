@@ -70,7 +70,7 @@ $ffmpeg = Streaming\FFMpeg::create($config);
 ```
 
 ### Opening a File
-There are several ways to open a file:
+There are two ways to open a file:
 
 #### 1. From a Local Path
 You can pass a local path of video to the `open` method:
@@ -92,7 +92,7 @@ $video = $ffmpeg->openFromCloud($from_google_cloud);
 
 Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
-Create DASH Files:
+Create DASH files:
 ``` php
 $video->DASH()
     ->HEVC() // Format of the video. Alternatives: X264() and VP9()
@@ -100,21 +100,30 @@ $video->DASH()
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
     ->save(); // It can be passed a path to the method or it can be null
 ```
-You can also create multi-representations video files using the `Representation` object:
+Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_1 = (new Representation())->setKiloBitrate(800)->setResize(1280 , 720);
-$rep_2 = (new Representation())->setKiloBitrate(300)->setResize(640 , 360);
+$rep_144 = (new Representation)->setKiloBitrate(95)->setResize(256 , 144);
+$rep_240 = (new Representation)->setKiloBitrate(150)->setResize(426 , 240);
+$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640 , 360);
+$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854 , 480);
+$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280 , 720);
+$rep_1080 = (new Representation)->setKiloBitrate(4096)->setResize(1920 , 1080);
+$rep_1440 = (new Representation)->setKiloBitrate(6096)->setResize(2560 , 1440);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentation($rep_1) // Add a representation
-    ->addRepresentation($rep_2) 
+    ->addRepresentation($rep_144)// add a representation
+    ->addRepresentation($rep_240)
+    ->addRepresentation($rep_360)
+    ->addRepresentation($rep_480)
+    ->addRepresentation($rep_720)
+    ->addRepresentation($rep_1080)
+    ->addRepresentation($rep_1440)
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
-See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
@@ -128,20 +137,20 @@ $video->HLS()
     ->autoGenerateRepresentations([720, 360]) // You can limit the numbers of representatons
     ->save();
 ```
-Generate `Representation` object(set bit-rate and size manually):
+Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_1 = (new Representation())->setKiloBitrate(1000)->setResize(1280 , 720);
-$rep_2 = (new Representation())->setKiloBitrate(500)->setResize(854 , 480);
-$rep_3 = (new Representation())->setKiloBitrate(200)->setResize(640 , 360);
+$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640 , 360);
+$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854 , 480);
+$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280 , 720);
 
 $video->HLS()
     ->X264()
     ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
-    ->addRepresentation($rep_1)
-    ->addRepresentation($rep_2)
-    ->addRepresentation($rep_3)
+    ->addRepresentation($rep_360)
+    ->addRepresentation($rep_480)
+    ->addRepresentation($rep_720)
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
@@ -151,7 +160,7 @@ $video->HLS()
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You need to pass both `URL to the key` and `path to save a random key` to the `generateRandomKeyInfo` method:
+You need to pass both `A URL to the key` and `A path to save a random key on your local machine` to the `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
 $save_to = '/var/www/my_website_project/keys/enc.key';
@@ -168,16 +177,14 @@ $video->HLS()
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
-See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 
 ``` php
 $format = new Streaming\Format\HEVC();
-$start_time = time();
-
 $start_time = 0;
+
 $percentage_to_time_left = function ($percentage) use (&$start_time) {
     if($start_time === 0){
         $start_time = time();
@@ -206,7 +213,7 @@ $video->DASH()
 ![transcoding](/docs/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
-There are several options to save your files.
+There are two ways to save your files.
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
@@ -231,7 +238,7 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of saving files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
@@ -240,7 +247,7 @@ A path can also be passed to save a copy of files on your local machine.
 $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
-**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
+**Schema:** The relation is `one-to-many`
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
@@ -253,7 +260,7 @@ $metadata = $hls->save();
 echo $metadata['filename']; // path to metadata.json
 var_dump($metadata['metadata']); // dump all metadata
 ```
-**NOTE:** It won't save metadata to clouds because of some security concerns.
+**NOTE:** It won't save metadata to clouds because of some security reasons.
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -268,7 +275,7 @@ You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` me
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
 $frame->save('image.jpg');
 ```
-To see more example, please go to the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** 
+To see more example, please vist the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
 
 ## Asynchronous Task Execution
 Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.

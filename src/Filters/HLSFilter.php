@@ -15,6 +15,7 @@ use Streaming\FileManager;
 use Streaming\Helper;
 use Streaming\HLS;
 use Streaming\Representation;
+use Streaming\Utilities;
 
 class HLSFilter extends Filter
 {
@@ -40,9 +41,9 @@ class HLSFilter extends Filter
         $counter = 0;
         $path_parts = $hls->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
-        $filename = substr($path_parts["filename"], -50);
-        $ts_sub_dir = Helper::appendSlash($hls->getTsSubDirectory());
-        $base_url = Helper::appendSlash($hls->getHlsBaseUrl());
+        $filename = substr($path_parts["filename"], -100);
+        $ts_sub_dir = Utilities::appendSlash($hls->getTsSubDirectory());
+        $base_url = Utilities::appendSlash($hls->getHlsBaseUrl());
 
         if ($ts_sub_dir) {
             FileManager::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);

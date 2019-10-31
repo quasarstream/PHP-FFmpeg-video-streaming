@@ -22,7 +22,7 @@ class CloudManager
      * @param array $clouds
      * @param string $tmp_dir
      */
-    public static function saveToClouds(?array $clouds, ?string $tmp_dir): void
+    public static function uploadDirectory(?array $clouds, ?string $tmp_dir): void
     {
         if (!$clouds) {
             return;
@@ -32,20 +32,9 @@ class CloudManager
             $clouds = [$clouds];
         }
 
-        sleep(1);
-
         foreach ($clouds as $cloud) {
-            if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-                $cloud_obj = $cloud['cloud'];
-                $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-
-                $cloud_obj->uploadDirectory($tmp_dir, $options);
-            } else {
-                throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
-                and the cloud must be instance of CloudInterface');
-            }
+            static::transfer($cloud, __FUNCTION__, $tmp_dir);
         }
-
     }
 
     /**
@@ -54,38 +43,27 @@ class CloudManager
      * @return array
      * @throws \Streaming\Exception\Exception
      */
-    public static function downloadFromCloud(array $cloud, string $save_to = null): array
+    public static function download(array $cloud, string $save_to = null): array
     {
-        list($is_tmp, $save_to) = static::isTmp($save_to);
-
-        if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-            $cloud_obj = $cloud['cloud'];
-            $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-
-            $cloud_obj->download($save_to, $options);
-        } else {
-            throw new InvalidArgumentException('You must pass an array of a cloud to the openFromCloud method. 
-                    and the cloud must be instance of CloudInterface');
-        }
+        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [FileManager::tmpFile(), true];
+        static::transfer($cloud, __FUNCTION__, $save_to);
 
         return [$save_to, $is_tmp];
     }
 
     /**
+     * @param $cloud
+     * @param $method
      * @param $path
-     * @return array
-     * @throws \Streaming\Exception\Exception
      */
-    private static function isTmp($path)
+    private static function transfer($cloud, $method, $path): void
     {
-        $is_tmp = false;
-
-        if (null === $path) {
-            $is_tmp = true;
-            $path = FileManager::tmpFile();
+        if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
+            $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
+            call_user_func_array([$cloud['cloud'], $method], [$path, $options]);
+        } else {
+            throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
+                and the cloud must be instance of CloudInterface');
         }
-
-        return [$is_tmp, $path];
     }
-
 }

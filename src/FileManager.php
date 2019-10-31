@@ -72,7 +72,7 @@ class FileManager
      */
     public static function tmpDir(): string
     {
-        $tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Helper::randomString() . DIRECTORY_SEPARATOR;
+        $tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Utilities::randomString() . DIRECTORY_SEPARATOR;
         static::makeDir($tmp_dir);
 
         return $tmp_dir;

@@ -12,11 +12,7 @@
 namespace Streaming;
 
 use FFMpeg\Exception\ExceptionInterface;
-use Streaming\Clouds\AWS;
-use Streaming\Clouds\Cloud;
 use Streaming\Clouds\CloudManager;
-use Streaming\Clouds\GoogleCloudStorage;
-use Streaming\Clouds\MicrosoftAzure;
 use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
@@ -72,7 +68,7 @@ abstract class Export
 
         $this->createPathInfoAndTmpDir($path, $clouds);
         $this->runFFmpeg();
-        CloudManager::saveToClouds($clouds, $this->tmp_dir);
+        CloudManager::uploadDirectory($clouds, $this->tmp_dir);
         $this->moveTmpFolder($path);
 
         return $metadata ? (new Metadata($this))->extract() : $this;
@@ -108,7 +104,7 @@ abstract class Export
         if (null !== $path) {
             $basename = pathinfo($path, PATHINFO_BASENAME);
         } else {
-            $basename = Helper::randomString();
+            $basename = Utilities::randomString();
         }
 
         $this->tmp_dir = FileManager::tmpDir();
@@ -230,155 +226,5 @@ abstract class Export
         if ($this instanceof HLS && $this->tmp_key_info_file) {
             @unlink($this->getHlsKeyInfoFile());
         }
-    }
-
-    /**
-     * @param string $url
-     * @param string $name
-     * @param string|null $path
-     * @param string $method
-     * @param array $headers
-     * @param array $options
-     * @return mixed
-     * @throws Exception
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    public function saveToCloud(
-        string $url,
-        string $name,
-        string $path = null,
-        string $method = 'GET',
-        array $headers = [],
-        array $options = []
-    )
-    {
-        @trigger_error('saveToCloud method is deprecated and will be removed in a future release. Use Cloud instead', E_USER_DEPRECATED);
-        if ($this instanceof HLS && $this->getTsSubDirectory()) {
-            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
-        }
-        $results = $this->saveToTemporaryFolder($path);
-        sleep(1);
-
-        $cloud = new Cloud($url, $method, $options);
-        $cloud->uploadDirectory($this->tmp_dir, ['name' => $name, 'headers' => $headers]);
-
-        $this->moveTmpFolder($path);
-
-        return $results;
-    }
-
-    /**
-     * @param array $config
-     * @param string $dest
-     * @param string|null $path
-     * @return mixed
-     * @throws Exception
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    public function saveToS3(
-        array $config,
-        string $dest,
-        string $path = null
-    )
-    {
-        @trigger_error('saveToS3 method is deprecated and will be removed in a future release. Use AWS instead', E_USER_DEPRECATED);
-        $results = $this->saveToTemporaryFolder($path);
-        sleep(1);
-
-        $aws = new AWS($config);
-        $aws->uploadDirectory($this->tmp_dir, ['dest' => $dest]);
-
-        $this->moveTmpFolder($path);
-
-        return $results;
-    }
-
-    /**
-     * @param array $config
-     * @param string $bucket
-     * @param string|null $path
-     * @param array $options
-     * @param bool $userProject
-     * @return mixed
-     * @throws Exception
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    public function saveToGCS(
-        array $config,
-        string $bucket,
-        string $path = null,
-        array $options = [],
-        bool $userProject = false
-    )
-    {
-        @trigger_error('saveToGCS method is deprecated and will be removed in a future release. Use GoogleCloudStorage instead', E_USER_DEPRECATED);
-        if ($this instanceof HLS && $this->getTsSubDirectory()) {
-            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
-        }
-
-        $results = $this->saveToTemporaryFolder($path);
-        sleep(1);
-
-        $google_cloud = new GoogleCloudStorage($config, $bucket, $userProject);
-        $google_cloud->uploadDirectory($this->tmp_dir, $options);
-
-        $this->moveTmpFolder($path);
-
-        return $results;
-    }
-
-    /**
-     * @param string $connectionString
-     * @param string $container
-     * @param string|null $path
-     * @return mixed
-     * @throws Exception
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    public function saveToMAS(
-        string $connectionString,
-        string $container,
-        string $path = null
-    )
-    {
-        @trigger_error('saveToMAS method is deprecated and will be removed in a future release. Use MicrosoftAzure instead', E_USER_DEPRECATED);
-
-        if ($this instanceof HLS && $this->getTsSubDirectory()) {
-            throw new InvalidArgumentException("It is not possible to create subdirectory in a cloud");
-        }
-
-        $results = $this->saveToTemporaryFolder($path);
-        sleep(1);
-
-        $google_cloud = new MicrosoftAzure($connectionString);
-        $google_cloud->uploadDirectory($this->tmp_dir, ['container' => $container]);
-
-        $this->moveTmpFolder($path);
-
-        return $results;
-    }
-
-    /**
-     * @param $path
-     * @return array
-     * @throws Exception
-     * @deprecated this method is deprecated
-     */
-    // @TODO: should be removed in the next releases.
-    private function saveToTemporaryFolder($path)
-    {
-        $basename = Helper::randomString();
-
-        if (null !== $path) {
-            $basename = pathinfo($path, PATHINFO_BASENAME);
-        }
-
-        $this->tmp_dir = FileManager::tmpDir();
-
-        return $this->save($this->tmp_dir . $basename);
     }
 }

@@ -84,7 +84,7 @@ class AutoRepresentations
         $reps[] = $this->addRep($k_bitrate, $w, $h);
 
         foreach ($this->side_values as $key => $height) {
-            $reps[] = $this->addRep($this->k_bitrate_values[$key], Helper::roundToEven($r * $height), $height);
+            $reps[] = $this->addRep($this->k_bitrate_values[$key], Utilities::roundToEven($r * $height), $height);
         }
 
         return array_reverse($reps);
