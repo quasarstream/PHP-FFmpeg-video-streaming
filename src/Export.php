@@ -13,7 +13,6 @@ namespace Streaming;
 
 use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Clouds\CloudManager;
-use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 use Streaming\Filters\Filter;
@@ -50,7 +49,6 @@ abstract class Export
      * @param array $clouds
      * @param bool $metadata
      * @return mixed
-     * @throws Exception
      */
     public function save(string $path = null, array $clouds = [], bool $metadata = true)
     {
@@ -77,7 +75,6 @@ abstract class Export
     /**
      * @param $path
      * @param $clouds
-     * @throws Exception
      */
     private function createPathInfoAndTmpDir($path, $clouds): void
     {
@@ -97,7 +94,6 @@ abstract class Export
 
     /**
      * @param $path
-     * @throws Exception
      */
     private function tmpDirectory($path)
     {
@@ -138,16 +134,15 @@ abstract class Export
      */
     private function getPath(): string
     {
-        $dirname = str_replace("\\", "/", $this->path_info["dirname"]);
-        $filename = substr($this->path_info["filename"], -100);
-        $path = '';
+        $path = substr(str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]), -PHP_MAXPATHLEN);
 
         if ($this instanceof DASH) {
-            $path = $dirname . "/" . $filename . ".mpd";
+            $path = $path . ".mpd";
         } elseif ($this instanceof HLS) {
+            ExportHLSPlaylist::savePlayList($path . ".m3u8", $this->getRepresentations(), $this->path_info["filename"]);
+
             $representations = $this->getRepresentations();
-            $path = $dirname . "/" . $filename . "_" . end($representations)->getHeight() . "p.m3u8";
-            ExportHLSPlaylist::savePlayList($dirname . DIRECTORY_SEPARATOR . $filename . ".m3u8", $this->getRepresentations(), $filename);
+            $path = $path . "_" . end($representations)->getHeight() . "p.m3u8";
         }
 
         return $path;
@@ -155,14 +150,12 @@ abstract class Export
 
     /**
      * @param string|null $path
-     * @throws Exception
      */
     private function moveTmpFolder(?string $path)
     {
         if ($this->tmp_dir && $path) {
             FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
             $this->path_info = pathinfo($path);
-            $this->tmp_dir = '';
         }
     }
 

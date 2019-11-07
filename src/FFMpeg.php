@@ -16,7 +16,6 @@ use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Clouds\CloudManager;
-use Streaming\Exception\Exception;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 
@@ -60,7 +59,6 @@ class FFMpeg
      * @param array $cloud
      * @param string|null $save_to
      * @return Media
-     * @throws Exception
      */
     public function openFromCloud(array $cloud, string $save_to = null): Media
     {

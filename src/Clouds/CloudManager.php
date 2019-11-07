@@ -41,7 +41,6 @@ class CloudManager
      * @param array $cloud
      * @param string|null $save_to
      * @return array
-     * @throws \Streaming\Exception\Exception
      */
     public static function download(array $cloud, string $save_to = null): array
     {

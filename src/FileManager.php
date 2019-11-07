@@ -13,7 +13,7 @@
 namespace Streaming;
 
 
-use Streaming\Exception\Exception;
+use Streaming\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -27,16 +27,15 @@ class FileManager
     /**
      * @param $dirname
      * @param int $mode
-     * @throws Exception
      */
     public static function makeDir($dirname, $mode = 0777): void
     {
-        $filesystem = new Filesystem();
+        $fs = new Filesystem();
 
         try {
-            $filesystem->mkdir($dirname, $mode);
+            $fs->mkdir($dirname, $mode);
         } catch (IOExceptionInterface $exception) {
-            throw new Exception("An error occurred while creating your directory at " . $exception->getPath(), $exception->getCode(), $exception);
+            throw new RuntimeException("Failed to make the directory at " . $exception->getPath(), $exception->getCode(), $exception);
         }
     }
 
@@ -59,7 +58,6 @@ class FileManager
 
     /**
      * @return string
-     * @throws Exception
      */
     public static function tmpFile(): string
     {
@@ -68,67 +66,55 @@ class FileManager
 
     /**
      * @return string
-     * @throws Exception
      */
     public static function tmpDir(): string
     {
-        $tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Utilities::randomString() . DIRECTORY_SEPARATOR;
-        static::makeDir($tmp_dir);
-
+        static::makeDir($tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Utilities::randomString() . DIRECTORY_SEPARATOR);
         return $tmp_dir;
     }
 
     /**
      * @return string
-     * @throws Exception
      */
     private static function tmpDirPath(): string
     {
-        $tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming";
-        static::makeDir($tmp_path);
-
+        static::makeDir($tmp_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "php_ffmpeg_video_streaming");
         return $tmp_path;
     }
 
     /**
-     * @param string $source
-     * @param string $destination
-     * @throws Exception
+     * @param string $src
+     * @param string $dst
      */
-    public static function moveDir(string $source, string $destination)
+    public static function moveDir(string $src, string $dst)
     {
-        static::makeDir($destination);
-        foreach (scandir($source) as $file) {
+        static::makeDir($dst);
+
+        foreach (scandir($src) as $file) {
             if (in_array($file, [".", ".."])) continue;
-            if (copy($source . $file, $destination . $file)) {
-                unlink($source . $file);
+
+            if (is_dir($src . DIRECTORY_SEPARATOR . $file)) {
+                static::moveDir($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+                continue;
             }
+
+            copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
         }
 
-        static::deleteDirectory($source);
+        static::deleteDirectory($src);
     }
 
     /**
      * @param $dir
-     * @return bool
      */
-    public static function deleteDirectory($dir)
+    public static function deleteDirectory($dir): void
     {
-        if (!file_exists($dir)) {
-            return true;
-        }
+        $fs = new Filesystem();
 
-        if (!is_dir($dir)) {
-            return @unlink($dir);
+        try {
+            $fs->remove($dir);
+        } catch (IOExceptionInterface $exception) {
+            throw new RuntimeException("Failed to remove the directory at " . $exception->getPath(), $exception->getCode(), $exception);
         }
-
-        foreach (scandir($dir) as $item) {
-            if (in_array($item, [".", ".."])) continue;
-            if (!static::deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
-                return false;
-            }
-        }
-
-        return @rmdir($dir);
     }
 }

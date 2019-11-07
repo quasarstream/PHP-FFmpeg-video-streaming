@@ -6,14 +6,12 @@
         "dash",
         "hls",
         "video",
+        "mp4",
         "videostreaming",
         "streaming",
-        "chunk",
-        "live",
-        "media",
         "video-streaming",
         "live-streaming",
-        "AminYazdanpanah",
+        "http-liv-streaming",
         "DynamicAdaptiveStreamingOverHTTP"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming",
@@ -48,17 +46,10 @@
     "require": {
         "php": "^7.2",
         "php-ffmpeg/php-ffmpeg": "^0.14",
-        "guzzlehttp/guzzle": "~6.0",
-        "aws/aws-sdk-php": "~3.0",
-        "google/cloud-storage": "^1.14",
-        "microsoft/azure-storage-blob": "*",
-        "ext-openssl": "*"
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit"
+        "symfony/filesystem": "^4.3"
     },
     "suggest": {
-        "php-ffmpeg/php-ffmpeg": "php-ffmpeg/php-ffmpeg is required for video support.",
-        "aminyazdanpanah/save-uploaded-files": "aminyazdanpanah/save-uploaded-files is suggested for uploading and validating a new video."
+        "aminyazdanpanah/php-shaka": "aminyazdanpanah/php-shaka is suggested for using DRM and encryption",
+        "aminyazdanpanah/handling-file-uploads": "aminyazdanpanah/handling-file-uploads is suggested for uploading and validating a new video."
     }
 }

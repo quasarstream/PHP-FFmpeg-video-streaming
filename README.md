@@ -104,13 +104,13 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_144 = (new Representation)->setKiloBitrate(95)->setResize(256 , 144);
-$rep_240 = (new Representation)->setKiloBitrate(150)->setResize(426 , 240);
-$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640 , 360);
-$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854 , 480);
-$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280 , 720);
-$rep_1080 = (new Representation)->setKiloBitrate(4096)->setResize(1920 , 1080);
-$rep_1440 = (new Representation)->setKiloBitrate(6096)->setResize(2560 , 1440);
+$rep_144 = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
+$rep_240 = (new Representation)->setKiloBitrate(150)->setResize(426, 240);
+$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
+$rep_1080 = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
+$rep_1440 = (new Representation)->setKiloBitrate(6096)->setResize(2560, 1440);
 
 $video->DASH()
     ->HEVC()
@@ -141,9 +141,9 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640 , 360);
-$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854 , 480);
-$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280 , 720);
+$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 
 $video->HLS()
     ->X264()
@@ -182,7 +182,6 @@ $video->HLS()
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 
 ``` php
-$format = new Streaming\Format\HEVC();
 $start_time = 0;
 
 $percentage_to_time_left = function ($percentage) use (&$start_time) {
@@ -196,6 +195,8 @@ $percentage_to_time_left = function ($percentage) use (&$start_time) {
 
     return gmdate("H:i:s", $seconds_left);
 };
+
+$format = new Streaming\Format\HEVC();
 $format->on('progress', function ($video, $format, $percentage) use($percentage_to_time_left) {
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
@@ -290,20 +291,27 @@ Packaging process will may take a while and it is recommended to run it in the b
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**
-    - DASH and HLS: **[video.js](https://github.com/videojs/video.js)**
-    - DASH and HLS: **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-    - DASH and HLS: **[Plyr](https://github.com/sampotts/plyr)**
-    - DASH and HLS: **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-    - DASH and HLS: **[Clappr](https://github.com/clappr/clappr)**
-    - DASH and HLS: **[Flowplayer](https://github.com/flowplayer/flowplayer)**
-    - DASH and HLS: **[Shaka Player](https://github.com/google/shaka-player)**
-    - DASH and HLS: **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
-    - DASH: **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
-    - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
+    - DASH and HLS: 
+        - **[video.js](https://github.com/videojs/video.js)**
+        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+        - **[Plyr](https://github.com/sampotts/plyr)**
+        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+        - **[Clappr](https://github.com/clappr/clappr)**
+        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
+        - **[Shaka Player](https://github.com/google/shaka-player)**
+        - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+    - DASH:
+        - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
+    - HLS: 
+        - **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
-    - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
+    - DASH and HLS: 
+        - **[ExoPlayer](https://github.com/google/ExoPlayer)**
+        - **[VLC Android](https://github.com/videolan/vlc-android)**
 - **Windows, Linux, and macOS**
-    - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
+    - DASH and HLS:
+        - **[VLC media player](https://github.com/videolan/vlc)**
+        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
