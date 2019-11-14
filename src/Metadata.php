@@ -32,7 +32,7 @@ class Metadata
     /**
      * @return mixed
      */
-    public function extract()
+    public function extract(): array
     {
         $metadata["video"] = $this->getVideoMetadata();
         $metadata["streams"] = $this->getStreamsMetadata();
@@ -51,7 +51,7 @@ class Metadata
     /**
      * @return mixed
      */
-    private function getVideoMetadata()
+    private function getVideoMetadata(): array
     {
         $probe = $this->export->getMedia()->probe();
         $streams = $probe['streams']->all();
@@ -70,7 +70,7 @@ class Metadata
     /**
      * @return mixed
      */
-    private function getStreamsMetadata()
+    private function getStreamsMetadata(): array
     {
         $stream_path = $this->export->getPathInfo();
         $metadata["filename"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
@@ -101,7 +101,7 @@ class Metadata
     /**
      * @return array
      */
-    private function getResolutions()
+    private function getResolutions(): array
     {
         $resolutions = [];
         foreach ($this->export->getRepresentations() as $key => $representation) {
@@ -114,7 +114,7 @@ class Metadata
         return $resolutions;
     }
 
-    private function saveAsJson($metadata)
+    private function saveAsJson($metadata): string
     {
         $name = $this->export->getPathInfo()["filename"] . "-" . bin2hex(openssl_random_pseudo_bytes(6)) . ".json";
         $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;

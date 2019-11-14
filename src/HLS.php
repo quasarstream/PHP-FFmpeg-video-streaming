@@ -106,7 +106,6 @@ class HLS extends Export
      * @param string $path
      * @param int $length
      * @return HLS
-     * @throws Exception\Exception
      */
     public function generateRandomKeyInfo(string $url, string $path, int $length = 16): HLS
     {

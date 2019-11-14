@@ -28,14 +28,14 @@ class FileManager
      * @param $dirname
      * @param int $mode
      */
-    public static function makeDir($dirname, $mode = 0777): void
+    public static function makeDir(string $dirname, int $mode = 0777): void
     {
         $fs = new Filesystem();
 
         try {
             $fs->mkdir($dirname, $mode);
-        } catch (IOExceptionInterface $exception) {
-            throw new RuntimeException("Failed to make the directory at " . $exception->getPath(), $exception->getCode(), $exception);
+        } catch (IOExceptionInterface $e) {
+            throw new RuntimeException("Failed to make the directory at " . $e->getPath(), $e->getCode(), $e);
         }
     }
 
@@ -43,7 +43,7 @@ class FileManager
      * @param $dir
      * @return int|null
      */
-    public static function directorySize($dir)
+    public static function directorySize(string $dir)
     {
         if (is_dir($dir)) {
             $size = 0;
@@ -86,7 +86,7 @@ class FileManager
      * @param string $src
      * @param string $dst
      */
-    public static function moveDir(string $src, string $dst)
+    public static function moveDir(string $src, string $dst): void
     {
         static::makeDir($dst);
 
@@ -107,14 +107,14 @@ class FileManager
     /**
      * @param $dir
      */
-    public static function deleteDirectory($dir): void
+    public static function deleteDirectory(string $dir): void
     {
         $fs = new Filesystem();
 
         try {
             $fs->remove($dir);
-        } catch (IOExceptionInterface $exception) {
-            throw new RuntimeException("Failed to remove the directory at " . $exception->getPath(), $exception->getCode(), $exception);
+        } catch (IOExceptionInterface $e) {
+            throw new RuntimeException("Failed to remove the directory at " . $e->getPath(), $e->getCode(), $e);
         }
     }
 }

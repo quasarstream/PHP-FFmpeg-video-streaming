@@ -19,7 +19,7 @@ class ExportHLSPlaylist
      * @param $representations
      * @param $basename
      */
-    public static function savePlayList($filename, $representations, $basename)
+    public static function savePlayList(string $filename, array $representations, string $basename): void
     {
         file_put_contents($filename, static::generateContents($representations, $basename));
     }
@@ -29,7 +29,7 @@ class ExportHLSPlaylist
      * @param $basename
      * @return string
      */
-    private static function generateContents($representations, $basename)
+    private static function generateContents(array $representations, string $basename): string
     {
         $content[] = "#EXTM3U";
         $content[] = "#EXT-X-VERSION:3";

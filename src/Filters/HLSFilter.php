@@ -21,7 +21,6 @@ class HLSFilter extends Filter
     /**
      * @param $media
      * @return mixed|void
-     * @throws \Streaming\Exception\Exception
      */
     public function setFilter($media): void
     {
@@ -31,7 +30,6 @@ class HLSFilter extends Filter
     /**
      * @param HLS $hls
      * @return array
-     * @throws \Streaming\Exception\Exception
      */
     private function HLSFilter(HLS $hls)
     {

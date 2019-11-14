@@ -49,11 +49,10 @@ Alternatively, add the dependency directly to your `composer.json` file:
 ```
 
 ## Quickstart
-First of all, you need to include the package in Your Code:
+First of all, you need to include the package in your code:
 ``` php
 require 'vendor/autoload.php'; // path to the autoload file
 ```
-**Note:** If you are using such a framework(e.g. **[Laravel](https://github.com/laravel/laravel)**) that auto-include the autoload in your code, then you can skip this step.
 
 ### Configuration
 This package will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
@@ -82,15 +81,12 @@ $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
 In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
-
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
 
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
-
-Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
+**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
 Create DASH files:
 ``` php
@@ -104,33 +100,33 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_144 = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
-$rep_240 = (new Representation)->setKiloBitrate(150)->setResize(426, 240);
-$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
-$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
-$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
-$rep_1080 = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
-$rep_1440 = (new Representation)->setKiloBitrate(6096)->setResize(2560, 1440);
+$rep_144p  = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
+$rep_240p  = (new Representation)->setKiloBitrate(150)->setResize(426, 240);
+$rep_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$rep_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
+$rep_1080p = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
+$rep_2k    = (new Representation)->setKiloBitrate(6144‬)->setResize(2560, 1440);
+$rep_4k    = (new Representation)->setKiloBitrate(17408‬)->setResize(3840, 2160);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentation($rep_144)// add a representation
-    ->addRepresentation($rep_240)
-    ->addRepresentation($rep_360)
-    ->addRepresentation($rep_480)
-    ->addRepresentation($rep_720)
-    ->addRepresentation($rep_1080)
-    ->addRepresentation($rep_1440)
+    ->addRepresentation($rep_144p)// add a representation
+    ->addRepresentation($rep_240p)
+    ->addRepresentation($rep_360p)
+    ->addRepresentation($rep_480p)
+    ->addRepresentation($rep_720p)
+    ->addRepresentation($rep_1080p)
+    ->addRepresentation($rep_2k)
+    ->addRepresentation($rep_4k)
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
 
 ### HLS
-**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
-
-HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
+**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
-Create HLS files based on original video(auto-generate qualities).
+Create HLS files:
 ``` php
 $video->HLS()
     ->X264()
@@ -141,16 +137,16 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_360 = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
-$rep_480 = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
-$rep_720 = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
+$rep_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$rep_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 
 $video->HLS()
     ->X264()
     ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
-    ->addRepresentation($rep_360)
-    ->addRepresentation($rep_480)
-    ->addRepresentation($rep_720)
+    ->addRepresentation($rep_360p)
+    ->addRepresentation($rep_480p)
+    ->addRepresentation($rep_720p)
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
@@ -160,13 +156,13 @@ $video->HLS()
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You need to pass both `A URL to the key` and `A path to save a random key on your local machine` to the `generateRandomKeyInfo` method:
+You must specify a path to save a random key on your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `generateRandomKeyInfo` method:
 ``` php
 //A path you want to save a random key on your server
-$save_to = '/var/www/my_website_project/keys/enc.key';
+$save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key';
 
 //A URL (or a path) to access the key on your website
-$url = 'https://www.aminyazdanpanah.com/keys/enc.key';// or '/keys/enc.key';
+$url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';// or '/PATH_TO_KEY_DIRECTORY/random_key.key';
 
 $video->HLS()
     ->X264()
@@ -175,32 +171,17 @@ $video->HLS()
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
-**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
+**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(**It is highly recommended**).    
 
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
-
 ``` php
-$start_time = 0;
-
-$percentage_to_time_left = function ($percentage) use (&$start_time) {
-    if($start_time === 0){
-        $start_time = time();
-        return "Calculating...";
-    }
-
-    $diff_time = time() - $start_time;
-    $seconds_left = 100 * $diff_time / $percentage - $diff_time;
-
-    return gmdate("H:i:s", $seconds_left);
-};
-
 $format = new Streaming\Format\HEVC();
-$format->on('progress', function ($video, $format, $percentage) use($percentage_to_time_left) {
+$format->on('progress', function ($video, $format, $percentage){
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
-    echo sprintf("\rTranscoding...(%s%%) %s [%s%s]", $percentage, $percentage_to_time_left($percentage), str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
+    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
 });
 
 $video->DASH()
@@ -211,7 +192,7 @@ $video->DASH()
 ```
 
 ##### Output From a Terminal:
-![transcoding](/docs/transcoding.gif?raw=true "transcoding" )
+![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
 There are two ways to save your files.
@@ -256,12 +237,12 @@ $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custo
 ### Metadata Extraction
 After saving files(wherever you saved them), you can extract the metadata from the video and streams. You can save these metadata to your database.
 ``` php
-$metadata = $hls->save();
+extract($hls->save());
 
-echo $metadata['filename']; // path to metadata.json
-var_dump($metadata['metadata']); // dump all metadata
+echo $filename; // path to metadata.json
+print_r($metadata); // print metadata -> it's an array
 ```
-**NOTE:** It won't save metadata to clouds because of some security reasons.
+**NOTE:** It will not save metadata to clouds because of some security reasons.
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -270,12 +251,28 @@ $ffmpeg = Streaming\FFMpeg::create()
 $video = $$ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4');
 ```
 
-#### Example(Extracting image)
+#### Extracting image
 You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
 ``` php
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
-$frame->save('image.jpg');
+$frame->save('/var/www/media/videos/poster.jpg');
 ```
+**NOTE:** You can use the image as a video's poster.
+
+#### Gif
+A gif is an animated image extracted from a sequence of the video.
+
+You can save gif files using the FFMpeg\Media\Gif::save method.
+
+``` php
+$video
+    ->gif(FFMpeg\Coordinate\TimeCode::fromSeconds(2), new FFMpeg\Coordinate\Dimension(640, 480), 3)
+    ->save('/var/www/media/videos/animated_image.gif');
+```
+This method has a third optional boolean parameter, which is the duration of the animation. If you don't set it, you will get a fixed gif image.
+
+**NOTE:** You can use the gif as a video's thumbnail.
+
 To see more example, please vist the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
 
 ## Asynchronous Task Execution
@@ -292,14 +289,13 @@ Packaging process will may take a while and it is recommended to run it in the b
 You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
-        - **[video.js](https://github.com/videojs/video.js)**
-        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-        - **[Plyr](https://github.com/sampotts/plyr)**
-        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-        - **[Clappr](https://github.com/clappr/clappr)**
-        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
         - **[Shaka Player](https://github.com/google/shaka-player)**
+        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
         - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+        - **[Clappr](https://github.com/clappr/clappr)**
+        - **[Plyr](https://github.com/sampotts/plyr)**
     - DASH:
         - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
     - HLS: 
@@ -308,10 +304,16 @@ You can use these libraries to play your streams.
     - DASH and HLS: 
         - **[ExoPlayer](https://github.com/google/ExoPlayer)**
         - **[VLC Android](https://github.com/videolan/vlc-android)**
+- **IOS**
+    - DASH: 
+        - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
+    - HLS: 
+        - **[Player](https://github.com/piemonte/Player)**
+        - **[Mamba](https://github.com/Comcast/mamba)**
 - **Windows, Linux, and macOS**
     - DASH and HLS:
-        - **[VLC media player](https://github.com/videolan/vlc)**
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
+        - **[VLC media player](https://github.com/videolan/vlc)**
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 

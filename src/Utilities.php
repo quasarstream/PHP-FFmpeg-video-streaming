@@ -29,7 +29,7 @@ class Utilities
      * @param int $length
      * @return bool|string
      */
-    public static function randomString($length = 10)
+    public static function randomString(int $length = 10): string
     {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return substr(str_shuffle(str_repeat($chars, ceil($length / strlen($chars)))), 1, $length);
@@ -39,7 +39,7 @@ class Utilities
      * @param $word
      * @return bool|string
      */
-    public static function appendSlash(string $word)
+    public static function appendSlash(string $word): string
     {
         return $word ? rtrim($word, '/') . '/' : '';
     }

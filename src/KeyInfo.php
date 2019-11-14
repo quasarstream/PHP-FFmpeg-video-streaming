@@ -22,7 +22,6 @@ class KeyInfo
      * @param $path
      * @param int $length
      * @return string
-     * @throws Exception\Exception
      */
     public static function generate(string $url, string $path, int $length = 16): string
     {

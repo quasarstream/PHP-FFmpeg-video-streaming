@@ -18,6 +18,7 @@ use Streaming\Exception\RuntimeException;
 use Streaming\Filters\Filter;
 use Streaming\Traits\Formats;
 
+
 abstract class Export
 {
     use Formats;
@@ -42,129 +43,6 @@ abstract class Export
     {
         $this->media = $media;
         $this->path_info = pathinfo($media->getPath());
-    }
-
-    /**
-     * @param string $path
-     * @param array $clouds
-     * @param bool $metadata
-     * @return mixed
-     */
-    public function save(string $path = null, array $clouds = [], bool $metadata = true)
-    {
-        /**
-         * Synopsis
-         * ------------------------------------------------------------------------------
-         * 1. Create directory path, path info array, and temporary folders(if it is required).
-         * 2. Build object and run FFmpeg to package media content and save on the local machine.
-         * 3. If the cloud is specified, entire packaged files will be uploaded to clouds.
-         * 4. If files were saved into a tmp folder, then they will be moved to the local path(if the path is specified).
-         * 5. Return all video and also streams' metadata and save as a json file on the local machine(it won't save metadata to clouds because of some security concerns).
-         * 6. In the end, clear all tmp files.
-         * ------------------------------------------------------------------------------
-         */
-
-        $this->createPathInfoAndTmpDir($path, $clouds);
-        $this->runFFmpeg();
-        CloudManager::uploadDirectory($clouds, $this->tmp_dir);
-        $this->moveTmpFolder($path);
-
-        return $metadata ? (new Metadata($this))->extract() : $this;
-    }
-
-    /**
-     * @param $path
-     * @param $clouds
-     */
-    private function createPathInfoAndTmpDir($path, $clouds): void
-    {
-        if (null !== $path) {
-            $this->path_info = pathinfo($path);
-            FileManager::makeDir($this->path_info["dirname"]);
-        }
-
-        if ($clouds) {
-            $this->tmpDirectory($path);
-        }
-
-        if (null === $path && $this->media->isTmp() && !$clouds) {
-            throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
-        }
-    }
-
-    /**
-     * @param $path
-     */
-    private function tmpDirectory($path)
-    {
-        if (null !== $path) {
-            $basename = pathinfo($path, PATHINFO_BASENAME);
-        } else {
-            $basename = Utilities::randomString();
-        }
-
-        $this->tmp_dir = FileManager::tmpDir();
-        $this->path_info = pathinfo($this->tmp_dir . $basename);
-    }
-
-    /**
-     * Run FFmpeg to package media content
-     */
-    private function runFFmpeg(): void
-    {
-        try {
-            $this->media
-                ->addFilter($this->getFilter())
-                ->save($this->getFormat(), $this->getPath());
-        } catch (ExceptionInterface $e) {
-            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()),
-                $e->getCode(),
-                $e
-            );
-        }
-    }
-
-    /**
-     * @return Filter
-     */
-    abstract protected function getFilter(): Filter;
-
-    /**
-     * @return string
-     */
-    private function getPath(): string
-    {
-        $path = substr(str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]), -PHP_MAXPATHLEN);
-
-        if ($this instanceof DASH) {
-            $path = $path . ".mpd";
-        } elseif ($this instanceof HLS) {
-            ExportHLSPlaylist::savePlayList($path . ".m3u8", $this->getRepresentations(), $this->path_info["filename"]);
-
-            $representations = $this->getRepresentations();
-            $path = $path . "_" . end($representations)->getHeight() . "p.m3u8";
-        }
-
-        return $path;
-    }
-
-    /**
-     * @param string|null $path
-     */
-    private function moveTmpFolder(?string $path)
-    {
-        if ($this->tmp_dir && $path) {
-            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
-            $this->path_info = pathinfo($path);
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getPathInfo(): array
-    {
-        return $this->path_info;
     }
 
     /**
@@ -199,6 +77,122 @@ abstract class Export
     public function isTmpDir(): bool
     {
         return (bool)$this->tmp_dir;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPathInfo(): array
+    {
+        return $this->path_info;
+    }
+
+    /**
+     * @param string|null $path
+     */
+    private function moveTmpFolder(?string $path): void
+    {
+        if ($this->tmp_dir && $path) {
+            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
+            $this->path_info = pathinfo($path);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    private function getPath(): string
+    {
+        $path = substr(str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]), 0, PHP_MAXPATHLEN);
+
+        if ($this instanceof DASH) {
+            $path = $path . ".mpd";
+        } elseif ($this instanceof HLS) {
+            ExportHLSPlaylist::savePlayList($path . ".m3u8", $this->getRepresentations(), $this->path_info["filename"]);
+
+            $representations = $this->getRepresentations();
+            $path = $path . "_" . end($representations)->getHeight() . "p.m3u8";
+        }
+
+        return $path;
+    }
+
+    /**
+     * @return Filter
+     */
+    abstract protected function getFilter(): Filter;
+
+    /**
+     * Run FFmpeg to package media content
+     */
+    private function runFFmpeg(): void
+    {
+        try {
+            $this->media
+                ->addFilter($this->getFilter())
+                ->save($this->getFormat(), $this->getPath());
+        } catch (ExceptionInterface $e) {
+            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param $path
+     */
+    private function tmpDirectory($path): void
+    {
+        $basename = $path ? pathinfo($path, PATHINFO_BASENAME) : Utilities::randomString();
+
+        $this->tmp_dir = FileManager::tmpDir();
+        $this->path_info = pathinfo($this->tmp_dir . $basename);
+    }
+
+    /**
+     * @param $path
+     * @param $clouds
+     */
+    private function createPathInfoAndTmpDir($path, $clouds): void
+    {
+        if (null !== $path) {
+            $this->path_info = pathinfo($path);
+            FileManager::makeDir($this->path_info["dirname"]);
+        }
+
+        if ($clouds) {
+            $this->tmpDirectory($path);
+        }
+
+        if (null === $path && $this->media->isTmp() && !$clouds) {
+            throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
+        }
+    }
+
+    /**
+     * @param string $path
+     * @param array $clouds
+     * @param bool $metadata
+     * @return mixed
+     */
+    public function save(string $path = null, array $clouds = [], bool $metadata = true)
+    {
+        /**
+         * Synopsis
+         * ------------------------------------------------------------------------------
+         * 1. Create directory path, path info array, and temporary folders(if it is required).
+         * 2. Build object and run FFmpeg to package media content and save on the local machine.
+         * 3. If the cloud is specified, entire packaged files will be uploaded to clouds.
+         * 4. If files were saved into a tmp folder, then they will be moved to the local path(if the path is specified).
+         * 5. Return all video and also streams' metadata and save as a json file on the local machine(it won't save metadata to clouds because of some security reasons).
+         * 6. In the end, clear all tmp files.
+         * ------------------------------------------------------------------------------
+         */
+
+        $this->createPathInfoAndTmpDir($path, $clouds);
+        $this->runFFmpeg();
+        CloudManager::uploadDirectory($clouds, $this->tmp_dir);
+        $this->moveTmpFolder($path);
+
+        return $metadata ? (new Metadata($this))->extract() : $this;
     }
 
     /**

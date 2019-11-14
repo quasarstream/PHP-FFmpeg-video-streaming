@@ -12,7 +12,14 @@
         "video-streaming",
         "live-streaming",
         "http-liv-streaming",
-        "DynamicAdaptiveStreamingOverHTTP"
+        "dynamicadaptivestreamingOverhttp",
+        "cloud",
+        "clouds",
+        "googlecloud",
+        "googlecloudstorage",
+        "s3",
+        "amazons3",
+        "microsoftazure"
     ],
     "homepage": "https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming",
     "license": "MIT",

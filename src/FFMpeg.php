@@ -16,7 +16,6 @@ use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
 use Streaming\Clouds\CloudManager;
-use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 
 class FFMpeg
@@ -39,10 +38,6 @@ class FFMpeg
      */
     public function open(string $path, bool $is_tmp = false): Media
     {
-        if (!is_file($path)) {
-            throw new InvalidArgumentException("There is no file in this path: " . $path);
-        }
-
         try {
             return new Media($this->ffmpeg->open($path), $path, $is_tmp);
         } catch (ExceptionInterface $e) {
@@ -50,7 +45,6 @@ class FFMpeg
                 sleep(1);
                 unlink($path);
             }
-
             throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
         }
     }
@@ -81,7 +75,7 @@ class FFMpeg
      * @param FFProbe|null $probe
      * @return FFMpeg
      */
-    public static function create($config = array(), LoggerInterface $logger = null, FFProbe $probe = null)
+    public static function create(array $config = [], LoggerInterface $logger = null, FFProbe $probe = null)
     {
         return new static(BFFMpeg::create($config, $logger, $probe));
     }
