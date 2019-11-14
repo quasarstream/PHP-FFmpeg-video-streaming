@@ -26,7 +26,7 @@ class AutoRepresentations
      *
      * @var array side_values
      */
-    private $side_values = [2160, 1080, 720, 480, 360, 240, 144];
+    private $side_values = [2160, 1440, 1080, 720, 480, 360, 240, 144];
 
     /** @var array $k_bitrate_values */
     private $k_bitrate_values;

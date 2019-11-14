@@ -38,7 +38,7 @@ class Metadata
         $metadata["streams"] = $this->getStreamsMetadata();
 
         $filename = 'It is not possible to save metadata to clouds.';
-        if(!$this->export->isTmpDir()){
+        if (!$this->export->isTmpDir()) {
             $filename = $this->saveAsJson($metadata);
         }
 
