@@ -35,10 +35,8 @@ class ExportHLSPlaylist
         $content[] = "#EXT-X-VERSION:3";
 
         foreach ($representations as $representation) {
-            if ($representation instanceof Representation) {
-                $content[] = "#EXT-X-STREAM-INF:BANDWIDTH=" . $representation->getKiloBitrate() * 1024 . ",RESOLUTION=" . $representation->getResize();
-                $content[] = $basename . "_" . $representation->getHeight() . "p.m3u8";
-            }
+            $content[] = "#EXT-X-STREAM-INF:BANDWIDTH=" . $representation->getKiloBitrate() * 1024 . ",RESOLUTION=" . $representation->getResize();
+            $content[] = $basename . "_" . $representation->getHeight() . "p.m3u8";
         }
 
         return implode(PHP_EOL, $content);

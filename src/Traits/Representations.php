@@ -12,7 +12,7 @@
 namespace Streaming\Traits;
 
 use Streaming\AutoRepresentations;
-use Streaming\Exception\Exception;
+use Streaming\Exception\InvalidArgumentException;
 use Streaming\Representation;
 
 trait Representations
@@ -23,15 +23,32 @@ trait Representations
     /**
      * @param Representation $rep
      * @return $this
-     * @throws Exception
+     * @deprecated Please use addRepresentations instead
      */
     public function addRepresentation(Representation $rep)
     {
-        if (!$this->format) {
-            throw new Exception('Format has not been set');
+        @trigger_error('addRepresentation method is deprecated and will be removed in a future release. Use addRepresentations instead.', E_USER_DEPRECATED);
+        $this->checkFormat();
+        $this->representations[] = $rep;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addRepresentations()
+    {
+        $this->checkFormat();
+        $reps = func_get_args();
+
+        foreach ($reps as $rep) {
+            if (!$rep instanceof Representation) {
+                throw new InvalidArgumentException('It must be instance of Representation object');
+            }
         }
 
-        $this->representations[] = $rep;
+        $this->representations = $reps;
         return $this;
     }
 
@@ -47,17 +64,22 @@ trait Representations
      * @param array $side_values
      * @param array|null $k_bitrate_values
      * @return $this
-     * @throws Exception
      */
     public function autoGenerateRepresentations(array $side_values = null, array $k_bitrate_values = null)
     {
-        if (!$this->format) {
-            throw new Exception('Format has not been set');
-        }
-
-        $this->representations = (new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))
-            ->get();
+        $this->checkFormat();
+        $this->representations = (new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))->get();
 
         return $this;
+    }
+
+    /**
+     * check whether format is set or nor
+     */
+    private function checkFormat()
+    {
+        if (!$this->format) {
+            throw new InvalidArgumentException('First you must set the format of the video');
+        }
     }
 }

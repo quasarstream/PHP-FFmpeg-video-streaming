@@ -15,7 +15,6 @@ namespace Streaming\Filters;
 
 use Streaming\DASH;
 use Streaming\Format\X264;
-use Streaming\Representation;
 
 class DASHFilter extends Filter
 {
@@ -36,16 +35,14 @@ class DASHFilter extends Filter
         $filter = $this->getAdditionalFilters($dash->getFormat(), count($dash->getRepresentations()));
 
         foreach ($dash->getRepresentations() as $key => $representation) {
-            if ($representation instanceof Representation) {
-                $filter[] = "-map";
-                $filter[] = "0";
-                $filter[] = "-b:v:" . $key;
-                $filter[] = $representation->getKiloBitrate() . "k";
+            $filter[] = "-map";
+            $filter[] = "0";
+            $filter[] = "-b:v:" . $key;
+            $filter[] = $representation->getKiloBitrate() . "k";
 
-                if (null !== $representation->getResize()) {
-                    $filter[] = "-s:v:" . $key;
-                    $filter[] = $representation->getResize();
-                }
+            if (null !== $representation->getResize()) {
+                $filter[] = "-s:v:" . $key;
+                $filter[] = $representation->getResize();
             }
         }
 

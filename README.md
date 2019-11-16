@@ -106,19 +106,12 @@ $rep_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
 $rep_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
 $rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 $rep_1080p = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
-$rep_2k    = (new Representation)->setKiloBitrate(6144‬)->setResize(2560, 1440);
-$rep_4k    = (new Representation)->setKiloBitrate(17408‬)->setResize(3840, 2160);
+$rep_2k    = (new Representation)->setKiloBitrate(6144)->setResize(2560, 1440);
+$rep_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentation($rep_144p)// add a representation
-    ->addRepresentation($rep_240p)
-    ->addRepresentation($rep_360p)
-    ->addRepresentation($rep_480p)
-    ->addRepresentation($rep_720p)
-    ->addRepresentation($rep_1080p)
-    ->addRepresentation($rep_2k)
-    ->addRepresentation($rep_4k)
+    ->addRepresentations($rep_144p, $rep_240p, $rep_360p, $rep_480p, $rep_720p, $rep_1080p, $rep_2k, $rep_4k)// add representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
@@ -144,9 +137,7 @@ $rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 $video->HLS()
     ->X264()
     ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
-    ->addRepresentation($rep_360p)
-    ->addRepresentation($rep_480p)
-    ->addRepresentation($rep_720p)
+    ->addRepresentations($rep_360p, $rep_480p, $rep_720p)// add representations
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
@@ -167,7 +158,7 @@ $url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';//
 $video->HLS()
     ->X264()
     ->setTsSubDirectory('ts_files')// put all ts files in a subdirectory
-    ->generateRandomKeyInfo($url, $save_to)
+    ->encryption($save_to, $url)
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
@@ -309,7 +300,6 @@ You can use these libraries to play your streams.
         - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
     - HLS: 
         - **[Player](https://github.com/piemonte/Player)**
-        - **[Mamba](https://github.com/Comcast/mamba)**
 - **Windows, Linux, and macOS**
     - DASH and HLS:
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**

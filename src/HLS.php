@@ -102,17 +102,30 @@ class HLS extends Export
     }
 
     /**
+     * @param string $save_to
+     * @param string $url
+     * @param int $length
+     * @return HLS
+     */
+    public function encryption(string $save_to, string $url, int $length = 16): HLS
+    {
+        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $save_to, $length));
+        $this->tmp_key_info_file = true;
+
+        return $this;
+    }
+
+    /**
      * @param string $url
      * @param string $path
      * @param int $length
      * @return HLS
+     * @deprecated Please use encryption instead
      */
     public function generateRandomKeyInfo(string $url, string $path, int $length = 16): HLS
     {
-        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $path, $length));
-        $this->tmp_key_info_file = true;
-
-        return $this;
+        @trigger_error('generateRandomKeyInfo method is deprecated and will be removed in a future release. Use encryption instead.', E_USER_DEPRECATED);
+        return $this->encryption($path, $url, $length);
     }
 
     /**

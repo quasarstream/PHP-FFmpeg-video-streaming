@@ -13,7 +13,6 @@ namespace Streaming\Filters;
 
 use Streaming\FileManager;
 use Streaming\HLS;
-use Streaming\Representation;
 use Streaming\Utilities;
 
 class HLSFilter extends Filter
@@ -34,11 +33,58 @@ class HLSFilter extends Filter
     private function HLSFilter(HLS $hls)
     {
         $filter = [];
-        $total_count = count($representations = $hls->getRepresentations());
-        $counter = 0;
+        $representations = $hls->getRepresentations();
         $path_parts = $hls->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
-        $filename = substr($path_parts["filename"], -100);
+        list($ts_sub_dir, $base_url) = $this->getSubDirectory($hls, $dirname);
+
+        foreach ($representations as $key => $representation) {
+            if ($key) {
+                $filter = array_merge($filter, $this->getFormats($hls));
+            }
+
+            $filter[] = "-s:v";
+            $filter[] = $representation->getResize();
+            $filter[] = "-crf";
+            $filter[] = "20";
+            $filter[] = "-sc_threshold";
+            $filter[] = "0";
+            $filter[] = "-g";
+            $filter[] = "48";
+            $filter[] = "-keyint_min";
+            $filter[] = "48";
+            $filter[] = "-hls_list_size";
+            $filter[] = "0";
+            $filter[] = "-hls_time";
+            $filter[] = $hls->getHlsTime();
+            $filter[] = "-hls_allow_cache";
+            $filter[] = (int)$hls->isHlsAllowCache();
+            $filter[] = "-b:v";
+            $filter[] = $representation->getKiloBitrate() . "k";
+            $filter[] = "-maxrate";
+            $filter[] = intval($representation->getKiloBitrate() * 1.2) . "k";
+            $filter[] = "-hls_segment_filename";
+            $filter[] = $dirname . "/" . $ts_sub_dir . $path_parts["filename"] . "_" . $representation->getHeight() . "p_%04d.ts";
+            $filter = array_merge($filter, $this->getBaseURL($base_url));
+            $filter = array_merge($filter, $this->getKeyInfo($hls));
+            $filter[] = "-strict";
+            $filter[] = $hls->getStrict();
+
+            if (end($representations) !== $representation) {
+                $filter[] = $dirname . "/" . $path_parts["filename"] . "_" . $representation->getHeight() . "p.m3u8";
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param HLS $hls
+     * @param $dirname
+     * @return array
+     */
+    private function getSubDirectory(HLS $hls, $dirname)
+    {
         $ts_sub_dir = Utilities::appendSlash($hls->getTsSubDirectory());
         $base_url = Utilities::appendSlash($hls->getHlsBaseUrl());
 
@@ -47,49 +93,42 @@ class HLSFilter extends Filter
             $base_url = $base_url . $hls->getTsSubDirectory() . "/";
         }
 
-        foreach ($representations as $representation) {
-            if ($representation instanceof Representation) {
-                $filter[] = "-s:v";
-                $filter[] = $representation->getResize();
-                $filter[] = "-crf";
-                $filter[] = "20";
-                $filter[] = "-sc_threshold";
-                $filter[] = "0";
-                $filter[] = "-g";
-                $filter[] = "48";
-                $filter[] = "-keyint_min";
-                $filter[] = "48";
-                $filter[] = "-hls_list_size";
-                $filter[] = "0";
-                $filter[] = "-hls_time";
-                $filter[] = $hls->getHlsTime();
-                $filter[] = "-hls_allow_cache";
-                $filter[] = (int)$hls->isHlsAllowCache();
-                $filter[] = "-b:v";
-                $filter[] = $representation->getKiloBitrate() . "k";
-                $filter[] = "-maxrate";
-                $filter[] = intval($representation->getKiloBitrate() * 1.2) . "k";
-                $filter[] = "-hls_segment_filename";
-                $filter[] = $dirname . "/" . $ts_sub_dir . $filename . "_" . $representation->getHeight() . "p_%04d.ts";
+        return [$ts_sub_dir, $base_url];
+    }
 
-                if ($base_url) {
-                    $filter[] = "-hls_base_url";
-                    $filter[] = $base_url;
-                }
+    private function getFormats(HLS $hls)
+    {
+        $format = ['-c:v', $hls->getFormat()->getVideoCodec()];
 
-                if ($hls->getHlsKeyInfoFile()) {
-                    $filter[] = "-hls_key_info_file";
-                    $filter[] = $hls->getHlsKeyInfoFile();
-                }
-
-                $filter[] = "-strict";
-                $filter[] = $hls->getStrict();
-
-                if (++$counter !== $total_count) {
-                    $filter[] = $dirname . "/" . $filename . "_" . $representation->getHeight() . "p.m3u8";
-                }
-            }
+        $audio_format = $hls->getFormat()->getAudioCodec();
+        if ($audio_format) {
+            $format = array_merge($format, ['-c:a', $audio_format]);
         }
+
+        return $format;
+    }
+
+    private function getBaseURL($base_url)
+    {
+        $filter = [];
+
+        if ($base_url) {
+            $filter[] = "-hls_base_url";
+            $filter[] = $base_url;
+        }
+
+        return $filter;
+    }
+
+    private function getKeyInfo(HLS $hls)
+    {
+        $filter = [];
+
+        if ($hls->getHlsKeyInfoFile()) {
+            $filter[] = "-hls_key_info_file";
+            $filter[] = $hls->getHlsKeyInfoFile();
+        }
+
         return $filter;
     }
 }
