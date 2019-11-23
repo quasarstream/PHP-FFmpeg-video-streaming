@@ -18,11 +18,11 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * FileManager constructor.
+ * File constructor.
  * It is all about files
 */
 
-class FileManager
+class File
 {
     /**
      * @param $dirname
@@ -30,30 +30,26 @@ class FileManager
      */
     public static function makeDir(string $dirname, int $mode = 0777): void
     {
-        $fs = new Filesystem();
-
-        try {
-            $fs->mkdir($dirname, $mode);
-        } catch (IOExceptionInterface $e) {
-            throw new RuntimeException("Failed to make the directory at " . $e->getPath(), $e->getCode(), $e);
-        }
+        static::filesystem('mkdir', [$dirname, $mode]);
     }
 
     /**
      * @param $dir
      * @return int|null
      */
-    public static function directorySize(string $dir)
+    public static function directorySize(string $dir): int
     {
         if (is_dir($dir)) {
             $size = 0;
-            foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
-                $size += is_file($each) ? filesize($each) : static::directorySize($each);
+            foreach (scandir($dir) as $file) {
+                if (in_array($file, [".", ".."])) continue;
+                $filename = $dir . DIRECTORY_SEPARATOR . $file;
+                $size += is_file($filename) ? filesize($filename) : static::directorySize($filename);
             }
             return $size;
         }
 
-        return null;
+        return 0;
     }
 
     /**
@@ -88,19 +84,7 @@ class FileManager
      */
     public static function moveDir(string $src, string $dst): void
     {
-        static::makeDir($dst);
-
-        foreach (scandir($src) as $file) {
-            if (in_array($file, [".", ".."])) continue;
-
-            if (is_dir($src . DIRECTORY_SEPARATOR . $file)) {
-                static::moveDir($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-                continue;
-            }
-
-            copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-        }
-
+        static::filesystem('mirror', [$src, $dst]);
         static::deleteDirectory($src);
     }
 
@@ -109,12 +93,19 @@ class FileManager
      */
     public static function deleteDirectory(string $dir): void
     {
-        $fs = new Filesystem();
+        static::filesystem('remove', [$dir]);
+    }
 
+    /**
+     * @param string $method
+     * @param array $params
+     */
+    private static function filesystem(string $method, array $params): void
+    {
         try {
-            $fs->remove($dir);
+            \call_user_func_array([new Filesystem, $method], $params);
         } catch (IOExceptionInterface $e) {
-            throw new RuntimeException("Failed to remove the directory at " . $e->getPath(), $e->getCode(), $e);
+            throw new RuntimeException("Failed action" . $e->getPath(), $e->getCode(), $e);
         }
     }
 }

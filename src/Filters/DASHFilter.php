@@ -15,6 +15,7 @@ namespace Streaming\Filters;
 
 use Streaming\DASH;
 use Streaming\Format\X264;
+use Streaming\Representation;
 
 class DASHFilter extends Filter
 {
@@ -30,7 +31,7 @@ class DASHFilter extends Filter
      * @param DASH $dash
      * @return array
      */
-    private function DASHFilter(DASH $dash)
+    private function DASHFilter(DASH $dash): array
     {
         $filter = $this->getAdditionalFilters($dash->getFormat(), count($dash->getRepresentations()));
 
@@ -39,6 +40,7 @@ class DASHFilter extends Filter
             $filter[] = "0";
             $filter[] = "-b:v:" . $key;
             $filter[] = $representation->getKiloBitrate() . "k";
+            $filter = array_merge($filter, $this->getAudioBitrate($representation, $key));
 
             if (null !== $representation->getResize()) {
                 $filter[] = "-s:v:" . $key;
@@ -59,7 +61,7 @@ class DASHFilter extends Filter
      * @param $count
      * @return array
      */
-    private function getAdditionalFilters($format, $count)
+    private function getAdditionalFilters($format, $count): array
     {
         $filter = [
             "-bf", "1", "-keyint_min", "120", "-g", "120",
@@ -79,5 +81,15 @@ class DASHFilter extends Filter
         }
 
         return $filter;
+    }
+
+    /**
+     * @param Representation $rep
+     * @param int $key
+     * @return array
+     */
+    private function getAudioBitrate(Representation $rep, int $key): array
+    {
+        return $rep->getAudioKiloBitrate() ? ["-b:a:" . $key, $rep->getAudioKiloBitrate() . "k"] : [];
     }
 }

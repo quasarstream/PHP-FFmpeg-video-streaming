@@ -15,7 +15,7 @@ namespace Streaming;
 
 use Streaming\Exception\RuntimeException;
 
-class KeyInfo
+class HLSKeyInfo
 {
     /**
      * @param $url
@@ -23,21 +23,16 @@ class KeyInfo
      * @param int $length
      * @return string
      */
-    public static function generate(string $url, string $path, int $length = 16): string
+    public static function generate(string $path, string $url, int $length = 16): string
     {
         if (!extension_loaded('openssl')) {
             throw new RuntimeException('OpenSSL is not installed.');
         }
 
-        FileManager::makeDir(pathinfo($path, PATHINFO_DIRNAME));
+        File::makeDir(dirname($path));
         file_put_contents($path, openssl_random_pseudo_bytes($length));
+        file_put_contents($path_f = File::tmpFile(), implode(PHP_EOL, [$url, $path, bin2hex(openssl_random_pseudo_bytes($length))]));
 
-        $key_info[] = $url;
-        $key_info[] = $path;
-        $key_info[] = bin2hex(openssl_random_pseudo_bytes($length));
-
-        file_put_contents($path = FileManager::tmpFile(), implode(PHP_EOL, $key_info));
-
-        return $path;
+        return $path_f;
     }
 }

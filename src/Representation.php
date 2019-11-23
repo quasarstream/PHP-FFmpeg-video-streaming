@@ -16,6 +16,7 @@ use Streaming\Exception\InvalidArgumentException;
 class Representation
 {
     private $kiloBitrate = 1000;
+    private $audioKiloBitrate = null;
     private $resize = '';
     private $width = 0;
     private $height = 0;
@@ -50,26 +51,46 @@ class Representation
     /**
      * @return int
      */
-    public function getKiloBitrate()
+    public function getKiloBitrate(): int
     {
         return $this->kiloBitrate;
     }
 
     /**
-     * Sets the kiloBitrate value.
+     * @return int|null
+     */
+    public function getAudioKiloBitrate()
+    {
+        return $this->audioKiloBitrate;
+    }
+
+    /**
+     * Sets the video kiloBitrate value.
      *
      * @param  integer $kiloBitrate
      * @return Representation
      * @throws InvalidArgumentException
      */
-    public function setKiloBitrate($kiloBitrate)
+    public function setKiloBitrate(int $kiloBitrate): Representation
     {
         if ($kiloBitrate < 1) {
             throw new InvalidArgumentException('Invalid kilo bit rate value');
         }
 
         $this->kiloBitrate = (int)$kiloBitrate;
+        return $this;
+    }
 
+    /**
+     * Sets the video kiloBitrate value.
+     *
+     * @param  integer $audioKiloBitrate
+     * @return Representation
+     * @throws InvalidArgumentException
+     */
+    public function setAudioKiloBitrate(int $audioKiloBitrate): Representation
+    {
+        $this->audioKiloBitrate = $audioKiloBitrate;
         return $this;
     }
 

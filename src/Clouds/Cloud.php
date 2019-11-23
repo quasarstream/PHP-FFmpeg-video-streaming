@@ -14,20 +14,16 @@ namespace Streaming\Clouds;
 
 
 use Streaming\Exception\InvalidArgumentException;
-use Streaming\FileManager;
+use Streaming\File;
 
-class CloudManager
+class Cloud
 {
     /**
      * @param array $clouds
      * @param string $tmp_dir
      */
-    public static function uploadDirectory(?array $clouds, ?string $tmp_dir): void
+    public static function uploadDirectory(array $clouds, string $tmp_dir): void
     {
-        if (!$clouds) {
-            return;
-        }
-
         if (!is_array(current($clouds))) {
             $clouds = [$clouds];
         }
@@ -44,25 +40,24 @@ class CloudManager
      */
     public static function download(array $cloud, string $save_to = null): array
     {
-        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [FileManager::tmpFile(), true];
+        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [File::tmpFile(), true];
         static::transfer($cloud, __FUNCTION__, $save_to);
 
         return [$save_to, $is_tmp];
     }
 
     /**
-     * @param $cloud
+     * @param $cloud_c
      * @param $method
      * @param $path
      */
-    private static function transfer($cloud, $method, $path): void
+    private static function transfer(array $cloud_c, string $method, string $path): void
     {
-        if (is_array($cloud) && $cloud['cloud'] instanceof CloudInterface) {
-            $options = (isset($cloud['options']) && is_array($cloud['options'])) ? $cloud['options'] : [];
-            call_user_func_array([$cloud['cloud'], $method], [$path, $options]);
+        extract($cloud_c);
+        if (isset($cloud) && $cloud instanceof CloudInterface) {
+            call_user_func_array([$cloud, $method], [$path, $options ?? []]);
         } else {
-            throw new InvalidArgumentException('You must pass an array of clouds to the save method. 
-                and the cloud must be instance of CloudInterface');
+            throw new InvalidArgumentException('The cloud key must be instance of the CloudInterface');
         }
     }
 }

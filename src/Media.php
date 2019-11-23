@@ -77,7 +77,7 @@ class Media
      * @param $argument
      * @return Media
      */
-    protected function isInstanceofArgument($argument)
+    private function isInstanceofArgument($argument)
     {
         return ($argument instanceof $this->media) ? $this : $argument;
     }

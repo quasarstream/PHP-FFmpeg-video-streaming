@@ -16,11 +16,16 @@ final class X264 extends Video
 
     /**
      * X264 constructor.
-     * @param string $videoCodec
+     * @param string $video_codec
+     * @param string|null $audio_codec
      */
-    public function __construct($videoCodec = 'libx264')
+    public function __construct(string $video_codec = 'libx264', string $audio_codec = null)
     {
-        $this->setVideoCodec($videoCodec);
+        $this->setVideoCodec($video_codec);
+
+        if($audio_codec){
+            $this->setAudioCodec($audio_codec);
+        }
     }
 
     /**
@@ -30,6 +35,16 @@ final class X264 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array('libx264', 'h264');
+        return [''];
+    }
+
+    /**
+     * Returns the list of available video codecs for this format.
+     *
+     * @return array
+     */
+    public function getAvailableVideoCodecs(): array
+    {
+        return ['libx264', 'h264', 'h264_afm'];
     }
 }

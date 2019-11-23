@@ -16,11 +16,16 @@ final class HEVC extends Video
 
     /**
      * HEVC constructor.
-     * @param string $videoCodec
+     * @param string $video_codec
+     * @param string|null $audio_codec
      */
-    public function __construct($videoCodec = 'libx265')
+    public function __construct(string $video_codec = 'libx265', string $audio_codec = null)
     {
-        $this->setVideoCodec($videoCodec);
+        $this->setVideoCodec($video_codec);
+
+        if($audio_codec){
+            $this->setAudioCodec($audio_codec);
+        }
     }
 
     /**
@@ -30,6 +35,11 @@ final class HEVC extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array('libx265');
+        return [''];
+    }
+
+    protected function getAvailableVideoCodecs(): array
+    {
+        return ['libx265', 'h265'];
     }
 }

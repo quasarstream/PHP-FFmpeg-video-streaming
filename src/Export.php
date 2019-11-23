@@ -12,7 +12,7 @@
 namespace Streaming;
 
 use FFMpeg\Exception\ExceptionInterface;
-use Streaming\Clouds\CloudManager;
+use Streaming\Clouds\Cloud;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 use Streaming\Filters\Filter;
@@ -90,11 +90,25 @@ abstract class Export
     /**
      * @param string|null $path
      */
-    private function moveTmpFolder(?string $path): void
+    private function moveTmp(?string $path): void
     {
-        if ($this->tmp_dir && $path) {
-            FileManager::moveDir($this->tmp_dir, pathinfo($path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR);
+        if ($this->isTmpDir() && !is_null($path)) {
+            File::moveDir($this->tmp_dir, dirname($path));
             $this->path_info = pathinfo($path);
+            $this->tmp_dir = '';
+        }
+    }
+
+
+    /**
+     * @param array $clouds
+     * @param string $path
+     */
+    private function clouds(array $clouds, ?string $path): void
+    {
+        if (!empty($clouds)) {
+            Cloud::uploadDirectory($clouds, $this->tmp_dir);
+            $this->moveTmp($path);
         }
     }
 
@@ -103,15 +117,14 @@ abstract class Export
      */
     private function getPath(): string
     {
-        $path = substr(str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]), 0, PHP_MAXPATHLEN);
+        $path = str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]);
 
         if ($this instanceof DASH) {
-            $path = $path . ".mpd";
+            $path .= ".mpd";
         } elseif ($this instanceof HLS) {
-            ExportHLSPlaylist::savePlayList($path . ".m3u8", $this->getRepresentations(), $this->path_info["filename"]);
-
-            $representations = $this->getRepresentations();
-            $path = $path . "_" . end($representations)->getHeight() . "p.m3u8";
+            $reps = $this->getRepresentations();
+            HLSPlaylist::save($path . ".m3u8", $reps);
+            $path .= "_" . end($reps)->getHeight() . "p.m3u8";
         }
 
         return $path;
@@ -125,25 +138,25 @@ abstract class Export
     /**
      * Run FFmpeg to package media content
      */
-    private function runFFmpeg(): void
+    private function run(): void
     {
         try {
             $this->media
                 ->addFilter($this->getFilter())
                 ->save($this->getFormat(), $this->getPath());
         } catch (ExceptionInterface $e) {
-            throw new RuntimeException(sprintf("There was an error saving files: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
+            throw new RuntimeException("An error occurred while saving files: " . $e->getMessage(), $e->getCode(), $e);
         }
     }
 
     /**
-     * @param $path
+     * @param string|null $path
      */
-    private function tmpDirectory($path): void
+    private function tmpDirectory(?string $path): void
     {
-        $basename = $path ? pathinfo($path, PATHINFO_BASENAME) : Utilities::randomString();
+        $basename = $path ? basename($path) : Utilities::randomString();
 
-        $this->tmp_dir = FileManager::tmpDir();
+        $this->tmp_dir = File::tmpDir();
         $this->path_info = pathinfo($this->tmp_dir . $basename);
     }
 
@@ -151,18 +164,18 @@ abstract class Export
      * @param $path
      * @param $clouds
      */
-    private function createPathInfoAndTmpDir($path, $clouds): void
+    private function makePaths(?string $path, array $clouds): void
     {
-        if (null !== $path) {
-            $this->path_info = pathinfo($path);
-            FileManager::makeDir($this->path_info["dirname"]);
-        }
-
         if ($clouds) {
             $this->tmpDirectory($path);
-        }
+        } elseif (!is_null($path)) {
+            if (strlen($path) > PHP_MAXPATHLEN) {
+                throw new InvalidArgumentException("The path is too long");
+            }
 
-        if (null === $path && $this->media->isTmp() && !$clouds) {
+            File::makeDir(dirname($path));
+            $this->path_info = pathinfo($path);
+        } elseif ($this->media->isTmp()) {
             throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
         }
     }
@@ -175,22 +188,9 @@ abstract class Export
      */
     public function save(string $path = null, array $clouds = [], bool $metadata = true)
     {
-        /**
-         * Synopsis
-         * ------------------------------------------------------------------------------
-         * 1. Create directory path, path info array, and temporary folders(if it is required).
-         * 2. Build object and run FFmpeg to package media content and save on the local machine.
-         * 3. If the cloud is specified, entire packaged files will be uploaded to clouds.
-         * 4. If files were saved into a tmp folder, then they will be moved to the local path(if the path is specified).
-         * 5. Return all video and also streams' metadata and save as a json file on the local machine(it won't save metadata to clouds because of some security reasons).
-         * 6. In the end, clear all tmp files.
-         * ------------------------------------------------------------------------------
-         */
-
-        $this->createPathInfoAndTmpDir($path, $clouds);
-        $this->runFFmpeg();
-        CloudManager::uploadDirectory($clouds, $this->tmp_dir);
-        $this->moveTmpFolder($path);
+        $this->makePaths($path, $clouds);
+        $this->run();
+        $this->clouds($clouds, $path);
 
         return $metadata ? (new Metadata($this))->extract() : $this;
     }
@@ -207,7 +207,7 @@ abstract class Export
         }
 
         if ($this->tmp_dir) {
-            FileManager::deleteDirectory($this->tmp_dir);
+            File::deleteDirectory($this->tmp_dir);
         }
 
         if ($this instanceof HLS && $this->tmp_key_info_file) {

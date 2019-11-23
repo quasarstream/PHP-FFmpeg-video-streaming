@@ -109,7 +109,7 @@ class HLS extends Export
      */
     public function encryption(string $save_to, string $url, int $length = 16): HLS
     {
-        $this->setHlsKeyInfoFile(KeyInfo::generate($url, $save_to, $length));
+        $this->setHlsKeyInfoFile(HLSKeyInfo::generate($save_to, $url, $length));
         $this->tmp_key_info_file = true;
 
         return $this;

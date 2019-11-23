@@ -74,7 +74,7 @@ class Metadata
     {
         $stream_path = $this->export->getPathInfo();
         $metadata["filename"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
-        $metadata["size_of_stream_dir"] = FileManager::directorySize($stream_path["dirname"]);
+        $metadata["size_of_stream_dir"] = File::directorySize($stream_path["dirname"]);
         $metadata["created_at"] = date("Y-m-d H:i:s");
 
         $metadata["resolutions"] = $this->getResolutions();
@@ -104,11 +104,11 @@ class Metadata
     private function getResolutions(): array
     {
         $resolutions = [];
-        foreach ($this->export->getRepresentations() as $key => $representation) {
-            if ($representation instanceof Representation) {
-                $resolutions[$key]["dimension"] = strtoupper($representation->getResize());
-                $resolutions[$key]["video_bitrate"] = $representation->getKiloBitrate() * 1024;
-            }
+        foreach ($this->export->getRepresentations() as $representation) {
+            $resolutions[] = [
+                "dimension" => strtoupper($representation->getResize()),
+                "video_bitrate" => $representation->getKiloBitrate() * 1024
+            ];
         }
 
         return $resolutions;

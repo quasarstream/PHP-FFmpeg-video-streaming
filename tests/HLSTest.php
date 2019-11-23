@@ -75,8 +75,7 @@ class HLSTest extends TestCase
 
         $hls = $this->getHLS();
         $hls->X264()
-            ->addRepresentation($rep_1)
-            ->addRepresentation($rep_2)
+            ->addRepresentations($rep_1, $rep_2)
             ->save($this->srcDir . '/hls/test.m3u8');
 
         $get_path_info = $hls->getPathInfo();
@@ -114,7 +113,7 @@ class HLSTest extends TestCase
         $path = $this->srcDir . DIRECTORY_SEPARATOR . "test2.key";
 
         $hls = $this->getHLS();
-        $export_obj = $hls->generateRandomKeyInfo($url, $path)
+        $hls->encryption($path, $url)
             ->X264()
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/enc_random_hls/test.m3u8');

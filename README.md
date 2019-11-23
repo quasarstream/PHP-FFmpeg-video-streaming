@@ -27,7 +27,7 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
   - [Other Advanced Features](#other-advanced-features)
 - [Asynchronous Task Execution](#asynchronous-task-execution)
 - [Several Open Source Players](#several-open-source-players)
-- [Contributing and Reporting Bug](#contributing-and-reporting-bugs)
+- [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
 - [License](#license)
 
@@ -80,7 +80,7 @@ $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 #### 2. From Clouds
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
@@ -100,18 +100,18 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_144p  = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
-$rep_240p  = (new Representation)->setKiloBitrate(150)->setResize(426, 240);
-$rep_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
-$rep_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
-$rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
-$rep_1080p = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
-$rep_2k    = (new Representation)->setKiloBitrate(6144)->setResize(2560, 1440);
-$rep_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
+$r_144p  = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
+$r_240p  = (new Representation)->setKiloBitrate(150)->setResize(426, 240);
+$r_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$r_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$r_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
+$r_1080p = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
+$r_2k    = (new Representation)->setKiloBitrate(6144)->setResize(2560, 1440);
+$r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentations($rep_144p, $rep_240p, $rep_360p, $rep_480p, $rep_720p, $rep_1080p, $rep_2k, $rep_4k)// add representations
+    ->addRepresentations($r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k)//add representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
@@ -130,14 +130,14 @@ Generate representations manually:
 ``` php
 use Streaming\Representation;
 
-$rep_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
-$rep_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
-$rep_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
+$r_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
+$r_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
+$r_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 
 $video->HLS()
     ->X264()
     ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
-    ->addRepresentations($rep_360p, $rep_480p, $rep_720p)// add representations
+    ->addRepresentations($r_360p, $r_480p, $r_720p)
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();
@@ -147,7 +147,7 @@ $video->HLS()
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You must specify a path to save a random key on your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `generateRandomKeyInfo` method:
+You must specify a path to save a random key on your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 ``` php
 //A path you want to save a random key on your server
 $save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key';
@@ -206,16 +206,16 @@ $hls = $video->HLS()
             
 $hls->save();
 ```
-**NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
+**NOTE:** If you opened a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of saving files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
-A path can also be passed to save a copy of files on your local machine.
+A path can also be passed to save a copy of files to your local machine.
 ``` php
 $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```

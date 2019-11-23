@@ -11,22 +11,22 @@
 
 namespace Tests\FFMpegStreaming;
 
-use Streaming\FileManager;
+use Streaming\File;
 
 class FileManagerTest extends TestCase
 {
     public function testMakeDir()
     {
         $path = $this->srcDir . DIRECTORY_SEPARATOR . "test_make_dir";
-        FileManager::makeDir($path);
+        File::makeDir($path);
 
         $this->assertDirectoryExists($path);
     }
 
     public function testTmp()
     {
-        $tmp_file = FileManager::tmpFile();
-        $tmp_dir = FileManager::tmpDir();
+        $tmp_file = File::tmpFile();
+        $tmp_dir = File::tmpDir();
 
         $this->assertIsString($tmp_file);
         $this->assertIsString($tmp_dir);

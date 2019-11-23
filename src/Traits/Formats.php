@@ -24,35 +24,35 @@ trait Formats
     protected $format;
 
     /**
-     * @param string $videoCodec
+     * @param string $video_codec
+     * @param string|null $audio_codec
      * @return $this
-     * @throws InvalidArgumentException
      */
-    public function X264($videoCodec = 'libx264')
+    public function X264(string $video_codec = 'libx264', string $audio_codec = null)
     {
-        $this->setFormat(new X264($videoCodec));
+        $this->setFormat(new X264($video_codec, $audio_codec));
         return $this;
     }
 
     /**
-     * @param string $videoCodec
+     * @param string $video_codec
+     * @param string|null $audio_codec
      * @return $this
-     * @throws InvalidArgumentException
      */
-    public function HEVC($videoCodec = 'libx265')
+    public function HEVC(string $video_codec = 'libx265', string $audio_codec = null)
     {
-        $this->setFormat(new HEVC($videoCodec));
+        $this->setFormat(new HEVC($video_codec, $audio_codec));
         return $this;
     }
 
     /**
-     * @param string $videoCodec
+     * @param string $video_codec
+     * @param string|null $audio_codec
      * @return $this
-     * @throws InvalidArgumentException
      */
-    public function WebM($videoCodec = 'libvpx-vp9')
+    public function WebM(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
     {
-        $this->setFormat(new VP9($videoCodec));
+        $this->setFormat(new VP9($video_codec, $audio_codec));
         return $this;
     }
 
@@ -72,7 +72,7 @@ trait Formats
     public function setFormat($format)
     {
         if (!$format instanceof Video) {
-            throw new InvalidArgumentException("Sorry! the format must be inherited from 'Streaming\Format\Video'");
+            throw new InvalidArgumentException("Sorry! the format must be instance of 'Streaming\Format\Video' object");
         }
 
         $this->format = $format;

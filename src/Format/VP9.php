@@ -16,9 +16,18 @@ namespace Streaming\Format;
  */
 final class VP9 extends Video
 {
-    public function __construct($videoCodec = 'libvpx-vp9')
+    /**
+     * VP9 constructor.
+     * @param string $video_codec
+     * @param string|null $audio_codec
+     */
+    public function __construct(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
     {
-        $this->setVideoCodec($videoCodec);
+        $this->setVideoCodec($video_codec);
+
+        if($audio_codec){
+            $this->setAudioCodec($audio_codec);
+        }
     }
 
     /**
@@ -26,14 +35,14 @@ final class VP9 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return array();
+        return [''];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getAvailableVideoCodecs()
+    public function getAvailableVideoCodecs(): array
     {
-        return array('libvpx', 'libvpx-vp9');
+        return ['libvpx', 'libvpx-vp9'];
     }
 }

@@ -12,6 +12,7 @@
 namespace Streaming\Format;
 
 use FFMpeg\Format\Audio\DefaultAudio;
+use Streaming\Exception\InvalidArgumentException;
 
 abstract class Video extends DefaultAudio
 {
@@ -28,12 +29,23 @@ abstract class Video extends DefaultAudio
         return $this->videoCodec;
     }
 
+    abstract protected function getAvailableVideoCodecs(): array;
+
     /**
      * @param string $videoCodec
+     * @return Video
      */
-    public function setVideoCodec(string $videoCodec): void
+    public function setVideoCodec(string $videoCodec): Video
     {
+        if (!in_array($videoCodec, $this->getAvailableVideoCodecs())) {
+            throw new InvalidArgumentException(sprintf(
+                'Wrong video codec value for %s, available formats are %s'
+                , $videoCodec, implode(', ', $this->getAvailableVideoCodecs())
+            ));
+        }
+
         $this->videoCodec = $videoCodec;
+        return $this;
     }
 
     /**

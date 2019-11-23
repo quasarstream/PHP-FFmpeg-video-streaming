@@ -15,8 +15,9 @@ use FFMpeg\Exception\ExceptionInterface;
 use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
 use Psr\Log\LoggerInterface;
-use Streaming\Clouds\CloudManager;
+use Streaming\Clouds\Cloud;
 use Streaming\Exception\RuntimeException;
+
 
 class FFMpeg
 {
@@ -43,9 +44,9 @@ class FFMpeg
         } catch (ExceptionInterface $e) {
             if ($is_tmp) {
                 sleep(1);
-                unlink($path);
+                @unlink($path);
             }
-            throw new RuntimeException(sprintf("There was an error opening this file: \n\n reason: \n %s", $e->getMessage()), $e->getCode(), $e);
+            throw new RuntimeException("An error occurred while opening the file: " . $e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -56,7 +57,7 @@ class FFMpeg
      */
     public function openFromCloud(array $cloud, string $save_to = null): Media
     {
-        return call_user_func_array([$this, 'open'], CloudManager::download($cloud, $save_to));
+        return call_user_func_array([$this, 'open'], Cloud::download($cloud, $save_to));
     }
 
     /**

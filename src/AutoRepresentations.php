@@ -64,7 +64,7 @@ class AutoRepresentations
     {
         if (!$this->video->has('bit_rate')) {
             if (!$this->format->has('bit_rate')) {
-                throw new InvalidArgumentException("We could determine the value of video bitrate");
+                throw new InvalidArgumentException("We could not determine the value of video's bitrate");
             }
 
             return intval(($this->format->get('bit_rate') / 1024) * .9);
@@ -81,7 +81,7 @@ class AutoRepresentations
         $k_bitrate = $this->getKiloBitRate();
         list($w, $h, $r) = $this->getDimensions();
 
-        $reps[] = $this->addRep($k_bitrate, $w, $h);
+        $reps = [$this->addRep($k_bitrate, $w, $h)];
 
         foreach ($this->side_values as $key => $height) {
             $reps[] = $this->addRep($this->k_bitrate_values[$key], Utilities::roundToEven($r * $height), $height);
@@ -99,7 +99,7 @@ class AutoRepresentations
      */
     private function addRep($k_bitrate, $width, $height): Representation
     {
-        return (new Representation())->setKiloBitrate($k_bitrate)->setResize($width, $height);
+        return (new Representation)->setKiloBitrate($k_bitrate)->setResize($width, $height);
     }
 
     /**

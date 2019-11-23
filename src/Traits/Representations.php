@@ -44,7 +44,7 @@ trait Representations
 
         foreach ($reps as $rep) {
             if (!$rep instanceof Representation) {
-                throw new InvalidArgumentException('It must be instance of Representation object');
+                throw new InvalidArgumentException('Representations must be instance of Representation object');
             }
         }
 

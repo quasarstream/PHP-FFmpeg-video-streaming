@@ -11,8 +11,9 @@
 
 namespace Streaming\Filters;
 
-use Streaming\FileManager;
+use Streaming\File;
 use Streaming\HLS;
+use Streaming\Representation;
 use Streaming\Utilities;
 
 class HLSFilter extends Filter
@@ -30,7 +31,7 @@ class HLSFilter extends Filter
      * @param HLS $hls
      * @return array
      */
-    private function HLSFilter(HLS $hls)
+    private function HLSFilter(HLS $hls): array
     {
         $filter = [];
         $representations = $hls->getRepresentations();
@@ -61,6 +62,7 @@ class HLSFilter extends Filter
             $filter[] = (int)$hls->isHlsAllowCache();
             $filter[] = "-b:v";
             $filter[] = $representation->getKiloBitrate() . "k";
+            $filter = array_merge($filter, $this->getAudioBitrate($representation));
             $filter[] = "-maxrate";
             $filter[] = intval($representation->getKiloBitrate() * 1.2) . "k";
             $filter[] = "-hls_segment_filename";
@@ -83,52 +85,55 @@ class HLSFilter extends Filter
      * @param $dirname
      * @return array
      */
-    private function getSubDirectory(HLS $hls, $dirname)
+    private function getSubDirectory(HLS $hls, $dirname): array
     {
         $ts_sub_dir = Utilities::appendSlash($hls->getTsSubDirectory());
         $base_url = Utilities::appendSlash($hls->getHlsBaseUrl());
 
         if ($ts_sub_dir) {
-            FileManager::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);
+            File::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);
             $base_url = $base_url . $hls->getTsSubDirectory() . "/";
         }
 
         return [$ts_sub_dir, $base_url];
     }
 
-    private function getFormats(HLS $hls)
+    /**
+     * @param HLS $hls
+     * @return array
+     */
+    private function getFormats(HLS $hls): array
     {
         $format = ['-c:v', $hls->getFormat()->getVideoCodec()];
-
         $audio_format = $hls->getFormat()->getAudioCodec();
-        if ($audio_format) {
-            $format = array_merge($format, ['-c:a', $audio_format]);
-        }
 
-        return $format;
+        return $audio_format ? array_merge($format, ['-c:a', $audio_format]) : $format;
     }
 
-    private function getBaseURL($base_url)
+    /**
+     * @param $base_url
+     * @return array
+     */
+    private function getBaseURL($base_url): array
     {
-        $filter = [];
-
-        if ($base_url) {
-            $filter[] = "-hls_base_url";
-            $filter[] = $base_url;
-        }
-
-        return $filter;
+        return $base_url ? ["-hls_base_url", $base_url] : [];
     }
 
-    private function getKeyInfo(HLS $hls)
+    /**
+     * @param HLS $hls
+     * @return array
+     */
+    private function getKeyInfo(HLS $hls): array
     {
-        $filter = [];
+        return $hls->getHlsKeyInfoFile() ? ["-hls_key_info_file", $hls->getHlsKeyInfoFile()] : [];
+    }
 
-        if ($hls->getHlsKeyInfoFile()) {
-            $filter[] = "-hls_key_info_file";
-            $filter[] = $hls->getHlsKeyInfoFile();
-        }
-
-        return $filter;
+    /**
+     * @param Representation $representation
+     * @return array
+     */
+    private function getAudioBitrate(Representation $representation): array
+    {
+        return $representation->getAudioKiloBitrate() ? ["-b:a", $representation->getAudioKiloBitrate() . "k"] : [];
     }
 }
