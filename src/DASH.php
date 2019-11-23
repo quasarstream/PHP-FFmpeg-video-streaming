@@ -47,4 +47,12 @@ class DASH extends Export
     {
         return new DASHFilter($this);
     }
+
+    /**
+     * @return string
+     */
+    protected function getPath(): string
+    {
+        return implode(".", [$this->getFilePath(), "mpd"]);
+    }
 }

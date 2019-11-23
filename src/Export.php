@@ -99,7 +99,6 @@ abstract class Export
         }
     }
 
-
     /**
      * @param array $clouds
      * @param string $path
@@ -115,20 +114,15 @@ abstract class Export
     /**
      * @return string
      */
-    private function getPath(): string
+    protected function getFilePath(): string
     {
-        $path = str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]);
-
-        if ($this instanceof DASH) {
-            $path .= ".mpd";
-        } elseif ($this instanceof HLS) {
-            $reps = $this->getRepresentations();
-            HLSPlaylist::save($path . ".m3u8", $reps);
-            $path .= "_" . end($reps)->getHeight() . "p.m3u8";
-        }
-
-        return $path;
+        return str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]);
     }
+
+    /**
+     * @return string
+     */
+    abstract protected function getPath(): string;
 
     /**
      * @return Filter

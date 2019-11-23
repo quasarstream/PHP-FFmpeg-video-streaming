@@ -161,4 +161,17 @@ class HLS extends Export
     {
         return new HLSFilter($this);
     }
+
+    /**
+     * @return string
+     */
+    protected function getPath(): string
+    {
+        $path = $this->getFilePath();
+        $reps = $this->getRepresentations();
+
+        HLSPlaylist::save($path . ".m3u8", $reps);
+
+        return $path . "_" . end($reps)->getHeight() . "p.m3u8";
+    }
 }
