@@ -148,7 +148,7 @@ abstract class Export
      */
     private function tmpDirectory(?string $path): void
     {
-        $basename = $path ? basename($path) : Utilities::randomString();
+        $basename = $path ? basename($path) : $this->path_info['basename'];
 
         $this->tmp_dir = File::tmpDir();
         $this->path_info = pathinfo($this->tmp_dir . $basename);

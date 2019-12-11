@@ -40,7 +40,7 @@ trait Representations
     public function addRepresentations()
     {
         $this->checkFormat();
-        $reps = func_get_args();
+        $reps = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
 
         foreach ($reps as $rep) {
             if (!$rep instanceof Representation) {

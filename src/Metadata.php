@@ -107,7 +107,8 @@ class Metadata
         foreach ($this->export->getRepresentations() as $representation) {
             $resolutions[] = [
                 "dimension" => strtoupper($representation->getResize()),
-                "video_bitrate" => $representation->getKiloBitrate() * 1024
+                "video_kilo_bitrate" => $representation->getKiloBitrate(),
+                "audio_kilo_bitrate" => $representation->getAudioKiloBitrate() ?? "Not specified"
             ];
         }
 

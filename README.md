@@ -111,8 +111,8 @@ $r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentations($r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k)//add representations
-    ->setAdaption('id=0,streams=v id=1,streams=a') // Set a adaption.
+    ->addRepresentations($r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k)
+    ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
 
@@ -123,7 +123,7 @@ Create HLS files:
 ``` php
 $video->HLS()
     ->X264()
-    ->autoGenerateRepresentations([720, 360]) // You can limit the numbers of representatons
+    ->autoGenerateRepresentations([720, 360]) // You can limit the number of representatons
     ->save();
 ```
 Generate representations manually:
@@ -147,13 +147,14 @@ $video->HLS()
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You must specify a path to save a random key on your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
+You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 ``` php
-//A path you want to save a random key on your server
+//A path you want to save a random key to your server
 $save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key';
 
 //A URL (or a path) to access the key on your website
-$url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';// or '/PATH_TO_KEY_DIRECTORY/random_key.key';
+$url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';
+// or $url = '/PATH_TO_KEY_DIRECTORY/random_key.key';
 
 $video->HLS()
     ->X264()
@@ -206,7 +207,7 @@ $hls = $video->HLS()
             
 $hls->save();
 ```
-**NOTE:** If you opened a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `save` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
@@ -294,7 +295,6 @@ You can use these libraries to play your streams.
 - **Android**
     - DASH and HLS: 
         - **[ExoPlayer](https://github.com/google/ExoPlayer)**
-        - **[VLC Android](https://github.com/videolan/vlc-android)**
 - **IOS**
     - DASH: 
         - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
