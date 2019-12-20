@@ -34,16 +34,13 @@ class Metadata
      */
     public function extract(): array
     {
-        $metadata["video"] = $this->getVideoMetadata();
-        $metadata["streams"] = $this->getStreamsMetadata();
-
-        $filename = 'It is not possible to save metadata to clouds.';
-        if (!$this->export->isTmpDir()) {
-            $filename = $this->saveAsJson($metadata);
-        }
+        $metadata = [
+            "video" => $this->getVideoMetadata(),
+            "streams" => $this->getStreamsMetadata()
+        ];
 
         return [
-            'filename' => $filename,
+            'filename' => !$this->export->isTmpDir() ? $this->saveAsJson($metadata) : null,
             'metadata' => $metadata
         ];
     }
@@ -72,6 +69,7 @@ class Metadata
      */
     private function getStreamsMetadata(): array
     {
+        $metadata = [];
         $stream_path = $this->export->getPathInfo();
         $metadata["filename"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
         $metadata["size_of_stream_dir"] = File::directorySize($stream_path["dirname"]);

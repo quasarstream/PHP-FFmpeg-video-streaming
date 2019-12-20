@@ -7,7 +7,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
+This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
 - **[A complete example](https://video.aminyazdanpanah.com/start/example)** is provided. It contains server-side(Transcoding + cloud + progress + web socket) and client-side(progress bar + web socket + player).
 - For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
@@ -111,7 +111,7 @@ $r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
 $video->DASH()
     ->HEVC()
-    ->addRepresentations($r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k)
+    ->addRepresentations([$r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k])
     ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
@@ -137,7 +137,7 @@ $r_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 $video->HLS()
     ->X264()
     ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
-    ->addRepresentations($r_360p, $r_480p, $r_720p)
+    ->addRepresentations([$r_360p, $r_480p, $r_720p])
     ->setHlsTime(5) // Set Hls Time. Default value is 10 
     ->setHlsAllowCache(false) // Default value is true 
     ->save();

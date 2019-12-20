@@ -44,7 +44,7 @@ class FFMpeg
         } catch (ExceptionInterface $e) {
             if ($is_tmp) {
                 sleep(1);
-                @unlink($path);
+                File::remove($path);
             }
             throw new RuntimeException("An error occurred while opening the file: " . $e->getMessage(), $e->getCode(), $e);
         }

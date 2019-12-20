@@ -109,7 +109,7 @@ class AutoRepresentations
     {
         $count_sides = count($this->side_values);
 
-        if ($k_bitrate_values) {
+        if (!empty($k_bitrate_values)) {
             if ($count_sides !== count($k_bitrate_values)) {
                 throw new InvalidArgumentException("The count of side value array must be the same as the count of kilo bitrate array");
             }
@@ -133,7 +133,7 @@ class AutoRepresentations
      */
     private function getSideValues(?array $side_values): void
     {
-        if ($side_values) {
+        if (!empty($side_values)) {
             $this->side_values = $side_values;
             return;
         }

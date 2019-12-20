@@ -160,7 +160,7 @@ abstract class Export
      */
     private function makePaths(?string $path, array $clouds): void
     {
-        if ($clouds) {
+        if (!empty($clouds)) {
             $this->tmpDirectory($path);
         } elseif (!is_null($path)) {
             if (strlen($path) > PHP_MAXPATHLEN) {
@@ -197,15 +197,15 @@ abstract class Export
         sleep(1);
 
         if ($this->media->isTmp()) {
-            @unlink($this->media->getPath());
+            File::remove($this->media->getPath());
         }
 
         if ($this->tmp_dir) {
-            File::deleteDirectory($this->tmp_dir);
+            File::remove($this->tmp_dir);
         }
 
         if ($this instanceof HLS && $this->tmp_key_info_file) {
-            @unlink($this->getHlsKeyInfoFile());
+            File::remove($this->getHlsKeyInfoFile());
         }
     }
 }

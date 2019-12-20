@@ -85,13 +85,13 @@ class File
     public static function moveDir(string $src, string $dst): void
     {
         static::filesystem('mirror', [$src, $dst]);
-        static::deleteDirectory($src);
+        static::remove($src);
     }
 
     /**
      * @param $dir
      */
-    public static function deleteDirectory(string $dir): void
+    public static function remove(string $dir): void
     {
         static::filesystem('remove', [$dir]);
     }

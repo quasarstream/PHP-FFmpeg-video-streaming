@@ -21,20 +21,6 @@ trait Representations
     protected $representations = [];
 
     /**
-     * @param Representation $rep
-     * @return $this
-     * @deprecated Please use addRepresentations instead
-     */
-    public function addRepresentation(Representation $rep)
-    {
-        @trigger_error('addRepresentation method is deprecated and will be removed in a future release. Use addRepresentations instead.', E_USER_DEPRECATED);
-        $this->checkFormat();
-        $this->representations[] = $rep;
-
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function addRepresentations()
