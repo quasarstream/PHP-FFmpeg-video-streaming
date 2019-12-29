@@ -52,6 +52,7 @@ class DASHFilter extends Filter
             $filter[] = "-adaptation_sets";
             $filter[] = $dash->getAdaption();
         }
+        $filter = array_merge($filter, $dash->getAdditionalParams());
 
         return $filter;
     }

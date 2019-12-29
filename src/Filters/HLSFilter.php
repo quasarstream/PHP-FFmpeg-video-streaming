@@ -69,6 +69,7 @@ class HLSFilter extends Filter
             $filter[] = $dirname . "/" . $ts_sub_dir . $path_parts["filename"] . "_" . $representation->getHeight() . "p_%04d.ts";
             $filter = array_merge($filter, $this->getBaseURL($base_url));
             $filter = array_merge($filter, $this->getKeyInfo($hls));
+            $filter = array_merge($filter, $hls->getAdditionalParams());
             $filter[] = "-strict";
             $filter[] = $hls->getStrict();
 

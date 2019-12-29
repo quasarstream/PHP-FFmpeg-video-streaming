@@ -35,6 +35,9 @@ abstract class Export
     /** @var string */
     protected $tmp_dir;
 
+    /** @var array */
+    private $additional_params = [];
+
     /**
      * Export constructor.
      * @param Media $media
@@ -43,6 +46,24 @@ abstract class Export
     {
         $this->media = $media;
         $this->path_info = pathinfo($media->getPath());
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalParams(): array
+    {
+        return $this->additional_params;
+    }
+
+    /**
+     * @param array $additional_params
+     * @return Export
+     */
+    public function setAdditionalParams(array $additional_params)
+    {
+        $this->additional_params = $additional_params;
+        return $this;
     }
 
     /**
