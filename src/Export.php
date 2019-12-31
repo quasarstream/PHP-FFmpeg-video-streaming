@@ -30,13 +30,7 @@ abstract class Export
     protected $path_info;
 
     /** @var string */
-    protected $strict = "-2";
-
-    /** @var string */
     protected $tmp_dir;
-
-    /** @var array */
-    private $additional_params = [];
 
     /**
      * Export constructor.
@@ -49,47 +43,11 @@ abstract class Export
     }
 
     /**
-     * @return array
-     */
-    public function getAdditionalParams(): array
-    {
-        return $this->additional_params;
-    }
-
-    /**
-     * @param array $additional_params
-     * @return Export
-     */
-    public function setAdditionalParams(array $additional_params)
-    {
-        $this->additional_params = $additional_params;
-        return $this;
-    }
-
-    /**
      * @return object|Media
      */
     public function getMedia(): Media
     {
         return $this->media;
-    }
-
-    /**
-     * @param string $strict
-     * @return Export
-     */
-    public function setStrict(string $strict): Export
-    {
-        $this->strict = $strict;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStrict(): string
-    {
-        return $this->strict;
     }
 
     /**

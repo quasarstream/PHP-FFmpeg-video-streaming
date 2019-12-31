@@ -12,13 +12,10 @@
 namespace Streaming;
 
 use Streaming\Filters\HLSFilter;
-use Streaming\Traits\Representations;
 use Streaming\Filters\Filter;
 
-class HLS extends Export
+class HLS extends Streaming
 {
-    use Representations;
-
     /** @var string */
     private $hls_time = 10;
 

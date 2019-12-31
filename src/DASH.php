@@ -17,10 +17,8 @@ use Streaming\Filters\Filter;
 
 class DASH extends Export
 {
-    use Representations;
-
     /** @var string */
-    protected $adaption;
+    private $adaption;
 
     /**
      * @return mixed

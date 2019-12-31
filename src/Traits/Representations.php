@@ -54,7 +54,7 @@ trait Representations
     public function autoGenerateRepresentations(array $side_values = null, array $k_bitrate_values = null)
     {
         $this->checkFormat();
-        $this->representations = (new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))->get();
+        $this->addRepresentations((new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))->get());
 
         return $this;
     }
