@@ -15,7 +15,7 @@ use Streaming\Filters\DASHFilter;
 use Streaming\Traits\Representations;
 use Streaming\Filters\Filter;
 
-class DASH extends Export
+class DASH extends Streaming
 {
     /** @var string */
     private $adaption;
