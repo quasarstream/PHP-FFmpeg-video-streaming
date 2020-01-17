@@ -173,7 +173,7 @@ $format = new Streaming\Format\HEVC();
 $format->on('progress', function ($video, $format, $percentage){
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
-    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
+    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
 });
 
 $video->DASH()
