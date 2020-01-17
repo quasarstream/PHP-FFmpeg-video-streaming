@@ -318,6 +318,7 @@ Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-str
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**
+- **[All Contributors](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/graphs/contributors)
 
 ## License
 The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)** for more information.
