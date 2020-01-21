@@ -14,7 +14,6 @@ namespace Streaming\Filters;
 use Streaming\File;
 use Streaming\HLS;
 use Streaming\Representation;
-use Streaming\Utilities;
 
 class HLSFilter extends Filter
 {
