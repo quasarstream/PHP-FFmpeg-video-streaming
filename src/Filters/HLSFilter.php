@@ -88,15 +88,14 @@ class HLSFilter extends Filter
      */
     private function getSubDirectory(HLS $hls, $dirname): array
     {
-        $ts_sub_dir = Utilities::appendSlash($hls->getTsSubDirectory());
-        $base_url = Utilities::appendSlash($hls->getHlsBaseUrl());
+        if ($hls->getTsSubDirectory()) {
+            File::makeDir($ts_sub_dir = $dirname . DIRECTORY_SEPARATOR . rtrim($hls->getTsSubDirectory(), '/'));
+            $base = $hls->getHlsBaseUrl() ? rtrim($hls->getHlsBaseUrl(), '/') : "";
+            $base_url = $base . $hls->getTsSubDirectory() . "/";
 
-        if ($ts_sub_dir) {
-            File::makeDir($dirname . DIRECTORY_SEPARATOR . $ts_sub_dir);
-            $base_url = $base_url . $hls->getTsSubDirectory() . "/";
+            return [$ts_sub_dir, $base_url];
         }
-
-        return [$ts_sub_dir, $base_url];
+        return array_fill(0, 2, "");
     }
 
     /**

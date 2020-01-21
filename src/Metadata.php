@@ -115,7 +115,7 @@ class Metadata
 
     private function saveAsJson($metadata): string
     {
-        $name = $this->export->getPathInfo()["filename"] . "-" . bin2hex(openssl_random_pseudo_bytes(6)) . ".json";
+        $name = uniqid($this->export->getPathInfo()["filename"] ?? "meta" . "-") . ".json";
         $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
         file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
 

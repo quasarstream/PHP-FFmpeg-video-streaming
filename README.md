@@ -265,7 +265,7 @@ This method has a third optional boolean parameter, which is the duration of the
 
 **NOTE:** You can use the gif as a video's thumbnail.
 
-To see more example, please vist the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
+To see more examples, please vist the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
 
 ## Asynchronous Task Execution
 Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.

@@ -65,8 +65,16 @@ class File
      */
     public static function tmpDir(): string
     {
-        static::makeDir($tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . Utilities::randomString() . DIRECTORY_SEPARATOR);
+        static::makeDir($tmp_dir = static::tmpDirPath() . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR);
         return $tmp_dir;
+    }
+
+    /**
+     * clear all tmp files
+     */
+    public static function cleanTmpFiles(): void
+    {
+        static::remove(static::tmpDirPath());
     }
 
     /**
