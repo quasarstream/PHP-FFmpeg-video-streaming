@@ -173,7 +173,7 @@ $format = new Streaming\Format\HEVC();
 $format->on('progress', function ($video, $format, $percentage){
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
-    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (99 - $percentage)));
+    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
 });
 
 $video->DASH()
@@ -318,6 +318,7 @@ Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-str
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**
+- **[All Contributors](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/graphs/contributors)**
 
 ## License
 The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)** for more information.
