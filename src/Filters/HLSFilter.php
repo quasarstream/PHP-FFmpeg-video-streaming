@@ -33,18 +33,18 @@ class HLSFilter extends Filter
     private function HLSFilter(HLS $hls): array
     {
         $filter = [];
-        $representations = $hls->getRepresentations();
+        $reps = $hls->getRepresentations();
         $path_parts = $hls->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
         list($ts_sub_dir, $base_url) = $this->getSubDirectory($hls, $dirname);
 
-        foreach ($representations as $key => $representation) {
+        foreach ($reps as $key => $rep) {
             if ($key) {
                 $filter = array_merge($filter, $this->getFormats($hls));
             }
 
             $filter[] = "-s:v";
-            $filter[] = $representation->getResize();
+            $filter[] = $rep->getResize();
             $filter[] = "-crf";
             $filter[] = "20";
             $filter[] = "-sc_threshold";
@@ -60,20 +60,20 @@ class HLSFilter extends Filter
             $filter[] = "-hls_allow_cache";
             $filter[] = (int)$hls->isHlsAllowCache();
             $filter[] = "-b:v";
-            $filter[] = $representation->getKiloBitrate() . "k";
-            $filter = array_merge($filter, $this->getAudioBitrate($representation));
+            $filter[] = $rep->getKiloBitrate() . "k";
+            $filter = array_merge($filter, $this->getAudioBitrate($rep));
             $filter[] = "-maxrate";
-            $filter[] = intval($representation->getKiloBitrate() * 1.2) . "k";
+            $filter[] = intval($rep->getKiloBitrate() * 1.2) . "k";
             $filter[] = "-hls_segment_filename";
-            $filter[] = $dirname . "/" . $ts_sub_dir . $path_parts["filename"] . "_" . $representation->getHeight() . "p_%04d.ts";
+            $filter[] = $dirname . "/" . $ts_sub_dir . $path_parts["filename"] . "_" . $rep->getHeight() . "p_%04d.ts";
             $filter = array_merge($filter, $this->getBaseURL($base_url));
             $filter = array_merge($filter, $this->getKeyInfo($hls));
             $filter = array_merge($filter, $hls->getAdditionalParams());
             $filter[] = "-strict";
             $filter[] = $hls->getStrict();
 
-            if (end($representations) !== $representation) {
-                $filter[] = $dirname . "/" . $path_parts["filename"] . "_" . $representation->getHeight() . "p.m3u8";
+            if (end($reps) !== $rep) {
+                $filter[] = $dirname . "/" . $path_parts["filename"] . "_" . $rep->getHeight() . "p.m3u8";
             }
         }
 
@@ -85,16 +85,16 @@ class HLSFilter extends Filter
      * @param $dirname
      * @return array
      */
-    private function getSubDirectory(HLS $hls, $dirname): array
+    private function getSubDirectory(HLS $hls, string $dirname): array
     {
         if ($hls->getTsSubDirectory()) {
-            File::makeDir($ts_sub_dir = $dirname . DIRECTORY_SEPARATOR . rtrim($hls->getTsSubDirectory(), '/'));
-            $base = $hls->getHlsBaseUrl() ? rtrim($hls->getHlsBaseUrl(), '/') : "";
-            $base_url = $base . $hls->getTsSubDirectory() . "/";
-
-            return [$ts_sub_dir, $base_url];
+            File::makeDir($dirname . "/" . $hls->getTsSubDirectory() . "/");
         }
-        return array_fill(0, 2, "");
+
+        $base = $hls->getHlsBaseUrl() ? rtrim($hls->getHlsBaseUrl(), '/') . "/" : null;
+        $ts = $hls->getTsSubDirectory() ? rtrim($hls->getTsSubDirectory(), '/') . "/" : null;
+
+        return [$ts, $base . $ts];
     }
 
     /**
@@ -113,7 +113,7 @@ class HLSFilter extends Filter
      * @param $base_url
      * @return array
      */
-    private function getBaseURL($base_url): array
+    private function getBaseURL(string $base_url): array
     {
         return $base_url ? ["-hls_base_url", $base_url] : [];
     }
@@ -128,11 +128,11 @@ class HLSFilter extends Filter
     }
 
     /**
-     * @param Representation $representation
+     * @param Representation $rep
      * @return array
      */
-    private function getAudioBitrate(Representation $representation): array
+    private function getAudioBitrate(Representation $rep): array
     {
-        return $representation->getAudioKiloBitrate() ? ["-b:a", $representation->getAudioKiloBitrate() . "k"] : [];
+        return $rep->getAudioKiloBitrate() ? ["-b:a", $rep->getAudioKiloBitrate() . "k"] : [];
     }
 }
