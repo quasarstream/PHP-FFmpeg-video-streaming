@@ -54,7 +54,7 @@ class HLSFilter extends Filter
             $filter[] = "-keyint_min";
             $filter[] = "48";
             $filter[] = "-hls_list_size";
-            $filter[] = "0";
+            $filter[] = $hls->getHlsListSize();
             $filter[] = "-hls_time";
             $filter[] = $hls->getHlsTime();
             $filter[] = "-hls_allow_cache";

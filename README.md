@@ -58,14 +58,20 @@ require 'vendor/autoload.php'; // path to the autoload file
 This package will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
 
 ``` php
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 $config = [
     'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
     'ffprobe.binaries' => '/usr/bin/ffprobe',
     'timeout'          => 3600, // The timeout for the underlying process
     'ffmpeg.threads'   => 12,   // The number of threads that FFmpeg should use
 ];
+
+$log = new Logger('FFmpeg_Streaming');
+$log->pushHandler(new StreamHandler('/var/log/ffmpeg-streaming.log')); // path to log file
     
-$ffmpeg = Streaming\FFMpeg::create($config);
+$ffmpeg = Streaming\FFMpeg::create($config, $log);
 ```
 
 ### Opening a File
@@ -282,12 +288,12 @@ You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
         - **[Shaka Player](https://github.com/google/shaka-player)**
-        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
         - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
         - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
         - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
         - **[Clappr](https://github.com/clappr/clappr)**
         - **[Plyr](https://github.com/sampotts/plyr)**
+        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
     - DASH:
         - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
     - HLS: 
@@ -304,6 +310,8 @@ You can use these libraries to play your streams.
     - DASH and HLS:
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
         - **[VLC media player](https://github.com/videolan/vlc)**
+
+As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So if you know any IOS player that supports DASH Stream and also works fine, please add it to the above list. 
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 

@@ -31,6 +31,9 @@ class HLS extends Streaming
     /** @var string */
     private $hls_base_url = "";
 
+    /** @var int */
+    private $hls_list_size = 0;
+
     /** @var bool */
     public $tmp_key_info_file = false;
 
@@ -136,6 +139,24 @@ class HLS extends Streaming
     public function getHlsBaseUrl(): string
     {
         return $this->hls_base_url;
+    }
+
+    /**
+     * @param int $hls_list_size
+     * @return HLS
+     */
+    public function setHlsListSize(int $hls_list_size): HLS
+    {
+        $this->hls_list_size = $hls_list_size;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHlsListSize(): int
+    {
+        return $this->hls_list_size;
     }
 
     /**
