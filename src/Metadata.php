@@ -87,7 +87,7 @@ class Metadata
             $metadata["dash_adaption"] = $this->export->getAdaption();
         } elseif ($this->export instanceof HLS) {
             $metadata["hls_time"] = $this->export->getHlsTime();
-            $metadata["hls_cache"] = $this->export->isHlsAllowCache();
+            $metadata["hls_cache"] = (bool)$this->export->isHlsAllowCache();
             $metadata["encrypted_hls"] = (bool)$this->export->getHlsKeyInfoFile();
             $metadata["ts_sub_directory"] = $this->export->getTsSubDirectory();
             $metadata["base_url"] = $this->export->getHlsBaseUrl();

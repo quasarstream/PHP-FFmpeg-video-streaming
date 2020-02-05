@@ -32,6 +32,9 @@ abstract class Export
     /** @var string */
     protected $tmp_dir;
 
+    /** @var string */
+    protected $uri;
+
     /**
      * Export constructor.
      * @param Media $media
@@ -166,6 +169,16 @@ abstract class Export
         $this->clouds($clouds, $path);
 
         return $metadata ? (new Metadata($this))->extract() : $this;
+    }
+
+    /**
+     * @param string $uri
+     */
+    public function live(string $uri): void
+    {
+        $this->uri = $uri;
+        $this->path_info = pathinfo($uri);
+        $this->run();
     }
 
     /**

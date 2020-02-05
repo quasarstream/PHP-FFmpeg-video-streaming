@@ -61,6 +61,13 @@ class Media
         return new HLS($this);
     }
 
+    /**
+     * @return StreamToFile
+     */
+    public function stream2file(): StreamToFile
+    {
+        return new StreamToFile($this);
+    }
 
     /**
      * @return array
