@@ -12,13 +12,15 @@
 namespace Streaming;
 
 use Streaming\Filters\DASHFilter;
-use Streaming\Traits\Representations;
 use Streaming\Filters\Filter;
 
 class DASH extends Streaming
 {
     /** @var string */
     private $adaption;
+
+    /** @var string */
+    private $seg_duration = 10;
 
     /**
      * @return mixed
@@ -36,6 +38,24 @@ class DASH extends Streaming
     {
         $this->adaption = $adaption;
         return $this;
+    }
+
+    /**
+     * @param string $seg_duration
+     * @return DASH
+     */
+    public function setSegDuration(string $seg_duration): DASH
+    {
+        $this->seg_duration = $seg_duration;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSegDuration(): string
+    {
+        return $this->seg_duration;
     }
 
     /**

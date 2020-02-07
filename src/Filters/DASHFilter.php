@@ -33,7 +33,7 @@ class DASHFilter extends Filter
      */
     private function DASHFilter(DASH $dash): array
     {
-        $filter = $this->getAdditionalFilters($dash->getFormat(), count($dash->getRepresentations()));
+        $filter = $this->getBaseFilters($dash, count($dash->getRepresentations()));
 
         foreach ($dash->getRepresentations() as $key => $representation) {
             $filter[] = "-map";
@@ -53,24 +53,35 @@ class DASHFilter extends Filter
             $filter[] = $dash->getAdaption();
         }
         $filter = array_merge($filter, $dash->getAdditionalParams());
+        $filter = array_merge($filter, ["-strict", $dash->getStrict()]);
 
         return $filter;
     }
 
     /**
-     * @param $format
+     * @param $dash
      * @param $count
      * @return array
      */
-    private function getAdditionalFilters($format, $count): array
+    private function getBaseFilters(DASH $dash, int $count): array
     {
+        $path_parts = $dash->getPathInfo();
+
         $filter = [
-            "-bf", "1", "-keyint_min", "120", "-g", "120",
-            "-sc_threshold", "0", "-b_strategy", "0", "-strict", "-2",
-            "-use_timeline", "1", "-use_template", "1", "-f", "dash"
+            "-bf", "1",
+            "-keyint_min", "120",
+            "-g", "120",
+            "-sc_threshold", "0",
+            "-b_strategy", "0",
+            "-use_timeline", "1",
+            "-use_template", "1",
+            "-init_seg_name", ($path_parts["filename"] . '_init_$RepresentationID$.$ext$'),
+            "-media_seg_name", ($path_parts["filename"] . '_chunk_$RepresentationID$_$Number%05d$.$ext$'),
+            "-seg_duration", $dash->getSegDuration(),
+            "-f", "dash",
         ];
 
-        if ($format instanceof X264) {
+        if ($dash->getFormat() instanceof X264) {
             $filter[] = "-profile:v:0";
             $filter[] = "main";
 

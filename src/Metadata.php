@@ -102,6 +102,10 @@ class Metadata
     private function getResolutions(): array
     {
         $resolutions = [];
+        if(!method_exists($this->export, 'getRepresentations')){
+            return $resolutions;
+        }
+
         foreach ($this->export->getRepresentations() as $representation) {
             $resolutions[] = [
                 "dimension" => strtoupper($representation->getResize()),

@@ -172,12 +172,12 @@ abstract class Export
     }
 
     /**
-     * @param string $uri
+     * @param string $url
      */
-    public function live(string $uri): void
+    public function live(string $url): void
     {
-        $this->uri = $uri;
-        $this->path_info = pathinfo($uri);
+        $this->uri = $url;
+        $this->path_info = pathinfo($url);
         $this->run();
     }
 

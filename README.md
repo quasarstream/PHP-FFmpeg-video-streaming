@@ -17,13 +17,15 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
 - [Installation](#installation)
 - [Quickstart](#quickstart)
   - [Configuration](#configuration)
-  - [Opening a File](#opening-a-file)
+  - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
     - [Encrypted HLS](#encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
   - [Metadata Extraction](#metadata-extraction)
+  - [Live](#live)
+  - [Conversion](#conversion)
   - [Other Advanced Features](#other-advanced-features)
 - [Asynchronous Task Execution](#asynchronous-task-execution)
 - [Several Open Source Players](#several-open-source-players)
@@ -74,13 +76,20 @@ $log->pushHandler(new StreamHandler('/var/log/ffmpeg-streaming.log')); // path t
 $ffmpeg = Streaming\FFMpeg::create($config, $log);
 ```
 
-### Opening a File
+### Opening a Resource
 There are two ways to open a file:
 
-#### 1. From a Local Path
-You can pass a local path of video to the `open` method:
+#### 1. From a FFmpeg supported resources
+You can pass a local path of video(or a supported resource) to the `open` method:
 ``` php
 $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
+```
+
+For opening a file from a supported FFmpeg resource such as `http`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
+
+**For example:** 
+``` php
+$video = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4');
 ```
 
 #### 2. From Clouds
@@ -118,6 +127,7 @@ $r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 $video->DASH()
     ->HEVC()
     ->addRepresentations([$r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k])
+    ->setSegDuration(30) // Default value is 10 
     ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
@@ -226,11 +236,11 @@ A path can also be passed to save a copy of files to your local machine.
 ``` php
 $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
+**NOTE:** This option(Save To Clouds) is only for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
-
 
 ### Metadata Extraction
 After saving files(wherever you saved them), you can extract the metadata from the video and streams. You can save these metadata to your database.
@@ -241,6 +251,49 @@ echo $filename; // path to metadata.json
 print_r($metadata); // print metadata -> it's an array
 ```
 **NOTE:** It will not save metadata to clouds because of some security reasons.
+
+### Live
+You can pass a url to live method to upload all the segments files to the HTTP server using the HTTP PUT method, and update the manifest files every refresh times.
+``` php
+// DASH live
+$dash->live('http://YOUR-WEBSITE.COM/live-stream/out.mpd');
+
+// HLS live
+$hls
+    ->setMasterPlaylist('/var/www/stream/live-master-manifest.m3u8')
+    ->live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8');
+```
+**NOTE:** In the HLS streaming method, do not forget that you should pass the master playlist to your player.
+
+### Conversion
+You can convert your stream to a file or to another stream protocols. You should pass a manifest of a stream to the `open` method:
+
+#### 1. HLS To DASH
+``` php
+$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/HLS-MANIFEST.M3U8');
+
+$stream->DASH()
+    ->X264()
+    ->addRepresentations([$r_360p, $r_480p]) 
+    ->save();
+```
+
+#### 2. DASH To HLS
+``` php
+$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.MPD');
+
+$stream->HLS()
+           ->X264()
+           ->autoGenerateRepresentations([720, 360])
+           ->save();
+```
+
+#### 3. Stream(DASH or HLS) To File
+``` php
+$stream->stream2file()
+           ->setFormat($format)
+           ->save('/var/www/media/new-video.mp4');
+```
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
@@ -287,12 +340,12 @@ Packaging process will may take a while and it is recommended to run it in the b
 You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
-        - **[Shaka Player](https://github.com/google/shaka-player)**
-        - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
-        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-        - **[Clappr](https://github.com/clappr/clappr)**
+        - **[Video.js 7](https://github.com/videojs/video.js) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
         - **[Plyr](https://github.com/sampotts/plyr)**
+        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+        - **[Clappr](https://github.com/clappr/clappr)**
+        - **[Shaka Player](https://github.com/google/shaka-player)**
         - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
     - DASH:
         - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**

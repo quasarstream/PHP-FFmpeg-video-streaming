@@ -37,6 +37,9 @@ class HLS extends Streaming
     /** @var bool */
     public $tmp_key_info_file = false;
 
+    /** @var string */
+    public $master_playlist;
+
     /**
      * @return string
      */
@@ -160,6 +163,16 @@ class HLS extends Streaming
     }
 
     /**
+     * @param string $master_playlist
+     * @return HLS
+     */
+    public function setMasterPlaylist(string $master_playlist): HLS
+    {
+        $this->master_playlist = $master_playlist;
+        return $this;
+    }
+
+    /**
      * @return Filter
      */
     protected function getFilter(): Filter
@@ -175,8 +188,18 @@ class HLS extends Streaming
         $path = $this->getFilePath();
         $reps = $this->getRepresentations();
 
-        HLSPlaylist::save($path . ".m3u8", $reps);
+        $this->savePlaylist($path . ".m3u8", $reps);
 
         return $path . "_" . end($reps)->getHeight() . "p.m3u8";
+    }
+
+    /**
+     * @param $path
+     * @param $reps
+     */
+    private function savePlaylist($path, $reps)
+    {
+        $manifests = pathinfo($path, $this->master_playlist ? PATHINFO_DIRNAME : PATHINFO_FILENAME);
+        HLSPlaylist::save($this->master_playlist ?? $path, $reps, $manifests);
     }
 }
