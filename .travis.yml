@@ -20,7 +20,6 @@ before_install:
 
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
-  - sudo apt-get install ffmpeg
 
 script:
   - export PATH=$(readlink -f ffmpeg-release):$PATH
