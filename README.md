@@ -85,7 +85,7 @@ You can pass a local path of video(or a supported resource) to the `open` method
 $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 ```
 
-For opening a file from a supported FFmpeg resource such as `http`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
+For opening a file from a supported FFmpeg resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
 
 **For example:** 
 ``` php
@@ -253,7 +253,10 @@ print_r($metadata); // print metadata -> it's an array
 **NOTE:** It will not save metadata to clouds because of some security reasons.
 
 ### Live
-You can pass a url to live method to upload all the segments files to the HTTP server using the HTTP PUT method, and update the manifest files every refresh times.
+You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
+
+If you want to save stream files to your local machine, please use the `save` method.
+
 ``` php
 // DASH live
 $dash->live('http://YOUR-WEBSITE.COM/live-stream/out.mpd');
@@ -263,7 +266,9 @@ $hls
     ->setMasterPlaylist('/var/www/stream/live-master-manifest.m3u8')
     ->live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8');
 ```
-**NOTE:** In the HLS streaming method, do not forget that you should pass the master playlist to your player.
+**NOTE:** In the HLS streaming method, you should pass the master playlist to your player. So you should upload the master manifest to your server as well as other files.
+
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
 
 ### Conversion
 You can convert your stream to a file or to another stream protocols. You should pass a manifest of a stream to the `open` method:
