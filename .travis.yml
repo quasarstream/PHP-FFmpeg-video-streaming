@@ -11,10 +11,21 @@ before_install:
   - sudo apt-get update
   - travis_retry composer self-update
   - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
+  - >
+      [ -f ffmpeg-release/ffmpeg ] || (
+          curl -O https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz &&
+          mkdir -p ffmpeg-release &&
+          tar Jxf ffmpeg-release-amd64-static.tar.xz --strip-components=1 -C ffmpeg-release
+      )
 
 install:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
   - sudo apt-get install ffmpeg
 
 script:
+  - export PATH=$(readlink -f ffmpeg-release):$PATH
   - vendor/bin/phpunit tests
+
+cache:
+  directories:
+    - ffmpeg-release
