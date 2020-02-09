@@ -199,7 +199,6 @@ class HLS extends Streaming
      */
     private function savePlaylist($path, $reps)
     {
-        $manifests = pathinfo($path, $this->master_playlist ? PATHINFO_DIRNAME : PATHINFO_FILENAME);
-        HLSPlaylist::save($this->master_playlist ?? $path, $reps, $manifests);
+        HLSPlaylist::save($this->master_playlist ?? $path, $reps, pathinfo($path,  PATHINFO_FILENAME));
     }
 }

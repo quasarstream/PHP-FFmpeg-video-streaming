@@ -1,4 +1,4 @@
-# 📼 PHP FFMPEG Video Streaming
+# 📼 PHP FFmpeg Video Streaming
 [![Build Status](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/PHP-FFmpeg-video-streaming)
 [![Build status](https://img.shields.io/appveyor/ci/aminyazdanpanah/PHP-FFmpeg-video-streaming/master.svg?style=flat&logo=appveyor)](https://ci.appveyor.com/project/aminyazdanpanah/php-ffmpeg-video-streaming)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/PHP-FFmpeg-video-streaming/?branch=master)
@@ -266,7 +266,7 @@ $hls
     ->setMasterPlaylist('/var/www/stream/live-master-manifest.m3u8')
     ->live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8');
 ```
-**NOTE:** In the HLS streaming method, you should pass the master playlist to your player. So you should upload the master manifest to your server as well as other files.
+**NOTE:** In the HLS method, you must upload the master manifest to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
 
 Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
 
@@ -280,7 +280,7 @@ $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/HLS-MANIFEST.M3
 $stream->DASH()
     ->X264()
     ->addRepresentations([$r_360p, $r_480p]) 
-    ->save();
+    ->save('/var/www/media/dash-stream.mpd');
 ```
 
 #### 2. DASH To HLS
@@ -290,11 +290,16 @@ $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.M
 $stream->HLS()
            ->X264()
            ->autoGenerateRepresentations([720, 360])
-           ->save();
+           ->save('/var/www/media/hls-stream.mpd');
 ```
 
 #### 3. Stream(DASH or HLS) To File
 ``` php
+$format = new Streaming\Format\X264();
+$format->on('progress', function ($video, $format, $percentage){
+    echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
+});
+
 $stream->stream2file()
            ->setFormat($format)
            ->save('/var/www/media/new-video.mp4');
