@@ -107,12 +107,13 @@ class HLS extends Streaming
     /**
      * @param string $save_to
      * @param string $url
+     * @param string|null $key_info_path
      * @param int $length
      * @return HLS
      */
-    public function encryption(string $save_to, string $url, int $length = 16): HLS
+    public function encryption(string $save_to, string $url, string $key_info_path = null, int $length = 16): HLS
     {
-        $this->setHlsKeyInfoFile(HLSKeyInfo::generate($save_to, $url, $length));
+        $this->setHlsKeyInfoFile(HLSKeyInfo::generate($save_to, $url, $key_info_path, $length));
         $this->tmp_key_info_file = true;
 
         return $this;
@@ -199,6 +200,6 @@ class HLS extends Streaming
      */
     private function savePlaylist($path, $reps)
     {
-        HLSPlaylist::save($this->master_playlist ?? $path, $reps, pathinfo($path,  PATHINFO_FILENAME));
+        HLSPlaylist::save($this->master_playlist ?? $path, $reps, pathinfo($path, PATHINFO_FILENAME));
     }
 }

@@ -75,7 +75,7 @@ abstract class Export
     private function moveTmp(?string $path): void
     {
         if ($this->isTmpDir() && !is_null($path)) {
-            File::moveDir($this->tmp_dir, dirname($path));
+            File::move($this->tmp_dir, dirname($path));
             $this->path_info = pathinfo($path);
             $this->tmp_dir = '';
         }

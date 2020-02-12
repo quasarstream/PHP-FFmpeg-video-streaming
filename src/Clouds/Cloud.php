@@ -24,7 +24,7 @@ class Cloud
      */
     public static function uploadDirectory(array $clouds, string $tmp_dir): void
     {
-        if (!is_array(current($clouds))) {
+        if (isset($clouds['cloud'])) {
             $clouds = [$clouds];
         }
 
@@ -40,7 +40,7 @@ class Cloud
      */
     public static function download(array $cloud, string $save_to = null): array
     {
-        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [File::tmpFile(), true];
+        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [File::tmp(), true];
         static::transfer($cloud, __FUNCTION__, $save_to);
 
         return [$save_to, $is_tmp];

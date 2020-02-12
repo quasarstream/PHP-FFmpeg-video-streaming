@@ -20,7 +20,7 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
   - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
-    - [Encrypted HLS](#encrypted-hls)
+    - [DRM (Encrypted HLS)](#drm-encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
   - [Metadata Extraction](#metadata-extraction)
@@ -160,10 +160,14 @@ $video->HLS()
 ```
 **NOTE:** You cannot use HEVC and VP9 formats for HLS packaging.
 
-#### Encrypted HLS
+#### DRM (Encrypted HLS)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
+
+##### Single Key
+The following code generates a key for all TS files.
+
 ``` php
 //A path you want to save a random key to your server
 $save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key';
@@ -179,8 +183,74 @@ $video->HLS()
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
+
+##### Key Rotation
+The code below, allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also modify the code to use a different key for each set of segments(i.e. if 10 TS files has been generated then rotate the key) or you can generate a new encryption key at every periodic time(i.e. every 10 seconds).
+
+First you need to create a listener class that is extended by `Evenement\EventEmitter` and is implemented by `Alchemy\BinaryDriver\Listeners\ListenerInterface`. This allows you to get all lines of FFmpeg logs regardless of the type of them.
+``` php
+class LineListener extends Evenement\EventEmitter implements Alchemy\BinaryDriver\Listeners\ListenerInterface
+{
+    private $event;
+
+    public function __construct($event = 'line')
+    {
+        $this->event = $event;
+    }
+
+    public function handle($type, $data)
+    {
+        foreach (explode(PHP_EOL, $data) as $line) {
+            $this->emit($this->event, [$line]);
+        }
+    }
+
+    public function forwardedEvents()
+    {
+        return [$this->event];
+    }
+}
+```
+
+You can also use `Alchemy\BinaryDriver\Listeners\DebugListener` object instead and skip this step.
+
+After that, you should pass an instance of the object to the `listen` method in the `FFMpegDriver` object and get the line of FFmpeg logs. When a new TS file has been created, you should generate a new encryption key and update the key info file.
+``` php
+$save_to = "/home/public_html/PATH_TO_KEY_DIRECTORY/key_rotation";
+$url = "https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/key_rotation";
+$key_info_path = Streaming\File::tmp();
+$ts_files = [];
+
+$update_key_info_file = function ($number) use ($save_to, $url, $key_info_path) {
+    $u_key_path = $save_to . "_" . $number;
+    $u_url = $url . "_" . $number;
+    Streaming\HLSKeyInfo::generate($u_key_path, $u_url, $key_info_path);
+};
+
+$ffmpeg = Streaming\FFMpeg::create();
+$ffmpeg->getFFMpegDriver()->listen(new LineListener);
+$ffmpeg->getFFMpegDriver()->on('line', function ($line) use (&$ts_files, $update_key_info_file) {
+    // Check if a new TS file is generated or not
+    if(false !== strpos($line, ".ts' for writing") && !in_array($line, $ts_files)){
+        // A new TS file has been created! Generate a new encryption key and update the key info file
+        array_push($ts_files, $line);
+        call_user_func($update_key_info_file, count($ts_files));
+    }
+});
+
+$video = $ffmpeg->open("path/to/video");
+
+$video->HLS()
+    ->encryption($save_to, $url, $key_info_path)
+    ->setAdditionalParams(['-hls_flags', 'periodic_rekey'])
+    ->X264()
+    ->autoGenerateRepresentations([240])
+    ->save('c:\\test\\encryption_videos\\hls-stream.m3u8');
+```
+
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(**It is highly recommended**).    
 
+**NOTE:** However HLS supports AES encryption, that you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend to try **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
@@ -290,7 +360,7 @@ $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.M
 $stream->HLS()
            ->X264()
            ->autoGenerateRepresentations([720, 360])
-           ->save('/var/www/media/hls-stream.mpd');
+           ->save('/var/www/media/hls-stream.m3u8');
 ```
 
 #### 3. Stream(DASH or HLS) To File

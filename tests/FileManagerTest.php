@@ -25,7 +25,7 @@ class FileManagerTest extends TestCase
 
     public function testTmp()
     {
-        $tmp_file = File::tmpFile();
+        $tmp_file = File::tmp();
         $tmp_dir = File::tmpDir();
 
         $this->assertIsString($tmp_file);

@@ -55,7 +55,7 @@ class File
     /**
      * @return string
      */
-    public static function tmpFile(): string
+    public static function tmp(): string
     {
         return tempnam(static::tmpDirPath(), 'stream');
     }
@@ -90,7 +90,7 @@ class File
      * @param string $src
      * @param string $dst
      */
-    public static function moveDir(string $src, string $dst): void
+    public static function move(string $src, string $dst): void
     {
         static::filesystem('mirror', [$src, $dst]);
         static::remove($src);
