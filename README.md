@@ -245,10 +245,10 @@ $video->HLS()
     ->setAdditionalParams(['-hls_flags', 'periodic_rekey'])
     ->X264()
     ->autoGenerateRepresentations([240])
-    ->save('c:\\test\\encryption_videos\\hls-stream.m3u8');
+    ->save('/var/www/media/encryption_key_rotation/hls-stream.m3u8');
 ```
 
-**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(**It is highly recommended**).    
+**NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(**It is highly recommended**).    
 
 **NOTE:** However HLS supports AES encryption, that you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend to try **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
