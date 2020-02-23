@@ -159,16 +159,15 @@ abstract class Export
     /**
      * @param string $path
      * @param array $clouds
-     * @param bool $metadata
      * @return mixed
      */
-    public function save(string $path = null, array $clouds = [], bool $metadata = true)
+    public function save(string $path = null, array $clouds = [])
     {
         $this->makePaths($path, $clouds);
         $this->run();
         $this->clouds($clouds, $path);
 
-        return $metadata ? (new Metadata($this))->extract() : $this;
+        return $this;
     }
 
     /**
@@ -182,10 +181,19 @@ abstract class Export
     }
 
     /**
+     * @return Metadata
+     */
+    public function metadata(): Metadata
+    {
+        return new Metadata($this);
+    }
+
+    /**
      * clear tmp files
      */
     public function __destruct()
     {
+        // make sure that FFmpeg process has benn terminated
         sleep(1);
 
         if ($this->media->isTmp()) {

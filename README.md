@@ -7,9 +7,8 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
+This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
-- **[A complete example](https://video.aminyazdanpanah.com/start/example)** is provided. It contains server-side(Transcoding + cloud + progress + web socket) and client-side(progress bar + web socket + player).
 - For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
@@ -23,7 +22,6 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
     - [DRM (Encrypted HLS)](#drm-encrypted-hls)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
-  - [Metadata Extraction](#metadata-extraction)
   - [Live](#live)
   - [Conversion](#conversion)
   - [Other Advanced Features](#other-advanced-features)
@@ -85,7 +83,7 @@ You can pass a local path of video(or a supported resource) to the `open` method
 $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 ```
 
-Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for opening a file from a supported resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. 
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, pipe, rtmp and etc.
 
 **For example:** 
 ``` php
@@ -177,9 +175,8 @@ $url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';
 // or $url = '/PATH_TO_KEY_DIRECTORY/random_key.key';
 
 $video->HLS()
-    ->X264()
-    ->setTsSubDirectory('ts_files')// put all ts files in a subdirectory
     ->encryption($save_to, $url)
+    ->X264()
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
@@ -252,16 +249,6 @@ $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custo
 **Schema:** The relation is `one-to-many`
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
-
-### Metadata Extraction
-After saving files(wherever you saved them), you can extract the metadata from the video and streams. You can save these metadata to your database.
-``` php
-extract($hls->save());
-
-echo $filename; // path to metadata.json
-print_r($metadata); // print metadata -> it's an array
-```
-**NOTE:** It will not save metadata to clouds because of some security reasons.
 
 ### Live
 You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.

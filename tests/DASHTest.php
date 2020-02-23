@@ -15,7 +15,6 @@ use Streaming\DASH;
 use Streaming\Export;
 use Streaming\Format\Video;
 use Streaming\Representation;
-use ReflectionClass;
 
 class DASHTest extends TestCase
 {
@@ -62,7 +61,7 @@ class DASHTest extends TestCase
     public function testSave()
     {
         $dash = $this->getDASH();
-        $streaming_analytics = $dash->HEVC()
+        $export_class = $dash->HEVC()
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/dash/test.mpd');
 
@@ -72,10 +71,7 @@ class DASHTest extends TestCase
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);
         $this->assertArrayHasKey('filename', $get_path_info);
-        $this->assertArrayHasKey('metadata', $streaming_analytics);
-        $metadata = $streaming_analytics['metadata'];
-        $this->assertArrayHasKey('video', $metadata);
-        $this->assertArrayHasKey('streams', $metadata);
+        $this->assertInstanceOf(Export::class, $export_class);
     }
 
     private function getDASH()

@@ -13,6 +13,8 @@
 namespace Streaming;
 
 
+use Streaming\Exception\InvalidArgumentException;
+
 class Metadata
 {
     /**
@@ -27,22 +29,6 @@ class Metadata
     public function __construct(Export $export)
     {
         $this->export = $export;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function extract(): array
-    {
-        $metadata = [
-            "video" => $this->getVideoMetadata(),
-            "streams" => $this->getStreamsMetadata()
-        ];
-
-        return [
-            'filename' => !$this->export->isTmpDir() ? $this->saveAsJson($metadata) : null,
-            'metadata' => $metadata
-        ];
     }
 
     /**
@@ -69,28 +55,33 @@ class Metadata
      */
     private function getStreamsMetadata(): array
     {
-        $metadata = [];
         $stream_path = $this->export->getPathInfo();
-        $metadata["filename"] = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
-        $metadata["size_of_stream_dir"] = File::directorySize($stream_path["dirname"]);
-        $metadata["created_at"] = date("Y-m-d H:i:s");
-
-        $metadata["resolutions"] = $this->getResolutions();
-
-        $format_class = explode("\\", get_class($this->export->getFormat()));
-        $metadata["format"] = end($format_class);
-
+        $filename = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
         $export_class = explode("\\", get_class($this->export));
-        $metadata["streaming_technique"] = end($export_class);
+        $format_class = explode("\\", get_class($this->export->getFormat()));
+
+        $metadata = [
+            "filename" => $filename,
+            "size_of_stream_dir" => File::directorySize($stream_path["dirname"]),
+            "created_at" => file_exists($filename) ? date("Y-m-d H:i:s", filemtime($filename)) : 'The file has been deleted',
+            "resolutions" => $this->getResolutions(),
+            "format" => end($format_class),
+            "streaming_technique" => end($export_class)
+        ];
 
         if ($this->export instanceof DASH) {
-            $metadata["dash_adaption"] = $this->export->getAdaption();
+            $metadata = array_merge($metadata, ["seg_duration" => $this->export->getSegDuration()]);
         } elseif ($this->export instanceof HLS) {
-            $metadata["hls_time"] = $this->export->getHlsTime();
-            $metadata["hls_cache"] = (bool)$this->export->isHlsAllowCache();
-            $metadata["encrypted_hls"] = (bool)$this->export->getHlsKeyInfoFile();
-            $metadata["ts_sub_directory"] = $this->export->getTsSubDirectory();
-            $metadata["base_url"] = $this->export->getHlsBaseUrl();
+            $metadata = array_merge(
+                $metadata,
+                [
+                    "hls_time" => $this->export->getHlsTime(),
+                    "hls_cache" => (bool)$this->export->isHlsAllowCache(),
+                    "encrypted_hls" => (bool)$this->export->getHlsKeyInfoFile(),
+                    "ts_sub_directory" => $this->export->getTsSubDirectory(),
+                    "base_url" => $this->export->getHlsBaseUrl()
+                ]
+            );
         }
 
         return $metadata;
@@ -102,7 +93,7 @@ class Metadata
     private function getResolutions(): array
     {
         $resolutions = [];
-        if(!method_exists($this->export, 'getRepresentations')){
+        if (!method_exists($this->export, 'getRepresentations')) {
             return $resolutions;
         }
 
@@ -117,12 +108,48 @@ class Metadata
         return $resolutions;
     }
 
-    private function saveAsJson($metadata): string
+    /**
+     * @return array
+     */
+    public function getMetadata(): array
     {
-        $name = uniqid(($this->export->getPathInfo()["filename"] ?? "meta") . "-") . ".json";
-        $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
-        file_put_contents($filename, json_encode($metadata, JSON_PRETTY_PRINT));
+        return [
+            "video" => $this->getVideoMetadata(),
+            "streams" => $this->getStreamsMetadata()
+        ];
+    }
+
+    /**
+     * @param string $filename
+     * @param int $opts
+     * @return string
+     */
+    public function saveAsJson(string $filename = null, int $opts = null): string
+    {
+        if (is_null($filename)) {
+            if ($this->export->isTmpDir()) {
+                throw new InvalidArgumentException("It is a temp directory! It is not possible to save it");
+            }
+
+            $name = uniqid(($this->export->getPathInfo()["filename"] ?? "meta") . "-") . ".json";
+            $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
+        }
+
+        file_put_contents(
+            $filename,
+            json_encode($this->getMetadata(), $opts ?? JSON_PRETTY_PRINT)
+        );
 
         return $filename;
+    }
+
+    /**
+     * @param string|null $save_to
+     * @param int|null $opts
+     * @return array
+     */
+    public function export(string $save_to = null, int $opts = null): array
+    {
+        return array_merge($this->getMetadata(), ['filename' => $this->saveAsJson($save_to, $opts)]);
     }
 }
