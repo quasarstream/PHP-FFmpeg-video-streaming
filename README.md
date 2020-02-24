@@ -23,6 +23,7 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
   - [Live](#live)
+  - [Metadata](#metadata)
   - [Conversion](#conversion)
   - [Other Advanced Features](#other-advanced-features)
 - [Asynchronous Task Execution](#asynchronous-task-execution)
@@ -267,6 +268,17 @@ $hls
 **NOTE:** In the HLS method, you must upload the master manifest to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
 
 Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
+
+### Metadata
+You can get information from multimedia streams and the video file using the following code.
+``` php
+$hls = $hls->save();
+$metadata = $hls->metadata()->export();
+
+print_r($metadata);
+```
+
+Please see **[the example](https://video.aminyazdanpanah.com/start?r=metadata#metadata)** for more information.
 
 ### Conversion
 You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `open` method:
