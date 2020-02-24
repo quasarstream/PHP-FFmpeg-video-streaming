@@ -24,7 +24,7 @@ class Representation
     /**
      * @return mixed
      */
-    public function getResize()
+    public function getResize(): string
     {
         return $this->resize;
     }

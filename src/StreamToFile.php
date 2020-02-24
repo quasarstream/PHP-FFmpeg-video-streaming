@@ -19,6 +19,28 @@ use Streaming\Filters\StreamToFileFilter;
 
 class StreamToFile extends Export
 {
+    /**
+     * @var array
+     */
+    private $params = [];
+
+    /**
+     * @param array $params
+     * @return StreamToFile
+     */
+    public function setParams(array $params): StreamToFile
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
 
     /**
      * @return string

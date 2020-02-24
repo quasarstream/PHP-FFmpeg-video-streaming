@@ -13,6 +13,9 @@
 namespace Streaming;
 
 
+use FFMpeg\FFProbe\DataMapping\Format;
+use FFMpeg\FFProbe\DataMapping\Stream;
+use FFMpeg\FFProbe\DataMapping\StreamCollection;
 use Streaming\Exception\InvalidArgumentException;
 
 class Metadata
@@ -23,12 +26,49 @@ class Metadata
     private $export;
 
     /**
+     * @var \FFMpeg\FFProbe\DataMapping\Format
+     */
+    private $format;
+
+    /**
+     * @var \FFMpeg\FFProbe\DataMapping\StreamCollection
+     */
+    private $streams_video;
+
+    /**
      * Metadata constructor.
      * @param Export $export
      */
     public function __construct(Export $export)
     {
         $this->export = $export;
+        $this->format = $export->getMedia()->probe()['format'];
+        $this->streams_video = $export->getMedia()->probe()['streams'];
+    }
+
+    /**
+     * @return \FFMpeg\FFProbe\DataMapping\Format
+     */
+    public function getFormat(): Format
+    {
+        return $this->format;
+    }
+
+    /**
+     * @return \FFMpeg\FFProbe\DataMapping\StreamCollection
+     */
+    public function getStreamsVideo(): StreamCollection
+    {
+        return $this->streams_video;
+    }
+
+    /**
+     * @param Stream $stream
+     * @return array
+     */
+    private function streamToArray(Stream $stream): array
+    {
+        return $stream->all();
     }
 
     /**
@@ -36,24 +76,42 @@ class Metadata
      */
     private function getVideoMetadata(): array
     {
-        $probe = $this->export->getMedia()->probe();
-        $streams = $probe['streams']->all();
-        $format = $probe['format']->all();
-
-        foreach ($streams as $key => $stream) {
-            $streams[$key] = $stream->all();
-        }
-
         return [
-            'format' => $format,
-            'streams' => $streams
+            'format' => $this->getFormat()->all(),
+            'streams' => array_map([$this, 'streamToArray'], $this->getStreamsVideo()->all())
         ];
     }
 
     /**
-     * @return mixed
+     * @param Representation $rep
+     * @return array
      */
-    private function getStreamsMetadata(): array
+    private function repToArray(Representation $rep): array
+    {
+        return [
+            "dimension" => strtoupper($rep->getResize()),
+            "video_kilo_bitrate" => $rep->getKiloBitrate(),
+            "audio_kilo_bitrate" => $rep->getAudioKiloBitrate() ?? "Not specified"
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getResolutions(): array
+    {
+        if (!method_exists($this->export, 'getRepresentations')) {
+            return [];
+        }
+
+        return array_map([$this, 'repToArray'], $this->export->getRepresentations() );
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getStreamsMetadata(): array
     {
         $stream_path = $this->export->getPathInfo();
         $filename = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
@@ -75,7 +133,7 @@ class Metadata
             $metadata = array_merge(
                 $metadata,
                 [
-                    "hls_time" => $this->export->getHlsTime(),
+                    "hls_time" => (int)$this->export->getHlsTime(),
                     "hls_cache" => (bool)$this->export->isHlsAllowCache(),
                     "encrypted_hls" => (bool)$this->export->getHlsKeyInfoFile(),
                     "ts_sub_directory" => $this->export->getTsSubDirectory(),
@@ -90,28 +148,7 @@ class Metadata
     /**
      * @return array
      */
-    private function getResolutions(): array
-    {
-        $resolutions = [];
-        if (!method_exists($this->export, 'getRepresentations')) {
-            return $resolutions;
-        }
-
-        foreach ($this->export->getRepresentations() as $representation) {
-            $resolutions[] = [
-                "dimension" => strtoupper($representation->getResize()),
-                "video_kilo_bitrate" => $representation->getKiloBitrate(),
-                "audio_kilo_bitrate" => $representation->getAudioKiloBitrate() ?? "Not specified"
-            ];
-        }
-
-        return $resolutions;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMetadata(): array
+    public function get(): array
     {
         return [
             "video" => $this->getVideoMetadata(),
@@ -137,7 +174,7 @@ class Metadata
 
         file_put_contents(
             $filename,
-            json_encode($this->getMetadata(), $opts ?? JSON_PRETTY_PRINT)
+            json_encode($this->get(), $opts ?? JSON_PRETTY_PRINT)
         );
 
         return $filename;
@@ -150,6 +187,6 @@ class Metadata
      */
     public function export(string $save_to = null, int $opts = null): array
     {
-        return array_merge($this->getMetadata(), ['filename' => $this->saveAsJson($save_to, $opts)]);
+        return array_merge($this->get(), ['filename' => $this->saveAsJson($save_to, $opts)]);
     }
 }

@@ -40,6 +40,9 @@ class HLS extends Streaming
     /** @var string */
     public $master_playlist;
 
+    /** @var array */
+    private $stream_info = [];
+
     /**
      * @return string
      */
@@ -165,11 +168,14 @@ class HLS extends Streaming
 
     /**
      * @param string $master_playlist
+     * @param array $stream_info
      * @return HLS
      */
-    public function setMasterPlaylist(string $master_playlist): HLS
+    public function setMasterPlaylist(string $master_playlist, array $stream_info = []): HLS
     {
         $this->master_playlist = $master_playlist;
+        $this->stream_info = $stream_info;
+
         return $this;
     }
 
@@ -198,8 +204,13 @@ class HLS extends Streaming
      * @param $path
      * @param $reps
      */
-    private function savePlaylist($path, $reps)
+    private function savePlaylist(string $path, array $reps): void
     {
-        HLSPlaylist::save($this->master_playlist ?? $path, $reps, pathinfo($path, PATHINFO_FILENAME));
+        HLSPlaylist::save(
+            $this->master_playlist ?? $path,
+            $reps,
+            pathinfo($path, PATHINFO_FILENAME),
+            $this->stream_info
+        );
     }
 }

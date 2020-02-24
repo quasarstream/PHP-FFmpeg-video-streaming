@@ -27,8 +27,12 @@ class StreamToFileFilter extends Filter
         $this->filter = $this->StreamToFileFilter($media);
     }
 
-    private function StreamToFileFilter(StreamToFile $media)
+    /**
+     * @param StreamToFile $stf
+     * @return array
+     */
+    private function StreamToFileFilter(StreamToFile $stf)
     {
-        return ['-c', 'copy'];
+        return array_merge(['-c', 'copy'], $stf->getParams());
     }
 }
