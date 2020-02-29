@@ -40,6 +40,12 @@ class HLS extends Streaming
     /** @var string */
     public $master_playlist;
 
+    /** @var string */
+    private $hls_segment_type = 'mpegts';
+
+    /** @var string */
+    private $hls_fmp4_init_filename = "init.mp4";
+
     /** @var array */
     private $stream_info = [];
 
@@ -177,6 +183,42 @@ class HLS extends Streaming
         $this->stream_info = $stream_info;
 
         return $this;
+    }
+
+    /**
+     * @param string $hls_segment_type
+     * @return HLS
+     */
+    public function setHlsSegmentType(string $hls_segment_type): HLS
+    {
+        $this->hls_segment_type = $hls_segment_type;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHlsSegmentType(): string
+    {
+        return $this->hls_segment_type;
+    }
+
+    /**
+     * @param string $hls_fmp4_init_filename
+     * @return HLS
+     */
+    public function setHlsFmp4InitFilename(string $hls_fmp4_init_filename): HLS
+    {
+        $this->hls_fmp4_init_filename = $hls_fmp4_init_filename;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHlsFmp4InitFilename(): string
+    {
+        return $this->hls_fmp4_init_filename;
     }
 
     /**

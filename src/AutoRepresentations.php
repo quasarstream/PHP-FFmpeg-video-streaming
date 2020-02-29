@@ -134,7 +134,7 @@ class AutoRepresentations
      */
     private function getSideValues(?array $side_values): void
     {
-        if (!empty($side_values)) {
+        if (!is_null($side_values)) {
             $this->side_values = $side_values;
             return;
         }

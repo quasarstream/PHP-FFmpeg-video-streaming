@@ -36,7 +36,8 @@ class HLSFilter extends Filter
         $reps = $hls->getRepresentations();
         $path_parts = $hls->getPathInfo();
         $dirname = str_replace("\\", "/", $path_parts["dirname"]);
-        list($ts_sub_dir, $base_url) = $this->getSubDirectory($hls, $dirname);
+        list($seg_sub_dir, $base_url) = $this->getSubDirectory($hls, $dirname);
+        $full_seg_filename = $dirname . "/" . $seg_sub_dir . $path_parts["filename"];
 
         foreach ($reps as $key => $rep) {
             if ($key) {
@@ -64,8 +65,12 @@ class HLSFilter extends Filter
             $filter = array_merge($filter, $this->getAudioBitrate($rep));
             $filter[] = "-maxrate";
             $filter[] = intval($rep->getKiloBitrate() * 1.2) . "k";
+            $filter[] = "-hls_segment_type";
+            $filter[] = $hls->getHlsSegmentType();
+            $filter[] = "-hls_fmp4_init_filename";
+            $filter[] = $path_parts["filename"] . "_" . $hls->getHlsFmp4InitFilename();
             $filter[] = "-hls_segment_filename";
-            $filter[] = $dirname . "/" . $ts_sub_dir . $path_parts["filename"] . "_" . $rep->getHeight() . "p_%04d.ts";
+            $filter[] = $this->getSegmentFilename($full_seg_filename, $rep, $hls->getHlsSegmentType());
             $filter = array_merge($filter, $this->getBaseURL($base_url));
             $filter = array_merge($filter, $this->getKeyInfo($hls));
             $filter = array_merge($filter, $hls->getAdditionalParams());
@@ -134,5 +139,17 @@ class HLSFilter extends Filter
     private function getAudioBitrate(Representation $rep): array
     {
         return $rep->getAudioKiloBitrate() ? ["-b:a", $rep->getAudioKiloBitrate() . "k"] : [];
+    }
+
+    /**
+     * @param string $full_seg_filename
+     * @param Representation $rep
+     * @param string $type
+     * @return string
+     */
+    private function getSegmentFilename(string $full_seg_filename, Representation $rep, string $type): string
+    {
+        $ext = ($type === "fmp4") ? "m4s" : "ts";
+        return $full_seg_filename . "_" . $rep->getHeight() . "p_%04d." . $ext;
     }
 }
