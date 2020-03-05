@@ -11,7 +11,10 @@
 
 namespace Streaming;
 
+use FFMpeg\Coordinate\Dimension;
+use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Exception\InvalidArgumentException;
+use Streaming\Exception\RuntimeException;
 
 class AutoRepresentations
 {
@@ -26,34 +29,35 @@ class AutoRepresentations
      *
      * @var array side_values
      */
-    private $side_values = [2160, 1440, 1080, 720, 480, 360, 240, 144];
+    private $side_values = [144, 240, 360, 480, 720, 1080, 1440, 2160];
 
     /** @var array $k_bitrate_values */
-    private $k_bitrate_values;
+    private $k_bitrate;
 
     /**
      * AutoRepresentations constructor.
-     * @param array $probe
-     * @param null | array $side_values
-     * @param array $k_bitrate_values
+     * @param Media $media
+     * @param array|null $sides
+     * @param array|null $k_bitrate
      */
-    public function __construct(array $probe, array $side_values = null, array $k_bitrate_values = null)
+    public function __construct(Media $media, array $sides = null, array $k_bitrate = null)
     {
-        $this->video = $probe['streams']->videos()->first();
-        $this->format = $probe['format'];
-        $this->getSideValues($side_values);
-        $this->getKiloBitrateValues($k_bitrate_values);
+        $this->video = $media->getStreams()->videos()->first();
+        $this->format = $media->getFormat();
+        $this->getSideValues($sides);
+        $this->getKiloBitrateValues($k_bitrate);
     }
 
     /**
-     * @return array
+     * @return Dimension
      */
-    private function getDimensions(): array
+    private function getDimensions(): Dimension
     {
-        $width = $this->video->get('width');
-        $height = $this->video->get('height');
-
-        return [$width, $height, $width / $height];
+        try {
+            return $this->video->getDimensions();
+        } catch (ExceptionInterface $e) {
+            throw new RuntimeException("Unable to extract dimensions.: " . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -64,7 +68,7 @@ class AutoRepresentations
     {
         if (!$this->video->has('bit_rate')) {
             if (!$this->format->has('bit_rate')) {
-                throw new InvalidArgumentException("We could not determine the value of video's bitrate");
+                throw new InvalidArgumentException("Unable to extract bitrate.");
             }
 
             return intval(($this->format->get('bit_rate') / 1024) * .9);
@@ -78,17 +82,15 @@ class AutoRepresentations
      */
     public function get(): array
     {
-        $k_bitrate = $this->getKiloBitRate();
-        list($w, $h, $r) = $this->getDimensions();
-
-        $reps = [$this->addRep($k_bitrate, $w, $h)];
+        $reps = [];
+        $dimension = $this->getDimensions();
+        $ratio = $dimension->getRatio()->getValue();
 
         foreach ($this->side_values as $key => $height) {
-            $width = (($w = intval($r * $height)) % 2 == 0) ? $w : $w + 1;
-            $reps[] = $this->addRep($this->k_bitrate_values[$key], $width, $height);
+            array_push($reps, $this->addRep($this->k_bitrate[$key], Utiles::RTE($height * $ratio), $height));
         }
 
-        return array_reverse($reps);
+        return array_merge($reps, [$this->addRep($this->getKiloBitRate(), $dimension->getWidth(), $dimension->getHeight())]);
     }
 
     /**
@@ -115,7 +117,7 @@ class AutoRepresentations
                 throw new InvalidArgumentException("The count of side value array must be the same as the count of kilo bitrate array");
             }
 
-            $this->k_bitrate_values = $k_bitrate_values;
+            $this->k_bitrate = $k_bitrate_values;
             return;
         }
 
@@ -123,10 +125,19 @@ class AutoRepresentations
         $divided_by = 1.5;
 
         while ($count_sides) {
-            $this->k_bitrate_values[] = (($k_bitrate = intval($k_bitrate_value / $divided_by)) < 64) ? 64 : $k_bitrate;
+            $this->k_bitrate[] = (($k_bitrate = intval($k_bitrate_value / $divided_by)) < 64) ? 64 : $k_bitrate;
             $divided_by += .5;
             $count_sides--;
         }
+    }
+
+    /**
+     * @param int $height
+     * @return bool
+     */
+    private function sideFilter(int $height): bool
+    {
+        return $height < $this->getDimensions()->getHeight();
     }
 
     /**
@@ -139,10 +150,6 @@ class AutoRepresentations
             return;
         }
 
-        $h = $this->getDimensions()[1];
-
-        $this->side_values = array_values(array_filter($this->side_values, function ($height) use ($h) {
-            return $height < $h;
-        }));
+        $this->side_values = array_values(array_filter($this->side_values, [$this, 'sideFilter']));
     }
 }

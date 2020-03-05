@@ -42,8 +42,8 @@ class Metadata
     public function __construct(Export $export)
     {
         $this->export = $export;
-        $this->format = $export->getMedia()->probe()['format'];
-        $this->streams_video = $export->getMedia()->probe()['streams'];
+        $this->format = $export->getMedia()->getFormat();
+        $this->streams_video = $export->getMedia()->getStreams();
     }
 
     /**
@@ -104,7 +104,7 @@ class Metadata
             return [];
         }
 
-        return array_map([$this, 'repToArray'], $this->export->getRepresentations() );
+        return array_map([$this, 'repToArray'], $this->export->getRepresentations());
     }
 
 
@@ -113,18 +113,20 @@ class Metadata
      */
     public function getStreamsMetadata(): array
     {
-        $stream_path = $this->export->getPathInfo();
-        $filename = $stream_path["dirname"] . DIRECTORY_SEPARATOR . $stream_path["basename"];
-        $export_class = explode("\\", get_class($this->export));
-        $format_class = explode("\\", get_class($this->export->getFormat()));
+        $dirname = $this->export->getPathInfo(PATHINFO_DIRNAME);
+        $basename = $this->export->getPathInfo(PATHINFO_BASENAME);
+        $filename = $dirname . DIRECTORY_SEPARATOR . $basename;
+
+        $technique = explode("\\", get_class($this->export));
+        $format = explode("\\", get_class($this->export->getFormat()));
 
         $metadata = [
             "filename" => $filename,
-            "size_of_stream_dir" => File::directorySize($stream_path["dirname"]),
+            "size_of_stream_dir" => File::directorySize($dirname),
             "created_at" => file_exists($filename) ? date("Y-m-d H:i:s", filemtime($filename)) : 'The file has been deleted',
             "resolutions" => $this->getResolutions(),
-            "format" => end($format_class),
-            "streaming_technique" => end($export_class)
+            "format" => end($format),
+            "streaming_technique" => end($technique)
         ];
 
         if ($this->export instanceof DASH) {
@@ -168,8 +170,8 @@ class Metadata
                 throw new InvalidArgumentException("It is a temp directory! It is not possible to save it");
             }
 
-            $name = uniqid(($this->export->getPathInfo()["filename"] ?? "meta") . "-") . ".json";
-            $filename = $this->export->getPathInfo()["dirname"] . DIRECTORY_SEPARATOR . $name;
+            $name = uniqid(($this->export->getPathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
+            $filename = $this->export->getPathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
         }
 
         file_put_contents(

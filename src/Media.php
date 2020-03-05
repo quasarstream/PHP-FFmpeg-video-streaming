@@ -14,10 +14,10 @@ namespace Streaming;
 use FFMpeg\Media\MediaTypeInterface;
 
 /**
- * @method mixed save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
- * @method mixed addFilter(\FFMpeg\Filters\FilterInterface $filter)
- * @method mixed getFormat()
- * @method mixed getStreams()
+ * @method \FFMpeg\Media\Video save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
+ * @method \FFMpeg\Media\Video addFilter(\FFMpeg\Filters\FilterInterface $filter)
+ * @method \FFMpeg\FFProbe\DataMapping\Format getFormat()
+ * @method \FFMpeg\FFProbe\DataMapping\StreamCollection getStreams()
  */
 class Media
 {
@@ -67,17 +67,6 @@ class Media
     public function stream2file(): StreamToFile
     {
         return new StreamToFile($this);
-    }
-
-    /**
-     * @return array
-     */
-    public function probe(): array
-    {
-        return [
-            'format' => $this->getFormat(),
-            'streams' => $this->getStreams()
-        ];
     }
 
     /**

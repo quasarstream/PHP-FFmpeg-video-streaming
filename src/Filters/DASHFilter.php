@@ -65,7 +65,8 @@ class DASHFilter extends Filter
      */
     private function getBaseFilters(DASH $dash, int $count): array
     {
-        $path_parts = $dash->getPathInfo();
+        $dirname = $dash->getPathInfo(PATHINFO_FILENAME);
+        $filename = $dash->getPathInfo(PATHINFO_FILENAME);
 
         $filter = [
             "-bf", "1",
@@ -75,9 +76,10 @@ class DASHFilter extends Filter
             "-b_strategy", "0",
             "-use_timeline", "1",
             "-use_template", "1",
-            "-init_seg_name", ($path_parts["filename"] . '_init_$RepresentationID$.$ext$'),
-            "-media_seg_name", ($path_parts["filename"] . '_chunk_$RepresentationID$_$Number%05d$.$ext$'),
+            "-init_seg_name", ($filename . '_init_$RepresentationID$.$ext$'),
+            "-media_seg_name", ($filename . '_chunk_$RepresentationID$_$Number%05d$.$ext$'),
             "-seg_duration", $dash->getSegDuration(),
+            "-hls_playlist", (int)$dash->isGenerateHlsPlaylist(),
             "-f", "dash",
         ];
 

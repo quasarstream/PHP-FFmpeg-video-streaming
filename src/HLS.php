@@ -11,8 +11,9 @@
 
 namespace Streaming;
 
+use phpDocumentor\Reflection\Types\This;
+use Streaming\Filters\FilterStreamingInterface;
 use Streaming\Filters\HLSFilter;
-use Streaming\Filters\Filter;
 
 class HLS extends Streaming
 {
@@ -47,7 +48,7 @@ class HLS extends Streaming
     private $hls_fmp4_init_filename = "init.mp4";
 
     /** @var array */
-    private $stream_info = [];
+    private $stream_des = [];
 
     /**
      * @return string
@@ -174,13 +175,13 @@ class HLS extends Streaming
 
     /**
      * @param string $master_playlist
-     * @param array $stream_info
+     * @param array $stream_des
      * @return HLS
      */
-    public function setMasterPlaylist(string $master_playlist, array $stream_info = []): HLS
+    public function setMasterPlaylist(string $master_playlist, array $stream_des = []): HLS
     {
         $this->master_playlist = $master_playlist;
-        $this->stream_info = $stream_info;
+        $this->stream_des = $stream_des;
 
         return $this;
     }
@@ -222,9 +223,9 @@ class HLS extends Streaming
     }
 
     /**
-     * @return Filter
+     * @return HLSFilter
      */
-    protected function getFilter(): Filter
+    protected function getFilter(): FilterStreamingInterface
     {
         return new HLSFilter($this);
     }
@@ -237,22 +238,17 @@ class HLS extends Streaming
         $path = $this->getFilePath();
         $reps = $this->getRepresentations();
 
-        $this->savePlaylist($path . ".m3u8", $reps);
+        $this->savePlaylist($path . ".m3u8");
 
         return $path . "_" . end($reps)->getHeight() . "p.m3u8";
     }
 
     /**
      * @param $path
-     * @param $reps
      */
-    private function savePlaylist(string $path, array $reps): void
+    private function savePlaylist(string $path): void
     {
-        HLSPlaylist::save(
-            $this->master_playlist ?? $path,
-            $reps,
-            pathinfo($path, PATHINFO_FILENAME),
-            $this->stream_info
-        );
+        $mater_playlist = new HLSPlaylist($this);
+        $mater_playlist->save($this->master_playlist ?? $path, $this->stream_des);
     }
 }

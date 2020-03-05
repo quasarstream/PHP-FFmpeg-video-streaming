@@ -12,7 +12,7 @@
 namespace Streaming;
 
 use Streaming\Filters\DASHFilter;
-use Streaming\Filters\Filter;
+use Streaming\Filters\FilterStreamingInterface;
 
 class DASH extends Streaming
 {
@@ -21,6 +21,9 @@ class DASH extends Streaming
 
     /** @var string */
     private $seg_duration = 10;
+
+    /** @var bool */
+    private $generate_hls_playlist = false;
 
     /**
      * @return mixed
@@ -59,9 +62,27 @@ class DASH extends Streaming
     }
 
     /**
-     * @return Filter
+     * @param bool $generate_hls_playlist
+     * @return DASH
      */
-    protected function getFilter(): Filter
+    public function generateHlsPlaylist(bool $generate_hls_playlist = true): DASH
+    {
+        $this->generate_hls_playlist = $generate_hls_playlist;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGenerateHlsPlaylist(): bool
+    {
+        return $this->generate_hls_playlist;
+    }
+
+    /**
+     * @return DASHFilter
+     */
+    protected function getFilter(): FilterStreamingInterface
     {
         return new DASHFilter($this);
     }

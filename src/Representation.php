@@ -20,6 +20,7 @@ class Representation
     private $resize = '';
     private $width = 0;
     private $height = 0;
+    private $hls_stream_info = [];
 
     /**
      * @return mixed
@@ -108,5 +109,23 @@ class Representation
     public function getHeight(): int
     {
         return $this->height;
+    }
+
+    /**
+     * @param array $hls_stream_info
+     * @return Representation
+     */
+    public function setHlsStreamInfo(array $hls_stream_info): Representation
+    {
+        $this->hls_stream_info = $hls_stream_info;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHlsStreamInfo(): array
+    {
+        return $this->hls_stream_info;
     }
 }

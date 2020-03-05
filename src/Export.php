@@ -16,6 +16,7 @@ use Streaming\Clouds\Cloud;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
 use Streaming\Filters\Filter;
+use Streaming\Filters\FilterStreamingInterface;
 use Streaming\Traits\Formats;
 
 
@@ -26,8 +27,8 @@ abstract class Export
     /** @var object */
     protected $media;
 
-    /** @var array */
-    protected $path_info;
+    /** @var string */
+    protected $path;
 
     /** @var string */
     protected $tmp_dir;
@@ -42,7 +43,7 @@ abstract class Export
     public function __construct(Media $media)
     {
         $this->media = $media;
-        $this->path_info = pathinfo($media->getPath());
+        $this->path = $media->getPath();
     }
 
     /**
@@ -62,11 +63,12 @@ abstract class Export
     }
 
     /**
-     * @return array
+     * @param int $option
+     * @return array | string
      */
-    public function getPathInfo(): array
+    public function getPathInfo(int $option)
     {
-        return $this->path_info;
+        return pathinfo($this->path, $option);
     }
 
     /**
@@ -76,7 +78,7 @@ abstract class Export
     {
         if ($this->isTmpDir() && !is_null($path)) {
             File::move($this->tmp_dir, dirname($path));
-            $this->path_info = pathinfo($path);
+            $this->path = $path;
             $this->tmp_dir = '';
         }
     }
@@ -98,7 +100,11 @@ abstract class Export
      */
     protected function getFilePath(): string
     {
-        return str_replace("\\", "/", $this->path_info["dirname"] . "/" . $this->path_info["filename"]);
+        return str_replace(
+            "\\",
+            "/",
+            $this->getPathInfo(PATHINFO_DIRNAME) . "/" . $this->getPathInfo(PATHINFO_FILENAME)
+        );
     }
 
     /**
@@ -109,7 +115,7 @@ abstract class Export
     /**
      * @return Filter
      */
-    abstract protected function getFilter(): Filter;
+    abstract protected function getFilter(): FilterStreamingInterface;
 
     /**
      * Run FFmpeg to package media content
@@ -126,31 +132,21 @@ abstract class Export
     }
 
     /**
-     * @param string|null $path
-     */
-    private function tmpDirectory(?string $path): void
-    {
-        $basename = $path ? basename($path) : $this->path_info['basename'];
-
-        $this->tmp_dir = File::tmpDir();
-        $this->path_info = pathinfo($this->tmp_dir . $basename);
-    }
-
-    /**
      * @param $path
      * @param $clouds
      */
-    private function makePaths(?string $path, array $clouds): void
+    private function paths(?string $path, array $clouds): void
     {
         if (!empty($clouds)) {
-            $this->tmpDirectory($path);
+            $this->tmp_dir = File::tmpDir();
+            $this->path = $this->tmp_dir . basename($path ?? $this->path);
         } elseif (!is_null($path)) {
             if (strlen($path) > PHP_MAXPATHLEN) {
                 throw new InvalidArgumentException("The path is too long");
             }
 
             File::makeDir(dirname($path));
-            $this->path_info = pathinfo($path);
+            $this->path = $path;
         } elseif ($this->media->isTmp()) {
             throw new InvalidArgumentException("You need to specify a path. It is not possible to save to a tmp directory");
         }
@@ -163,7 +159,7 @@ abstract class Export
      */
     public function save(string $path = null, array $clouds = [])
     {
-        $this->makePaths($path, $clouds);
+        $this->paths($path, $clouds);
         $this->run();
         $this->clouds($clouds, $path);
 
@@ -175,8 +171,7 @@ abstract class Export
      */
     public function live(string $url): void
     {
-        $this->uri = $url;
-        $this->path_info = pathinfo($url);
+        $this->path = $this->uri = $url;
         $this->run();
     }
 

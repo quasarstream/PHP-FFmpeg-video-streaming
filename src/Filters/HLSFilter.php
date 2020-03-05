@@ -12,124 +12,49 @@
 namespace Streaming\Filters;
 
 use Streaming\File;
-use Streaming\HLS;
 use Streaming\Representation;
+use Streaming\Utiles;
 
 class HLSFilter extends Filter
 {
-    /**
-     * @param $media
-     * @return mixed|void
-     */
-    public function setFilter($media): void
-    {
-        $this->filter = $this->HLSFilter($media);
-    }
+    /**  @var \Streaming\HLS */
+    private $hls;
+
+    /** @var string */
+    private $dirname;
+
+    /** @var string */
+    private $filename;
+
+    /** @var string */
+    private $seg_sub_dir;
+
+    /** @var string */
+    private $base_url;
+
+    /** @var string */
+    private $seg_filename;
 
     /**
-     * @param HLS $hls
+     * @param
      * @return array
      */
-    private function HLSFilter(HLS $hls): array
+    private function getFormats(): array
     {
-        $filter = [];
-        $reps = $hls->getRepresentations();
-        $path_parts = $hls->getPathInfo();
-        $dirname = str_replace("\\", "/", $path_parts["dirname"]);
-        list($seg_sub_dir, $base_url) = $this->getSubDirectory($hls, $dirname);
-        $full_seg_filename = $dirname . "/" . $seg_sub_dir . $path_parts["filename"];
-
-        foreach ($reps as $key => $rep) {
-            if ($key) {
-                $filter = array_merge($filter, $this->getFormats($hls));
-            }
-
-            $filter[] = "-s:v";
-            $filter[] = $rep->getResize();
-            $filter[] = "-crf";
-            $filter[] = "20";
-            $filter[] = "-sc_threshold";
-            $filter[] = "0";
-            $filter[] = "-g";
-            $filter[] = "48";
-            $filter[] = "-keyint_min";
-            $filter[] = "48";
-            $filter[] = "-hls_list_size";
-            $filter[] = $hls->getHlsListSize();
-            $filter[] = "-hls_time";
-            $filter[] = $hls->getHlsTime();
-            $filter[] = "-hls_allow_cache";
-            $filter[] = (int)$hls->isHlsAllowCache();
-            $filter[] = "-b:v";
-            $filter[] = $rep->getKiloBitrate() . "k";
-            $filter = array_merge($filter, $this->getAudioBitrate($rep));
-            $filter[] = "-maxrate";
-            $filter[] = intval($rep->getKiloBitrate() * 1.2) . "k";
-            $filter[] = "-hls_segment_type";
-            $filter[] = $hls->getHlsSegmentType();
-            $filter[] = "-hls_fmp4_init_filename";
-            $filter[] = $path_parts["filename"] . "_" . $hls->getHlsFmp4InitFilename();
-            $filter[] = "-hls_segment_filename";
-            $filter[] = $this->getSegmentFilename($full_seg_filename, $rep, $hls->getHlsSegmentType());
-            $filter = array_merge($filter, $this->getBaseURL($base_url));
-            $filter = array_merge($filter, $this->getKeyInfo($hls));
-            $filter = array_merge($filter, $hls->getAdditionalParams());
-            $filter[] = "-strict";
-            $filter[] = $hls->getStrict();
-
-            if (end($reps) !== $rep) {
-                $filter[] = $dirname . "/" . $path_parts["filename"] . "_" . $rep->getHeight() . "p.m3u8";
-            }
-        }
-
-        return $filter;
-    }
-
-    /**
-     * @param HLS $hls
-     * @param $dirname
-     * @return array
-     */
-    private function getSubDirectory(HLS $hls, string $dirname): array
-    {
-        if ($hls->getTsSubDirectory()) {
-            File::makeDir($dirname . "/" . $hls->getTsSubDirectory() . "/");
-        }
-
-        $base = $hls->getHlsBaseUrl() ? rtrim($hls->getHlsBaseUrl(), '/') . "/" : null;
-        $ts = $hls->getTsSubDirectory() ? rtrim($hls->getTsSubDirectory(), '/') . "/" : null;
-
-        return [$ts, $base . $ts];
-    }
-
-    /**
-     * @param HLS $hls
-     * @return array
-     */
-    private function getFormats(HLS $hls): array
-    {
-        $format = ['-c:v', $hls->getFormat()->getVideoCodec()];
-        $audio_format = $hls->getFormat()->getAudioCodec();
+        $format = ['-c:v', $this->hls->getFormat()->getVideoCodec()];
+        $audio_format = $this->hls->getFormat()->getAudioCodec();
 
         return $audio_format ? array_merge($format, ['-c:a', $audio_format]) : $format;
     }
 
     /**
-     * @param $base_url
+     * @param Representation $rep
+     * @param bool $not_last
      * @return array
      */
-    private function getBaseURL(string $base_url): array
+    private function playlistPath(Representation $rep, bool $not_last): array
     {
-        return $base_url ? ["-hls_base_url", $base_url] : [];
-    }
-
-    /**
-     * @param HLS $hls
-     * @return array
-     */
-    private function getKeyInfo(HLS $hls): array
-    {
-        return $hls->getHlsKeyInfoFile() ? ["-hls_key_info_file", $hls->getHlsKeyInfoFile()] : [];
+        return $not_last ? [$this->dirname . "/" . $this->filename . "_" . $rep->getHeight() . "p.m3u8"] : [];
     }
 
     /**
@@ -142,14 +67,124 @@ class HLSFilter extends Filter
     }
 
     /**
-     * @param string $full_seg_filename
-     * @param Representation $rep
-     * @param string $type
+     * @return array
+     */
+    private function getBaseURL(): array
+    {
+        return $this->base_url ? ["-hls_base_url", $this->base_url] : [];
+    }
+
+    /**
+     * @param
+     * @return array
+     */
+    private function getKeyInfo(): array
+    {
+        return $this->hls->getHlsKeyInfoFile() ? ["-hls_key_info_file", $this->hls->getHlsKeyInfoFile()] : [];
+    }
+
+    /**
      * @return string
      */
-    private function getSegmentFilename(string $full_seg_filename, Representation $rep, string $type): string
+    private function getInitFilename(): string
     {
-        $ext = ($type === "fmp4") ? "m4s" : "ts";
-        return $full_seg_filename . "_" . $rep->getHeight() . "p_%04d." . $ext;
+        return $this->seg_sub_dir . $this->filename . "_" . $this->hls->getHlsFmp4InitFilename();
+    }
+
+    /**
+     * @param Representation $rep
+     * @return string
+     */
+    private function getSegmentFilename(Representation $rep): string
+    {
+        $ext = ($this->hls->getHlsFmp4InitFilename() === "fmp4") ? "m4s" : "ts";
+        return $this->seg_filename . "_" . $rep->getHeight() . "p_%04d." . $ext;
+    }
+
+    /**
+     * @param Representation $rep
+     * @return array
+     */
+    private function initArgs(Representation $rep): array
+    {
+        return [
+            "-s:v", $rep->getResize(),
+            "-crf", "20",
+            "-sc_threshold", "0",
+            "-g", "48",
+            "-keyint_min", "48",
+            "-hls_list_size", $this->hls->getHlsListSize(),
+            "-hls_time", $this->hls->getHlsTime(),
+            "-hls_allow_cache", (int)$this->hls->isHlsAllowCache(),
+            "-b:v", $rep->getKiloBitrate() . "k",
+            "-maxrate", intval($rep->getKiloBitrate() * 1.2) . "k",
+            "-hls_segment_type", $this->hls->getHlsSegmentType(),
+            "-hls_fmp4_init_filename", $this->getInitFilename(),
+            "-hls_segment_filename", $this->getSegmentFilename($rep)
+        ];
+    }
+
+    /**
+     * @param Representation $rep
+     * @param bool $not_last
+     */
+    private function getArgs(Representation $rep, bool $not_last): void
+    {
+        $this->filter = array_merge(
+            $this->filter,
+            $this->initArgs($rep),
+            $this->getAudioBitrate($rep),
+            $this->getBaseURL(),
+            $this->getKeyInfo(),
+            $this->hls->getAdditionalParams(),
+            ["-strict", $this->hls->getStrict()],
+            $this->playlistPath($rep, $not_last)
+        );
+    }
+
+    /**
+     * set segments paths
+     */
+    private function segmentPaths()
+    {
+        if ($this->hls->getTsSubDirectory()) {
+            File::makeDir($this->dirname . "/" . $this->hls->getTsSubDirectory() . "/");
+        }
+
+        $base = Utiles::appendSlash($this->hls->getHlsBaseUrl());
+
+        $this->seg_sub_dir = Utiles::appendSlash($this->hls->getTsSubDirectory());
+        $this->seg_filename = $this->dirname . "/" . $this->seg_sub_dir . $this->filename;
+        $this->base_url = $base . $this->seg_sub_dir;
+    }
+
+    /**
+     * set paths
+     */
+    private function setPaths(): void
+    {
+        $this->dirname = str_replace("\\", "/", $this->hls->getPathInfo(PATHINFO_DIRNAME));
+        $this->filename = $this->hls->getPathInfo(PATHINFO_FILENAME);
+        $this->segmentPaths();
+    }
+
+    /**
+     * @param $media
+     * @return void
+     */
+    public function setFilter($media): void
+    {
+        $this->hls = $media;
+        $this->setPaths();
+
+        $reps = $this->hls->getRepresentations();
+
+        foreach ($reps as $key => $rep) {
+            if ($key) {
+                $this->filter = array_merge($this->filter, $this->getFormats());
+            }
+
+            $this->getArgs($rep, end($reps) !== $rep);
+        }
     }
 }

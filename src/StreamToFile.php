@@ -15,6 +15,7 @@ namespace Streaming;
 
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Filters\Filter;
+use Streaming\Filters\FilterStreamingInterface;
 use Streaming\Filters\StreamToFileFilter;
 
 class StreamToFile extends Export
@@ -47,13 +48,13 @@ class StreamToFile extends Export
      */
     protected function getPath(): string
     {
-        return implode(".", [$this->getFilePath(), $this->path_info["extension"] ?? "mp4"]);
+        return implode(".", [$this->getFilePath(), $this->getPathInfo(PATHINFO_EXTENSION) ?? "mp4"]);
     }
 
     /**
-     * @return Filter
+     * @return StreamToFileFilter
      */
-    protected function getFilter(): Filter
+    protected function getFilter(): FilterStreamingInterface
     {
         if ($this->uri) {
             throw new InvalidArgumentException("It is not possible to live this file");

@@ -47,14 +47,14 @@ trait Representations
     }
 
     /**
-     * @param array $side_values
-     * @param array|null $k_bitrate_values
+     * @param array|null $sides
+     * @param array|null $k_bitrate
      * @return $this
      */
-    public function autoGenerateRepresentations(array $side_values = null, array $k_bitrate_values = null)
+    public function autoGenerateRepresentations(array $sides = null, array $k_bitrate = null)
     {
         $this->checkFormat();
-        $this->addRepresentations((new AutoRepresentations($this->getMedia()->probe(), $side_values, $k_bitrate_values))->get());
+        $this->addRepresentations((new AutoRepresentations($this->getMedia(), $sides, $k_bitrate))->get());
 
         return $this;
     }

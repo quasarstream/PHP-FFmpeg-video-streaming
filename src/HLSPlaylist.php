@@ -12,42 +12,36 @@
 namespace Streaming;
 
 
+use Streaming\Exception\RuntimeException;
+
 class HLSPlaylist
 {
-    /**
-     * @param string $filename
-     * @param array $reps
-     * @param string $manifests
-     * @param array $stream_info
-     */
-    public static function save(string $filename, array $reps, string $manifests, array $stream_info = []): void
-    {
-        file_put_contents($filename, static::contents($reps, $manifests, $stream_info));
-    }
+    /** @var HLS */
+    private $hls;
 
     /**
-     * @param array $reps
-     * @param string $manifests
-     * @param array $stream_info
-     * @return string
+     * HLSPlaylist constructor.
+     * @param HLS $hls
      */
-    private static function contents(array $reps, string $manifests, array $stream_info = []): string
+    public function __construct(HLS $hls)
     {
-        $content = ["#EXTM3U", "#EXT-X-VERSION:3"];
-        foreach ($reps as $rep) {
-            $content[] = static::streamInfo($rep, $stream_info);
-            $content[] = $manifests . "_" . $rep->getHeight() . "p.m3u8";
-        }
-
-        return implode(PHP_EOL, $content);
+        $this->hls = $hls;
     }
 
     /**
      * @param Representation $rep
-     * @param array $extra
      * @return string
      */
-    private static function streamInfo(Representation $rep, array $extra = []): string
+    private function segmentPath(Representation $rep): string
+    {
+        return $this->hls->getPathInfo(PATHINFO_FILENAME) . "_" . $rep->getHeight() . "p.m3u8";
+    }
+
+    /**
+     * @param Representation $rep
+     * @return string
+     */
+    private function streamInfo(Representation $rep): string
     {
         $ext_stream = '#EXT-X-STREAM-INF:';
         $params = [
@@ -56,6 +50,41 @@ class HLSPlaylist
             "NAME=\"" . $rep->getHeight() . "\""
         ];
 
-        return $ext_stream . implode(",", array_merge($params, $extra));
+        return $ext_stream . implode(",", array_merge($params, $rep->getHlsStreamInfo()));
+    }
+
+    /**
+     * @return string
+     */
+    private function getVersion(): string
+    {
+        $version = $this->hls->getHlsSegmentType() === "fmp4" ? 7 : 3;
+        return "#EXT-X-VERSION:" . $version;
+    }
+
+    /**
+     * @param array $description
+     * @return string
+     */
+    private function contents(array $description): string
+    {
+        $content = array_merge(["#EXTM3U", $this->getVersion()], $description);
+
+        foreach ($this->hls->getRepresentations() as $rep) {
+            array_push($content, $this->streamInfo($rep), $this->segmentPath($rep));
+        }
+
+        return implode(PHP_EOL, $content);
+    }
+
+    /**
+     * @param string $filename
+     * @param array $description
+     */
+    public function save(string $filename, array $description): void
+    {
+        if (false === @file_put_contents($filename, $this->contents($description))) {
+            throw new RuntimeException("Unable to save the master playlist file");
+        }
     }
 }
