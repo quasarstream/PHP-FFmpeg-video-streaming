@@ -40,7 +40,6 @@ class DASHTest extends TestCase
 
         $this->assertIsArray($representations);
         $this->assertInstanceOf(Representation::class, current($representations));
-
         $this->assertEquals('256x144', $representations[0]->getResize());
         $this->assertEquals('426x240', $representations[1]->getResize());
         $this->assertEquals('640x360', $representations[2]->getResize());
@@ -65,12 +64,8 @@ class DASHTest extends TestCase
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/dash/test.mpd');
 
-        $get_path_info = $dash->getPathInfo();
 
         $this->assertFileExists($this->srcDir . '/dash/test.mpd');
-        $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname', $get_path_info);
-        $this->assertArrayHasKey('filename', $get_path_info);
         $this->assertInstanceOf(Export::class, $export_class);
     }
 

@@ -78,15 +78,10 @@ class HLSTest extends TestCase
             ->addRepresentations($rep_1, $rep_2)
             ->save($this->srcDir . '/hls/test.m3u8');
 
-        $get_path_info = $hls->getPathInfo();
-
         $this->assertInstanceOf(Representation::class, $rep_1);
         $this->assertEquals($rep_1->getKiloBitrate(), 200);
         $this->assertEquals($rep_2->getResize(), "480x270");
         $this->assertFileExists($this->srcDir . '/hls/test.m3u8');
-        $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname', $get_path_info);
-        $this->assertArrayHasKey('filename', $get_path_info);
     }
 
     public function testEncryptedHLS()
@@ -99,12 +94,8 @@ class HLSTest extends TestCase
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/enc_hls/test.m3u8');
 
-        $get_path_info = $hls->getPathInfo();
 
         $this->assertFileExists($this->srcDir . '/enc_hls/test.m3u8');
-        $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname', $get_path_info);
-        $this->assertArrayHasKey('filename', $get_path_info);
     }
 
     public function testRandomEncryptedHLS()
@@ -118,12 +109,7 @@ class HLSTest extends TestCase
             ->autoGenerateRepresentations()
             ->save($this->srcDir . '/enc_random_hls/test.m3u8');
 
-        $get_path_info = $hls->getPathInfo();
-
         $this->assertFileExists($this->srcDir . '/enc_random_hls/test.m3u8');
-        $this->assertIsArray($get_path_info);
-        $this->assertArrayHasKey('dirname', $get_path_info);
-        $this->assertArrayHasKey('filename', $get_path_info);
     }
 
     private function getHLS()

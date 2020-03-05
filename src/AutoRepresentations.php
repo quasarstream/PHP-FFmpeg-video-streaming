@@ -110,6 +110,8 @@ class AutoRepresentations
      */
     private function getKiloBitrateValues(?array $k_bitrate_values): void
     {
+        $k_bit_rates = [];
+
         $count_sides = count($this->side_values);
 
         if (!empty($k_bitrate_values)) {
@@ -125,10 +127,12 @@ class AutoRepresentations
         $divided_by = 1.5;
 
         while ($count_sides) {
-            $this->k_bitrate[] = (($k_bitrate = intval($k_bitrate_value / $divided_by)) < 64) ? 64 : $k_bitrate;
+            $k_bit_rates[] = (($k_bitrate = intval($k_bitrate_value / $divided_by)) < 64) ? 64 : $k_bitrate;
             $divided_by += .5;
             $count_sides--;
         }
+
+        $this->k_bitrate = array_reverse($k_bit_rates);
     }
 
     /**
