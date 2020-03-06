@@ -13,13 +13,13 @@ namespace Tests\FFMpegStreaming;
 
 use Streaming\DASH;
 use Streaming\Filters\DASHFilter;
-use Streaming\Filters\Filter;
+use Streaming\Filters\StreamFilter;
 
 class DASHFiltersTest extends TestCase
 {
     public function testFilterClass()
     {
-        $this->assertInstanceOf(Filter::class, $this->getFilter());
+        $this->assertInstanceOf(StreamFilter::class, $this->getFilter());
     }
 
     public function testGetApply()

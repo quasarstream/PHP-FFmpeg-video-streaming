@@ -12,7 +12,7 @@
 namespace Tests\FFMpegStreaming;
 
 use Streaming\DASH;
-use Streaming\Export;
+use Streaming\Stream;
 use Streaming\Format\Video;
 use Streaming\Representation;
 
@@ -20,7 +20,7 @@ class DASHTest extends TestCase
 {
     public function testDASHClass()
     {
-        $this->assertInstanceOf(Export::class, $this->getDASH());
+        $this->assertInstanceOf(Stream::class, $this->getDASH());
     }
 
     public function testFormat()
@@ -66,7 +66,7 @@ class DASHTest extends TestCase
 
 
         $this->assertFileExists($this->srcDir . '/dash/test.mpd');
-        $this->assertInstanceOf(Export::class, $export_class);
+        $this->assertInstanceOf(Stream::class, $export_class);
     }
 
     private function getDASH()

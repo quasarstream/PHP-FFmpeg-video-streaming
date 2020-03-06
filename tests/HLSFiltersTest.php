@@ -11,7 +11,7 @@
 
 namespace Tests\FFMpegStreaming;
 
-use Streaming\Filters\Filter;
+use Streaming\Filters\StreamFilter;
 use Streaming\Filters\HLSFilter;
 use Streaming\HLS;
 
@@ -19,7 +19,7 @@ class HLSFiltersTest extends TestCase
 {
     public function testFilterClass()
     {
-        $this->assertInstanceOf(Filter::class, $this->getFilter());
+        $this->assertInstanceOf(StreamFilter::class, $this->getFilter());
     }
 
     private function getFilter()

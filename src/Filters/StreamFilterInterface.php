@@ -11,11 +11,19 @@
 
 namespace Streaming\Filters;
 
-interface FilterStreamingInterface
+use FFMpeg\Filters\FilterInterface;
+use Streaming\StreamInterface;
+
+interface StreamFilterInterface extends FilterInterface
 {
     /**
-     * @param $media
+     * @param StreamInterface $stream
      * @return mixed
      */
-    public function setFilter($media): void;
+    public function streamFilter(StreamInterface $stream): void;
+
+    /**
+     * @return array
+     */
+    public function apply(): array;
 }

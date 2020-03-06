@@ -13,62 +13,62 @@
 namespace Streaming\Filters;
 
 
-use Streaming\DASH;
+use Streaming\StreamInterface;
 use Streaming\Format\X264;
 use Streaming\Representation;
 
-class DASHFilter extends Filter
+class DASHFilter extends StreamFilter
 {
+    /** @var \Streaming\DASH */
+    private $dash;
     /**
-     * @param $media
+     * @param StreamInterface $stream
      */
-    public function setFilter($media): void
+    public function streamFilter(StreamInterface $stream): void
     {
-        $this->filter = $this->DASHFilter($media);
+        $this->dash = $stream;
+        $this->set();
     }
 
     /**
-     * @param DASH $dash
      * @return array
      */
-    private function DASHFilter(DASH $dash): array
+    private function set()
     {
-        $filter = $this->getBaseFilters($dash, count($dash->getRepresentations()));
+        $this->filter = $this->getBaseFilters();
 
-        foreach ($dash->getRepresentations() as $key => $representation) {
-            $filter[] = "-map";
-            $filter[] = "0";
-            $filter[] = "-b:v:" . $key;
-            $filter[] = $representation->getKiloBitrate() . "k";
-            $filter = array_merge($filter, $this->getAudioBitrate($representation, $key));
+        foreach ($this->dash->getRepresentations() as $key => $representation) {
+            $this->filter[] = "-map";
+            $this->filter[] = "0";
+            $this->filter[] = "-b:v:" . $key;
+            $this->filter[] = $representation->getKiloBitrate() . "k";
+            $this->filter = array_merge($this->filter, $this->getAudioBitrate($representation, $key));
 
             if (null !== $representation->getResize()) {
-                $filter[] = "-s:v:" . $key;
-                $filter[] = $representation->getResize();
+                $this->filter[] = "-s:v:" . $key;
+                $this->filter[] = $representation->getResize();
             }
         }
 
-        if ($dash->getAdaption()) {
-            $filter[] = "-adaptation_sets";
-            $filter[] = $dash->getAdaption();
+        if ($this->dash->getAdaption()) {
+            $this->filter[] = "-adaptation_sets";
+            $this->filter[] = $this->dash->getAdaption();
         }
-        $filter = array_merge($filter, $dash->getAdditionalParams());
-        $filter = array_merge($filter, ["-strict", $dash->getStrict()]);
+        $this->filter = array_merge($this->filter, $this->dash->getAdditionalParams());
+        $this->filter = array_merge($this->filter, ["-strict", $this->dash->getStrict()]);
 
-        return $filter;
+        return $this->filter;
     }
 
     /**
-     * @param $dash
-     * @param $count
+
      * @return array
      */
-    private function getBaseFilters(DASH $dash, int $count): array
+    private function getBaseFilters(): array
     {
-        $dirname = $dash->getPathInfo(PATHINFO_FILENAME);
-        $filename = $dash->getPathInfo(PATHINFO_FILENAME);
+        $filename = $this->dash->getPathInfo(PATHINFO_FILENAME);
 
-        $filter = [
+        $this->filter = [
             "-bf", "1",
             "-keyint_min", "120",
             "-g", "120",
@@ -78,23 +78,25 @@ class DASHFilter extends Filter
             "-use_template", "1",
             "-init_seg_name", ($filename . '_init_$RepresentationID$.$ext$'),
             "-media_seg_name", ($filename . '_chunk_$RepresentationID$_$Number%05d$.$ext$'),
-            "-seg_duration", $dash->getSegDuration(),
-            "-hls_playlist", (int)$dash->isGenerateHlsPlaylist(),
+            "-seg_duration", $this->dash->getSegDuration(),
+            "-hls_playlist", (int)$this->dash->isGenerateHlsPlaylist(),
             "-f", "dash",
         ];
 
-        if ($dash->getFormat() instanceof X264) {
-            $filter[] = "-profile:v:0";
-            $filter[] = "main";
+        if ($this->dash->getFormat() instanceof X264) {
+            $this->filter[] = "-profile:v:0";
+            $this->filter[] = "main";
+
+            $count = count($this->dash->getRepresentations());
 
             while ($count > 0) {
-                $filter[] = "-profile:v:" . $count;
-                $filter[] = "baseline";
+                $this->filter[] = "-profile:v:" . $count;
+                $this->filter[] = "baseline";
                 $count--;
             }
         }
 
-        return $filter;
+        return $this->filter;
     }
 
     /**

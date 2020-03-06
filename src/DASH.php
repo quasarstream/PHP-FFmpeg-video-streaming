@@ -12,7 +12,7 @@
 namespace Streaming;
 
 use Streaming\Filters\DASHFilter;
-use Streaming\Filters\FilterStreamingInterface;
+use Streaming\Filters\StreamFilterInterface;
 
 class DASH extends Streaming
 {
@@ -82,7 +82,7 @@ class DASH extends Streaming
     /**
      * @return DASHFilter
      */
-    protected function getFilter(): FilterStreamingInterface
+    protected function getFilter(): StreamFilterInterface
     {
         return new DASHFilter($this);
     }

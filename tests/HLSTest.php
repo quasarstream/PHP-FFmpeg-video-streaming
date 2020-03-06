@@ -12,7 +12,7 @@
 namespace Tests\FFMpegStreaming;
 
 use Streaming\HLS;
-use Streaming\Export;
+use Streaming\Stream;
 use Streaming\Format\Video;
 use Streaming\Representation;
 use ReflectionClass;
@@ -21,7 +21,7 @@ class HLSTest extends TestCase
 {
     public function testHLSClass()
     {
-        $this->assertInstanceOf(Export::class, $this->getHLS());
+        $this->assertInstanceOf(Stream::class, $this->getHLS());
     }
 
     public function testFormat()

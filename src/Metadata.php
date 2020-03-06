@@ -14,16 +14,16 @@ namespace Streaming;
 
 
 use FFMpeg\FFProbe\DataMapping\Format;
-use FFMpeg\FFProbe\DataMapping\Stream;
+use FFMpeg\FFProbe\DataMapping\Stream as VideoStream;
 use FFMpeg\FFProbe\DataMapping\StreamCollection;
 use Streaming\Exception\InvalidArgumentException;
 
 class Metadata
 {
     /**
-     * @var Export
+     * @var Stream
      */
-    private $export;
+    private $stream;
 
     /**
      * @var \FFMpeg\FFProbe\DataMapping\Format
@@ -33,17 +33,17 @@ class Metadata
     /**
      * @var \FFMpeg\FFProbe\DataMapping\StreamCollection
      */
-    private $streams_video;
+    private $video_streams;
 
     /**
      * Metadata constructor.
-     * @param Export $export
+     * @param Stream $stream
      */
-    public function __construct(Export $export)
+    public function __construct(Stream $stream)
     {
-        $this->export = $export;
-        $this->format = $export->getMedia()->getFormat();
-        $this->streams_video = $export->getMedia()->getStreams();
+        $this->stream = $stream;
+        $this->format = $stream->getMedia()->getFormat();
+        $this->video_streams = $stream->getMedia()->getStreams();
     }
 
     /**
@@ -59,14 +59,14 @@ class Metadata
      */
     public function getStreamsVideo(): StreamCollection
     {
-        return $this->streams_video;
+        return $this->video_streams;
     }
 
     /**
-     * @param Stream $stream
+     * @param VideoStream $stream
      * @return array
      */
-    private function streamToArray(Stream $stream): array
+    private function streamToArray(VideoStream $stream): array
     {
         return $stream->all();
     }
@@ -100,11 +100,11 @@ class Metadata
      */
     private function getResolutions(): array
     {
-        if (!method_exists($this->export, 'getRepresentations')) {
+        if (!method_exists($this->stream, 'getRepresentations')) {
             return [];
         }
 
-        return array_map([$this, 'repToArray'], $this->export->getRepresentations());
+        return array_map([$this, 'repToArray'], $this->stream->getRepresentations());
     }
 
 
@@ -113,12 +113,12 @@ class Metadata
      */
     public function getStreamsMetadata(): array
     {
-        $dirname = $this->export->getPathInfo(PATHINFO_DIRNAME);
-        $basename = $this->export->getPathInfo(PATHINFO_BASENAME);
+        $dirname = $this->stream->getPathInfo(PATHINFO_DIRNAME);
+        $basename = $this->stream->getPathInfo(PATHINFO_BASENAME);
         $filename = $dirname . DIRECTORY_SEPARATOR . $basename;
 
-        $technique = explode("\\", get_class($this->export));
-        $format = explode("\\", get_class($this->export->getFormat()));
+        $technique = explode("\\", get_class($this->stream));
+        $format = explode("\\", get_class($this->stream->getFormat()));
 
         $metadata = [
             "filename" => $filename,
@@ -129,17 +129,17 @@ class Metadata
             "streaming_technique" => end($technique)
         ];
 
-        if ($this->export instanceof DASH) {
-            $metadata = array_merge($metadata, ["seg_duration" => $this->export->getSegDuration()]);
-        } elseif ($this->export instanceof HLS) {
+        if ($this->stream instanceof DASH) {
+            $metadata = array_merge($metadata, ["seg_duration" => $this->stream->getSegDuration()]);
+        } elseif ($this->stream instanceof HLS) {
             $metadata = array_merge(
                 $metadata,
                 [
-                    "hls_time" => (int)$this->export->getHlsTime(),
-                    "hls_cache" => (bool)$this->export->isHlsAllowCache(),
-                    "encrypted_hls" => (bool)$this->export->getHlsKeyInfoFile(),
-                    "ts_sub_directory" => $this->export->getTsSubDirectory(),
-                    "base_url" => $this->export->getHlsBaseUrl()
+                    "hls_time" => (int)$this->stream->getHlsTime(),
+                    "hls_cache" => (bool)$this->stream->isHlsAllowCache(),
+                    "encrypted_hls" => (bool)$this->stream->getHlsKeyInfoFile(),
+                    "ts_sub_directory" => $this->stream->getTsSubDirectory(),
+                    "base_url" => $this->stream->getHlsBaseUrl()
                 ]
             );
         }
@@ -166,12 +166,12 @@ class Metadata
     public function saveAsJson(string $filename = null, int $opts = null): string
     {
         if (is_null($filename)) {
-            if ($this->export->isTmpDir()) {
+            if ($this->stream->isTmpDir()) {
                 throw new InvalidArgumentException("It is a temp directory! It is not possible to save it");
             }
 
-            $name = uniqid(($this->export->getPathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
-            $filename = $this->export->getPathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
+            $name = uniqid(($this->stream->getPathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
+            $filename = $this->stream->getPathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
         }
 
         file_put_contents(

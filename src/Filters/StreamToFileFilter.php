@@ -13,26 +13,18 @@
 namespace Streaming\Filters;
 
 
+use Streaming\StreamInterface;
 use Streaming\StreamToFile;
 
-class StreamToFileFilter extends Filter
+class StreamToFileFilter extends StreamFilter
 {
 
     /**
      * @param $media
      * @return mixed
      */
-    public function setFilter($media): void
+    public function streamFilter(StreamInterface $media): void
     {
-        $this->filter = $this->StreamToFileFilter($media);
-    }
-
-    /**
-     * @param StreamToFile $stf
-     * @return array
-     */
-    private function StreamToFileFilter(StreamToFile $stf)
-    {
-        return array_merge(['-c', 'copy'], $stf->getParams());
+        $this->filter = array_merge(['-c', 'copy'], $media->getParams());
     }
 }

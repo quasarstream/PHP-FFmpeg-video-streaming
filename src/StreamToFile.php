@@ -14,11 +14,10 @@ namespace Streaming;
 
 
 use Streaming\Exception\InvalidArgumentException;
-use Streaming\Filters\Filter;
-use Streaming\Filters\FilterStreamingInterface;
+use Streaming\Filters\StreamFilterInterface;
 use Streaming\Filters\StreamToFileFilter;
 
-class StreamToFile extends Export
+class StreamToFile extends Stream
 {
     /**
      * @var array
@@ -54,7 +53,7 @@ class StreamToFile extends Export
     /**
      * @return StreamToFileFilter
      */
-    protected function getFilter(): FilterStreamingInterface
+    protected function getFilter(): StreamFilterInterface
     {
         if ($this->uri) {
             throw new InvalidArgumentException("It is not possible to live this file");

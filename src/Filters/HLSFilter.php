@@ -11,11 +11,12 @@
 
 namespace Streaming\Filters;
 
+use Streaming\StreamInterface;
 use Streaming\File;
 use Streaming\Representation;
 use Streaming\Utiles;
 
-class HLSFilter extends Filter
+class HLSFilter extends StreamFilter
 {
     /**  @var \Streaming\HLS */
     private $hls;
@@ -97,7 +98,7 @@ class HLSFilter extends Filter
      */
     private function getSegmentFilename(Representation $rep): string
     {
-        $ext = ($this->hls->getHlsFmp4InitFilename() === "fmp4") ? "m4s" : "ts";
+        $ext = ($this->hls->getHlsSegmentType() === "fmp4") ? "m4s" : "ts";
         return $this->seg_filename . "_" . $rep->getHeight() . "p_%04d." . $ext;
     }
 
@@ -169,12 +170,12 @@ class HLSFilter extends Filter
     }
 
     /**
-     * @param $media
+     * @param StreamInterface $stream
      * @return void
      */
-    public function setFilter($media): void
+    public function streamFilter(StreamInterface $stream): void
     {
-        $this->hls = $media;
+        $this->hls = $stream;
         $this->setPaths();
 
         $reps = $this->hls->getRepresentations();

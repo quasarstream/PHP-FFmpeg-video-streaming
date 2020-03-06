@@ -14,7 +14,7 @@ namespace Streaming;
 use Streaming\Traits\Representations;
 
 
-abstract class Streaming extends Export
+abstract class Streaming extends Stream
 {
     use Representations;
 
@@ -34,7 +34,7 @@ abstract class Streaming extends Export
 
     /**
      * @param array $additional_params
-     * @return Export
+     * @return Stream
      */
     public function setAdditionalParams(array $additional_params)
     {
@@ -44,9 +44,9 @@ abstract class Streaming extends Export
 
     /**
      * @param string $strict
-     * @return Export
+     * @return Stream
      */
-    public function setStrict(string $strict): Export
+    public function setStrict(string $strict): Stream
     {
         $this->strict = $strict;
         return $this;

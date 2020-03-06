@@ -15,12 +15,11 @@ use FFMpeg\Exception\ExceptionInterface;
 use Streaming\Clouds\Cloud;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
-use Streaming\Filters\Filter;
-use Streaming\Filters\FilterStreamingInterface;
+use Streaming\Filters\StreamFilterInterface;
 use Streaming\Traits\Formats;
 
 
-abstract class Export
+abstract class Stream implements StreamInterface
 {
     use Formats;
 
@@ -37,7 +36,7 @@ abstract class Export
     protected $uri;
 
     /**
-     * Export constructor.
+     * Stream constructor.
      * @param Media $media
      */
     public function __construct(Media $media)
@@ -64,9 +63,9 @@ abstract class Export
 
     /**
      * @param int $option
-     * @return array | string
+     * @return string
      */
-    public function getPathInfo(int $option)
+    public function getPathInfo(int $option): string
     {
         return pathinfo($this->path, $option);
     }
@@ -113,9 +112,9 @@ abstract class Export
     abstract protected function getPath(): string;
 
     /**
-     * @return Filter
+     * @return StreamFilterInterface
      */
-    abstract protected function getFilter(): FilterStreamingInterface;
+    abstract protected function getFilter(): StreamFilterInterface;
 
     /**
      * Run FFmpeg to package media content
@@ -157,7 +156,7 @@ abstract class Export
      * @param array $clouds
      * @return mixed
      */
-    public function save(string $path = null, array $clouds = [])
+    public function save(string $path = null, array $clouds = []): Stream
     {
         $this->paths($path, $clouds);
         $this->run();

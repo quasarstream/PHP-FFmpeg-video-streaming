@@ -11,9 +11,8 @@
 
 namespace Streaming;
 
-use phpDocumentor\Reflection\Types\This;
-use Streaming\Filters\FilterStreamingInterface;
 use Streaming\Filters\HLSFilter;
+use Streaming\Filters\StreamFilterInterface;
 
 class HLS extends Streaming
 {
@@ -225,7 +224,7 @@ class HLS extends Streaming
     /**
      * @return HLSFilter
      */
-    protected function getFilter(): FilterStreamingInterface
+    protected function getFilter(): StreamFilterInterface
     {
         return new HLSFilter($this);
     }

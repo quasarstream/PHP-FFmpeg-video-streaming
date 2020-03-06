@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * This file is part of the ******* package.
+ *
+ * (c) Amin Yazdanpanah <contact@aminyazdanpanah.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+namespace Streaming;
+
+
+interface StreamInterface
+{
+    /**
+     * @return Media
+     */
+    public function getMedia(): Media;
+
+    /**
+     * @param int $option
+     * @return string
+     */
+    public function getPathInfo(int $option): string;
+
+    /**
+     * @param string $path
+     * @param array $clouds
+     * @return mixed
+     */
+    public function save(string $path = null, array $clouds = []): Stream;
+
+    /**
+     * @param string $url
+     */
+    public function live(string $url): void;
+}

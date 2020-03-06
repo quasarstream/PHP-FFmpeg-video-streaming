@@ -11,10 +11,9 @@
 
 namespace Streaming\Filters;
 
-use Streaming\Export;
-use FFMpeg\Filters\FilterInterface;
+use Streaming\StreamInterface;
 
-abstract class Filter implements FilterInterface, FilterStreamingInterface
+abstract class StreamFilter implements StreamFilterInterface
 {
     private $priority = 2;
 
@@ -22,15 +21,15 @@ abstract class Filter implements FilterInterface, FilterStreamingInterface
 
     /**
      * Filter constructor.
-     * @param Export $media
+     * @param StreamInterface $stream
      */
-    public function __construct(Export $media)
+    public function __construct(StreamInterface $stream)
     {
-        $this->setFilter($media);
+        $this->streamFilter($stream);
     }
 
     /**
-     * Applies the filter on the the Audio media given an format.
+     * Applies the filter on the the stream media
      *
      * @return array An array of arguments
      */
