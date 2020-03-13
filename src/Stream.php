@@ -23,17 +23,14 @@ abstract class Stream implements StreamInterface
 {
     use Formats;
 
-    /** @var object */
-    protected $media;
+    /** @var Media */
+    private $media;
 
     /** @var string */
     protected $path;
 
     /** @var string */
-    protected $tmp_dir;
-
-    /** @var string */
-    protected $uri;
+    private $tmp_dir = '';
 
     /**
      * Stream constructor.
@@ -42,11 +39,11 @@ abstract class Stream implements StreamInterface
     public function __construct(Media $media)
     {
         $this->media = $media;
-        $this->path = $media->getPath();
+        $this->path = $media->getPathfile();
     }
 
     /**
-     * @return object|Media
+     * @return Media
      */
     public function getMedia(): Media
     {
@@ -65,7 +62,7 @@ abstract class Stream implements StreamInterface
      * @param int $option
      * @return string
      */
-    public function getPathInfo(int $option): string
+    public function pathInfo(int $option): string
     {
         return pathinfo($this->path, $option);
     }
@@ -102,7 +99,7 @@ abstract class Stream implements StreamInterface
         return str_replace(
             "\\",
             "/",
-            $this->getPathInfo(PATHINFO_DIRNAME) . "/" . $this->getPathInfo(PATHINFO_FILENAME)
+            $this->pathInfo(PATHINFO_DIRNAME) . "/" . $this->pathInfo(PATHINFO_FILENAME)
         );
     }
 
@@ -170,7 +167,7 @@ abstract class Stream implements StreamInterface
      */
     public function live(string $url): void
     {
-        $this->path = $this->uri = $url;
+        $this->path = $url;
         $this->run();
     }
 
@@ -188,18 +185,11 @@ abstract class Stream implements StreamInterface
     public function __destruct()
     {
         // make sure that FFmpeg process has benn terminated
-        sleep(1);
+        sleep(.5);
+        File::remove($this->tmp_dir);
 
         if ($this->media->isTmp()) {
-            File::remove($this->media->getPath());
-        }
-
-        if ($this->tmp_dir) {
-            File::remove($this->tmp_dir);
-        }
-
-        if ($this instanceof HLS && $this->tmp_key_info_file) {
-            File::remove($this->getHlsKeyInfoFile());
+            File::remove($this->media->getPathfile());
         }
     }
 }

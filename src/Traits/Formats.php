@@ -14,13 +14,13 @@ namespace Streaming\Traits;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Format\HEVC;
 use Streaming\Format\Video;
+use Streaming\Format\VideoInterface;
 use Streaming\Format\VP9;
 use Streaming\Format\X264;
-use FFMpeg\Format\FormatInterface;
 
 trait Formats
 {
-    /** @var object */
+    /** @var VideoInterface */
     protected $format;
 
     /**
@@ -57,9 +57,9 @@ trait Formats
     }
 
     /**
-     * @return FormatInterface|mixed
+     * @return VideoInterface
      */
-    public function getFormat(): FormatInterface
+    public function getFormat(): VideoInterface
     {
         return $this->format;
     }

@@ -13,17 +13,28 @@ namespace Streaming;
 
 use Streaming\Exception\InvalidArgumentException;
 
-class Representation
+class Representation implements RepresentationInterface
 {
-    private $kiloBitrate = 1000;
-    private $audioKiloBitrate = null;
-    private $resize = '';
-    private $width = 0;
-    private $height = 0;
+    /** @var int $kiloBitrate video kilo bitrate */
+    private $kiloBitrate;
+
+    /** @var int $audioKiloBitrate audio kilo bitrate */
+    private $audioKiloBitrate;
+
+    /** @var string $resize WidthXHeight */
+    private $resize;
+
+    /** @var int $width video width */
+    private $width;
+
+    /** @var int $width video height */
+    private $height;
+
+    /** @var array $hls_stream_info hls stream info */
     private $hls_stream_info = [];
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getResize(): string
     {

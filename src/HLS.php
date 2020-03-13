@@ -16,6 +16,7 @@ use Streaming\Filters\StreamFilterInterface;
 
 class HLS extends Streaming
 {
+
     /** @var string */
     private $hls_time = 10;
 
@@ -35,7 +36,7 @@ class HLS extends Streaming
     private $hls_list_size = 0;
 
     /** @var bool */
-    public $tmp_key_info_file = false;
+    private $tmp_key_info_file = false;
 
     /** @var string */
     public $master_playlist;
@@ -239,15 +240,27 @@ class HLS extends Streaming
 
         $this->savePlaylist($path . ".m3u8");
 
-        return $path . "_" . end($reps)->getHeight() . "p.m3u8";
+        return $path . "_" . $reps->end()->getHeight() . "p.m3u8";
     }
 
     /**
      * @param $path
      */
-    private function savePlaylist(string $path): void
+    public function savePlaylist(string $path): void
     {
         $mater_playlist = new HLSPlaylist($this);
         $mater_playlist->save($this->master_playlist ?? $path, $this->stream_des);
+    }
+
+    /**
+     * Clear key info file if is a temp file
+     */
+    public function __destruct()
+    {
+        if ($this->tmp_key_info_file) {
+            File::remove($this->getHlsKeyInfoFile());
+        }
+
+        parent::__destruct();
     }
 }

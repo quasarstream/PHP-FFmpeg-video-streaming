@@ -66,7 +66,7 @@ class DASHFilter extends StreamFilter
      */
     private function getBaseFilters(): array
     {
-        $filename = $this->dash->getPathInfo(PATHINFO_FILENAME);
+        $filename = $this->dash->pathInfo(PATHINFO_FILENAME);
 
         $this->filter = [
             "-bf", "1",

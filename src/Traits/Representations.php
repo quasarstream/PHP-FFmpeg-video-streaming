@@ -11,61 +11,65 @@
 
 namespace Streaming\Traits;
 
-use Streaming\AutoRepresentations;
+use Streaming\AutoReps;
 use Streaming\Exception\InvalidArgumentException;
-use Streaming\Representation;
+use Streaming\RepresentationInterface;
+use Streaming\RepsCollection;
 
 trait Representations
 {
-    /** @var array */
-    protected $representations = [];
+    /** @var RepsCollection */
+    protected $reps;
 
     /**
+     * add a representation
+     * @param RepresentationInterface $rep
      * @return $this
      */
-    public function addRepresentations()
+    public function addRepresentation(RepresentationInterface $rep)
     {
-        $this->checkFormat();
-        $reps = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
-
-        foreach ($reps as $rep) {
-            if (!$rep instanceof Representation) {
-                throw new InvalidArgumentException('Representations must be instance of Representation object');
-            }
-        }
-
-        $this->representations = $reps;
+        $this->reps->add($rep);
         return $this;
     }
 
     /**
-     * @return array
+     * add representations using an array
+     * @param array $reps
+     * @return $this
      */
-    public function getRepresentations(): array
+    public function addRepresentations(array $reps)
     {
-        return $this->representations;
+        array_walk($reps, [$this, 'addRepresentation']);
+        return $this;
     }
 
     /**
      * @param array|null $sides
      * @param array|null $k_bitrate
+     * @param string $sort
      * @return $this
      */
-    public function autoGenerateRepresentations(array $sides = null, array $k_bitrate = null)
+    public function autoGenerateRepresentations(array $sides = null, array $k_bitrate = null, string $sort = "asc")
     {
-        $this->checkFormat();
-        $this->addRepresentations((new AutoRepresentations($this->getMedia(), $sides, $k_bitrate))->get());
+        if (!$this->format) {
+            throw new InvalidArgumentException('First you must set the format of the video');
+        }
+
+        $reps = new AutoReps($this->getMedia(), $this->getFormat(), $sides, $k_bitrate);
+        $reps->sort($sort);
+
+        foreach ($reps as $rep) {
+            $this->addRepresentation($rep);
+        }
 
         return $this;
     }
 
     /**
-     * check whether format is set or nor
+     * @return RepsCollection
      */
-    private function checkFormat()
+    public function getRepresentations(): RepsCollection
     {
-        if (!$this->format) {
-            throw new InvalidArgumentException('First you must set the format of the video');
-        }
+        return $this->reps;
     }
 }

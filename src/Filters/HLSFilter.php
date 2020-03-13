@@ -37,7 +37,6 @@ class HLSFilter extends StreamFilter
     private $seg_filename;
 
     /**
-     * @param
      * @return array
      */
     private function getFormats(): array
@@ -76,7 +75,6 @@ class HLSFilter extends StreamFilter
     }
 
     /**
-     * @param
      * @return array
      */
     private function getKeyInfo(): array
@@ -164,8 +162,8 @@ class HLSFilter extends StreamFilter
      */
     private function setPaths(): void
     {
-        $this->dirname = str_replace("\\", "/", $this->hls->getPathInfo(PATHINFO_DIRNAME));
-        $this->filename = $this->hls->getPathInfo(PATHINFO_FILENAME);
+        $this->dirname = str_replace("\\", "/", $this->hls->pathInfo(PATHINFO_DIRNAME));
+        $this->filename = $this->hls->pathInfo(PATHINFO_FILENAME);
         $this->segmentPaths();
     }
 
@@ -185,7 +183,7 @@ class HLSFilter extends StreamFilter
                 $this->filter = array_merge($this->filter, $this->getFormats());
             }
 
-            $this->getArgs($rep, end($reps) !== $rep);
+            $this->getArgs($rep, $reps->end() !== $rep);
         }
     }
 }

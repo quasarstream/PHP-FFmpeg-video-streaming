@@ -19,10 +19,11 @@ use Streaming\Clouds\Cloud;
 use Streaming\Exception\RuntimeException;
 
 
+/** @mixin BFFMpeg*/
 class FFMpeg
 {
     /** @var BFFMpeg */
-    protected $ffmpeg;
+    private $ffmpeg;
 
     /**
      * @param $ffmpeg
@@ -40,10 +41,10 @@ class FFMpeg
     public function open(string $path, bool $is_tmp = false): Media
     {
         try {
-            return new Media($this->ffmpeg->open($path), $path, $is_tmp);
+            return new Media($this->ffmpeg->open($path), $is_tmp);
         } catch (ExceptionInterface $e) {
             if ($is_tmp) {
-                sleep(1);
+                sleep(.5);
                 File::remove($path);
             }
             throw new RuntimeException("An error occurred while opening the file: " . $e->getMessage(), $e->getCode(), $e);

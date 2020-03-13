@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the ******* package.
+ * This file is part of the PHP-FFmpeg-video-streaming package.
  *
  * (c) Amin Yazdanpanah <contact@aminyazdanpanah.com>
  *
@@ -24,7 +24,7 @@ interface StreamInterface
      * @param int $option
      * @return string
      */
-    public function getPathInfo(int $option): string;
+    public function pathInfo(int $option): string;
 
     /**
      * @param string $path

@@ -13,42 +13,31 @@ namespace Streaming;
 
 use FFMpeg\Media\MediaTypeInterface;
 
-/**
- * @method \FFMpeg\Media\Video save(\FFMpeg\Format\FormatInterface $format, $outputPathfile)
- * @method \FFMpeg\Media\Video addFilter(\FFMpeg\Filters\FilterInterface $filter)
- * @method \FFMpeg\FFProbe\DataMapping\Format getFormat()
- * @method \FFMpeg\FFProbe\DataMapping\StreamCollection getStreams()
- */
+
+/** @mixin  \FFMpeg\Media\Video */
 class Media
 {
+    /** @var \FFMpeg\Media\Video */
+    private $media;
 
-    protected $media;
-    /**
-     * @var string
-     */
-    private $path;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $is_tmp;
 
     /**
      * Media constructor.
      * @param MediaTypeInterface $media
-     * @param string $path
      * @param bool $is_tmp
      */
-    public function __construct(MediaTypeInterface $media, string $path, bool $is_tmp)
+    public function __construct(MediaTypeInterface $media, bool $is_tmp)
     {
         $this->media = $media;
-        $this->path = $path;
         $this->is_tmp = $is_tmp;
     }
 
     /**
      * @return DASH
      */
-    public function DASH(): DASH
+    public function dash(): DASH
     {
         return new DASH($this);
     }
@@ -56,7 +45,7 @@ class Media
     /**
      * @return HLS
      */
-    public function HLS(): HLS
+    public function hls(): HLS
     {
         return new HLS($this);
     }
@@ -70,8 +59,16 @@ class Media
     }
 
     /**
+     * @return bool
+     */
+    public function isTmp(): bool
+    {
+        return $this->is_tmp;
+    }
+
+    /**
      * @param $argument
-     * @return Media
+     * @return Media | \FFMpeg\Media\Video
      */
     private function isInstanceofArgument($argument)
     {
@@ -81,28 +78,12 @@ class Media
     /**
      * @param $method
      * @param $parameters
-     * @return Media
+     * @return Media | \FFMpeg\Media\Video
      */
     public function __call($method, $parameters)
     {
         return $this->isInstanceofArgument(
             call_user_func_array([$this->media, $method], $parameters)
         );
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isTmp(): bool
-    {
-        return $this->is_tmp;
     }
 }

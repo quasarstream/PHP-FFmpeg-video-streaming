@@ -14,7 +14,6 @@ namespace Streaming\Filters;
 
 
 use Streaming\StreamInterface;
-use Streaming\StreamToFile;
 
 class StreamToFileFilter extends StreamFilter
 {

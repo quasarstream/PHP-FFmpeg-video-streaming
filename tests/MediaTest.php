@@ -37,7 +37,7 @@ class MediaTest extends TestCase
     public function testGetPath()
     {
         $media = $this->getVideo();
-        $get_path_info = pathinfo($media->getPath());
+        $get_path_info = pathinfo($media->getPathfile());
 
         $this->assertIsArray($get_path_info);
         $this->assertArrayHasKey('dirname', $get_path_info);

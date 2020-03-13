@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the ******* package.
+ * This file is part of the PHP-FFmpeg-video-streaming package.
  *
  * (c) Amin Yazdanpanah <contact@aminyazdanpanah.com>
  *
@@ -22,15 +22,5 @@ class Utiles
     public static function appendSlash(string $str): string
     {
         return $str ? rtrim($str, '/') . "/" : $str;
-    }
-
-    /**
-     * Round to even number
-     * @param float $num
-     * @return int
-     */
-    public static function RTE(float $num): int
-    {
-        return (int)$num % 2 == 0 ? $num : ++$num;
     }
 }

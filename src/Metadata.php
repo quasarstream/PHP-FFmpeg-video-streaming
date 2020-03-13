@@ -20,19 +20,13 @@ use Streaming\Exception\InvalidArgumentException;
 
 class Metadata
 {
-    /**
-     * @var Stream
-     */
+    /** @var Stream */
     private $stream;
 
-    /**
-     * @var \FFMpeg\FFProbe\DataMapping\Format
-     */
+    /** @var \FFMpeg\FFProbe\DataMapping\Format */
     private $format;
 
-    /**
-     * @var \FFMpeg\FFProbe\DataMapping\StreamCollection
-     */
+    /** @var \FFMpeg\FFProbe\DataMapping\StreamCollection */
     private $video_streams;
 
     /**
@@ -57,7 +51,7 @@ class Metadata
     /**
      * @return \FFMpeg\FFProbe\DataMapping\StreamCollection
      */
-    public function getStreamsVideo(): StreamCollection
+    public function getVideoStreams(): StreamCollection
     {
         return $this->video_streams;
     }
@@ -78,7 +72,7 @@ class Metadata
     {
         return [
             'format' => $this->getFormat()->all(),
-            'streams' => array_map([$this, 'streamToArray'], $this->getStreamsVideo()->all())
+            'streams' => array_map([$this, 'streamToArray'], $this->getVideoStreams()->all())
         ];
     }
 
@@ -104,7 +98,7 @@ class Metadata
             return [];
         }
 
-        return array_map([$this, 'repToArray'], $this->stream->getRepresentations());
+        return array_map([$this, 'repToArray'], $this->stream->getRepresentations()->all());
     }
 
 
@@ -113,8 +107,8 @@ class Metadata
      */
     public function getStreamsMetadata(): array
     {
-        $dirname = $this->stream->getPathInfo(PATHINFO_DIRNAME);
-        $basename = $this->stream->getPathInfo(PATHINFO_BASENAME);
+        $dirname = $this->stream->PathInfo(PATHINFO_DIRNAME);
+        $basename = $this->stream->PathInfo(PATHINFO_BASENAME);
         $filename = $dirname . DIRECTORY_SEPARATOR . $basename;
 
         $technique = explode("\\", get_class($this->stream));
@@ -154,7 +148,7 @@ class Metadata
     {
         return [
             "video" => $this->getVideoMetadata(),
-            "streams" => $this->getStreamsMetadata()
+            "stream" => $this->getStreamsMetadata()
         ];
     }
 
@@ -170,8 +164,8 @@ class Metadata
                 throw new InvalidArgumentException("It is a temp directory! It is not possible to save it");
             }
 
-            $name = uniqid(($this->stream->getPathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
-            $filename = $this->stream->getPathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
+            $name = uniqid(($this->stream->pathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
+            $filename = $this->stream->pathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
         }
 
         file_put_contents(

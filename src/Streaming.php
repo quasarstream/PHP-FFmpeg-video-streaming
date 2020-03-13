@@ -25,6 +25,15 @@ abstract class Streaming extends Stream
     private $additional_params = [];
 
     /**
+     * Streaming constructor.
+     * @param Media $media
+     */
+    public function __construct(Media $media)
+    {
+        $this->reps = new RepsCollection();
+        parent::__construct($media);
+    }
+    /**
      * @return array
      */
     public function getAdditionalParams(): array

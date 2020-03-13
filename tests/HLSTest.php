@@ -38,7 +38,7 @@ class HLSTest extends TestCase
         $hls->X264()
             ->autoGenerateRepresentations();
 
-        $representations = $hls->getRepresentations();
+        $representations = $hls->getRepresentations()->all();
 
         $this->assertIsArray($representations);
         $this->assertInstanceOf(Representation::class, current($representations));
@@ -75,7 +75,7 @@ class HLSTest extends TestCase
 
         $hls = $this->getHLS();
         $hls->X264()
-            ->addRepresentations($rep_1, $rep_2)
+            ->addRepresentations([$rep_1, $rep_2])
             ->save($this->srcDir . '/hls/test.m3u8');
 
         $this->assertInstanceOf(Representation::class, $rep_1);

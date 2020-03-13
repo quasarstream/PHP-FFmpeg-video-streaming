@@ -38,8 +38,28 @@ final class HEVC extends Video
         return [''];
     }
 
-    protected function getAvailableVideoCodecs(): array
+    public function getAvailableVideoCodecs(): array
     {
         return ['libx265', 'h265'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getModulus()
+    {
+        return 2;
+    }
+
+    /**
+     * Returns true if the current format supports B-Frames.
+     *
+     * @see https://wikipedia.org/wiki/Video_compression_picture_types
+     *
+     * @return Boolean
+     */
+    public function supportBFrames()
+    {
+        return true;
     }
 }

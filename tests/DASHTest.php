@@ -36,7 +36,7 @@ class DASHTest extends TestCase
         $dash = $this->getDASH();
         $dash->HEVC()
             ->autoGenerateRepresentations();
-        $representations = $dash->getRepresentations();
+        $representations = $dash->getRepresentations()->all();
 
         $this->assertIsArray($representations);
         $this->assertInstanceOf(Representation::class, current($representations));

@@ -14,7 +14,7 @@ namespace Streaming\Format;
 use FFMpeg\Format\Audio\DefaultAudio;
 use Streaming\Exception\InvalidArgumentException;
 
-abstract class Video extends DefaultAudio
+abstract class Video extends DefaultAudio implements VideoInterface
 {
     /** @var string */
     protected $videoCodec;
@@ -28,8 +28,6 @@ abstract class Video extends DefaultAudio
     {
         return $this->videoCodec;
     }
-
-    abstract protected function getAvailableVideoCodecs(): array;
 
     /**
      * @param string $videoCodec

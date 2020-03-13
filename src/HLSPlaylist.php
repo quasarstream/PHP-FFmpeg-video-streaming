@@ -34,7 +34,7 @@ class HLSPlaylist
      */
     private function segmentPath(Representation $rep): string
     {
-        return $this->hls->getPathInfo(PATHINFO_FILENAME) . "_" . $rep->getHeight() . "p.m3u8";
+        return $this->hls->pathInfo(PATHINFO_FILENAME) . "_" . $rep->getHeight() . "p.m3u8";
     }
 
     /**
