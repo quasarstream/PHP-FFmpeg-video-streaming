@@ -11,9 +11,6 @@
 
 namespace Streaming;
 
-
-use Streaming\Exception\RuntimeException;
-
 class HLSPlaylist
 {
     /** @var HLS */
@@ -43,14 +40,18 @@ class HLSPlaylist
      */
     private function streamInfo(Representation $rep): string
     {
-        $ext_stream = '#EXT-X-STREAM-INF:';
-        $params = [
-            "BANDWIDTH=" . $rep->getKiloBitrate() * 1024,
-            "RESOLUTION=" . $rep->getResize(),
-            "NAME=\"" . $rep->getHeight() . "\""
-        ];
+        $tag = '#EXT-X-STREAM-INF:';
+        $params = array_merge(
+            [
+                "BANDWIDTH" => $rep->getKiloBitrate() * 1024,
+                "RESOLUTION" => $rep->getResize(),
+                "NAME" => "\"" . $rep->getHeight() . "\""
+            ],
+            $rep->getHlsStreamInfo()
+        );
+        Utiles::concatKeyValue($params, "=");
 
-        return $ext_stream . implode(",", array_merge($params, $rep->getHlsStreamInfo()));
+        return $tag . implode(",", $params);
     }
 
     /**
@@ -83,8 +84,6 @@ class HLSPlaylist
      */
     public function save(string $filename, array $description): void
     {
-        if (false === @file_put_contents($filename, $this->contents($description))) {
-            throw new RuntimeException("Unable to save the master playlist file");
-        }
+        File::put($filename, $this->contents(($description)));
     }
 }

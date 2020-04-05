@@ -53,6 +53,23 @@ class File
     }
 
     /**
+     * @param $path
+     * @param $content
+     * @param bool $force
+     * @return void
+     */
+    public static function put($path, $content, $force = true): void
+    {
+        if (file_exists($path) && !$force) {
+            throw new RuntimeException("File Already Exists");
+        }
+
+        if (false === @file_put_contents($path, $content)) {
+            throw new RuntimeException("Unable to save the file");
+        }
+    }
+
+    /**
      * @return string
      */
     public static function tmp(): string

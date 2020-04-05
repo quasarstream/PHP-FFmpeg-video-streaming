@@ -11,11 +11,10 @@
 
 namespace Tests\FFMpegStreaming;
 
+use Streaming\Format\StreamFormat;
 use Streaming\HLS;
 use Streaming\Stream;
-use Streaming\Format\Video;
 use Streaming\Representation;
-use ReflectionClass;
 
 class HLSTest extends TestCase
 {
@@ -29,7 +28,7 @@ class HLSTest extends TestCase
         $hls = $this->getHLS();
         $hls->X264();
 
-        $this->assertInstanceOf(Video::class, $hls->getFormat());
+        $this->assertInstanceOf(StreamFormat::class, $hls->getFormat());
     }
 
     public function testAutoRepresentations()

@@ -27,7 +27,7 @@ class HLS extends Streaming
     private $hls_key_info_file = "";
 
     /** @var string */
-    private $ts_sub_directory = "";
+    private $seg_sub_directory = "";
 
     /** @var string */
     private $hls_base_url = "";
@@ -50,21 +50,24 @@ class HLS extends Streaming
     /** @var array */
     private $stream_des = [];
 
+    /** @var array */
+    private $flags = [];
+
     /**
      * @return string
      */
-    public function getTsSubDirectory(): string
+    public function getSegSubDirectory(): string
     {
-        return $this->ts_sub_directory;
+        return $this->seg_sub_directory;
     }
 
     /**
      * @param string $ts_sub_directory
      * @return HLS
      */
-    public function setTsSubDirectory(string $ts_sub_directory)
+    public function setSegSubDirectory(string $ts_sub_directory)
     {
-        $this->ts_sub_directory = $ts_sub_directory;
+        $this->seg_sub_directory = $ts_sub_directory;
         return $this;
     }
 
@@ -117,13 +120,22 @@ class HLS extends Streaming
     /**
      * @param string $save_to
      * @param string $url
-     * @param string|null $key_info_path
+     * @param int $key_rotation_period
+     * @param string $search
      * @param int $length
      * @return HLS
      */
-    public function encryption(string $save_to, string $url, string $key_info_path = null, int $length = 16): HLS
+    public function encryption(string $save_to, string $url, int $key_rotation_period = 0, $search = ".ts' for writing", int $length = 16): HLS
     {
-        $this->setHlsKeyInfoFile(HLSKeyInfo::generate($save_to, $url, $key_info_path, $length));
+        $key_info = HLSKeyInfo::create($save_to, $url);
+        $key_info->setLength($length);
+
+        if ($key_rotation_period > 0) {
+            $key_info->rotateKey($this->getMedia()->getFFMpegDriver(), $key_rotation_period, $search);
+            array_push($this->flags, HLSFlag::PERIODIC_REKEY);
+        }
+
+        $this->setHlsKeyInfoFile((string)$key_info);
         $this->tmp_key_info_file = true;
 
         return $this;
@@ -187,6 +199,15 @@ class HLS extends Streaming
     }
 
     /**
+     * @return HLS
+     */
+    public function fragmentedMP4(): HLS
+    {
+        $this->setHlsSegmentType("fmp4");
+        return $this;
+    }
+
+    /**
      * @param string $hls_segment_type
      * @return HLS
      */
@@ -220,6 +241,24 @@ class HLS extends Streaming
     public function getHlsFmp4InitFilename(): string
     {
         return $this->hls_fmp4_init_filename;
+    }
+
+    /**
+     * @param array $flags
+     * @return HLS
+     */
+    public function setFlags(array $flags): HLS
+    {
+        $this->flags = $flags;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlags(): array
+    {
+        return $this->flags;
     }
 
     /**

@@ -7,9 +7,9 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
+This library is a wrapper around **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** and packages media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
 - **[Full Documentation](https://video.aminyazdanpanah.com/)** is available describing all features and components.
-- For using DRM and encryption, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
+- For using encryption and DRM, I **recommend** trying **[Shaka PHP](https://github.com/aminyazdanpanah/shaka-php)**, which is a great tool for this use case.
 
 **Contents**
 - [Requirements](#requirements)
@@ -19,10 +19,9 @@ This package provides integration with **[PHP-FFMpeg](https://github.com/PHP-FFM
   - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
-    - [DRM (Encrypted HLS)](#drm-encrypted-hls)
+    - [Encryption(DRM)](#encryptiondrm)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
-  - [Live](#live)
   - [Metadata](#metadata)
   - [Conversion](#conversion)
   - [Other Advanced Features](#other-advanced-features)
@@ -45,7 +44,7 @@ composer require aminyazdanpanah/php-ffmpeg-video-streaming
 Alternatively, add the dependency directly to your `composer.json` file:
 ``` json
 "require": {
-    "aminyazdanpanah/php-ffmpeg-video-streaming": "^1.1"
+    "aminyazdanpanah/php-ffmpeg-video-streaming": "^1.2"
 }
 ```
 
@@ -84,28 +83,36 @@ You can pass a local path of video(or a supported resource) to the `open` method
 $video = $ffmpeg->open('/var/www/media/videos/video.mp4');
 ```
 
-Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, pipe, rtmp and etc.
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, and etc.
 
 **For example:** 
 ``` php
-$video = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4');
+$video = $ffmpeg->open(https://www.aminyazdanpanah.com/?"PATH TO A VIDEO FILE" or "PATH TO A LIVE HTTP STREAM");
 ```
 
 #### 2. From Clouds
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
+Please visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
+#### 3. Capture Webcam or Screen (Live Streaming)
+ ``` php
+ $capture = $ffmpeg->capture("CAMERA NAME OR SCREEN NAME");
+ ```
+ To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](https://trac.ffmpeg.org/wiki/Capture/Webcam)** and **[FFmpeg Capture Desktop](https://trac.ffmpeg.org/wiki/Capture/Desktop)**.
+ 
+ 
+You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
 Create DASH files:
 ``` php
-$video->DASH()
-    ->HEVC() // Format of the video. Alternatives: X264() and VP9()
+$video->dash()
+    ->hevc() // Format of the video. Alternatives: X264() and VP9()
     ->autoGenerateRepresentations() // Auto generate representations
     ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
     ->save(); // It can be passed a path to the method or it can be null
@@ -123,21 +130,21 @@ $r_1080p = (new Representation)->setKiloBitrate(4096)->setResize(1920, 1080);
 $r_2k    = (new Representation)->setKiloBitrate(6144)->setResize(2560, 1440);
 $r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
-$video->DASH()
-    ->HEVC()
+$video->dash()
+    ->hevc()
     ->addRepresentations([$r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k])
-    ->setSegDuration(30) // Default value is 10 
     ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save('/var/www/media/videos/dash-stream.mpd');
 ```
+To see more examples, you can visit the [DASH Documentation](https://video.aminyazdanpanah.com/start?r=dash#dash) page.
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
 Create HLS files:
 ``` php
-$video->HLS()
-    ->X264()
+$video->hls()
+    ->x264()
     ->autoGenerateRepresentations([720, 360]) // You can limit the number of representatons
     ->save();
 ```
@@ -149,47 +156,45 @@ $r_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
 $r_480p  = (new Representation)->setKiloBitrate(750)->setResize(854, 480);
 $r_720p  = (new Representation)->setKiloBitrate(2048)->setResize(1280, 720);
 
-$video->HLS()
-    ->X264()
-    ->setHlsBaseUrl('https://bucket.s3-us-west-1.amazonaws.com/videos') // Add a base URL
+$video->hls()
+    ->x264()
     ->addRepresentations([$r_360p, $r_480p, $r_720p])
-    ->setHlsTime(5) // Set Hls Time. Default value is 10 
-    ->setHlsAllowCache(false) // Default value is true 
     ->save();
 ```
-**NOTE:** You cannot use HEVC and VP9 formats for HLS packaging.
+To see more examples such as Fragmented MP4, live from camera/screen and so on, visit the [HLS Documentation](https://video.aminyazdanpanah.com/start?r=hls#hls) page.
 
-#### DRM (Encrypted HLS)
+#### Encryption(DRM)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ##### Single Key
-The following code generates a key for all TS files in a stream.
+The following code generates a key for all TS files.
 
 ``` php
 //A path you want to save a random key to your server
-$save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key';
+$save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key';
 
 //A URL (or a path) to access the key on your website
-$url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key';
+$url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key';
 // or $url = '/PATH_TO_KEY_DIRECTORY/random_key.key';
 
-$video->HLS()
+$video->hls()
     ->encryption($save_to, $url)
-    ->X264()
+    ->x264()
     ->autoGenerateRepresentations([1080, 480, 240])
     ->save('/var/www/media/videos/hls-stream.m3u8');
 ```
 
 ##### Key Rotation
-This technique allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also use a different key for each set of segments(e.g. if 10 TS files have been generated then rotate the key) or you can generate a new encryption key at every periodic time(e.g. every 10 seconds).
+An integer as a "key rotation period" can also be passed(i.e. `encryption($save_to, $url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. This technique allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. For example, if 10 TS files have been generated then rotate the key.
 
 Please see **[the example](https://video.aminyazdanpanah.com/start?r=enc-hls#hls-encryption)** for more information.
 
 **NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(**It is highly recommended**).    
 
-**NOTE:** However HLS supports AES encryption, which you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
+##### DRM
+However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full DRM solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
@@ -201,7 +206,7 @@ $format->on('progress', function ($video, $format, $percentage){
     echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
 });
 
-$video->DASH()
+$video->dash()
     ->setFormat($format)
     ->autoGenerateRepresentations()
     ->setAdaption('id=0,streams=v id=1,streams=a')
@@ -217,7 +222,7 @@ There are two ways to save your files.
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
 ``` php
-$dash = $video->DASH()
+$dash = $video->dash()
             ->HEVC()
             ->autoGenerateRepresentations()
             ->setAdaption('id=0,streams=v id=1,streams=a');
@@ -226,7 +231,7 @@ $dash->save('/var/www/media/videos/dash-stream.mpd');
 ```
 It can also be null. The default path to save files is the input path.
 ``` php
-$hls = $video->HLS()
+$hls = $video->hls()
             ->X264()
             ->autoGenerateRepresentations();
             
@@ -237,7 +242,6 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/start/open-clouds)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ``` php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
@@ -245,13 +249,16 @@ A path can also be passed to save a copy of files to your local machine.
 ``` php
 $hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
+
+Please visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+
 **NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
-### Live
+#### 3. TO a Server Instantly
 You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
 
 If you want to save stream files to your local machine, please use the `save` method.
@@ -285,9 +292,9 @@ You can convert your stream to a file or to another stream protocols. You should
 
 #### 1. HLS To DASH
 ``` php
-$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/HLS-MANIFEST.M3U8');
+$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/HLS-MANIFEST.M3U8');
 
-$stream->DASH()
+$stream->dash()
     ->X264()
     ->addRepresentations([$r_360p, $r_480p]) 
     ->save('/var/www/media/dash-stream.mpd');
@@ -295,9 +302,9 @@ $stream->DASH()
 
 #### 2. DASH To HLS
 ``` php
-$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.MPD');
+$stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/DASH-MANIFEST.MPD');
 
-$stream->HLS()
+$stream->hls()
            ->X264()
            ->autoGenerateRepresentations([720, 360])
            ->save('/var/www/media/hls-stream.m3u8');
@@ -360,7 +367,7 @@ Packaging process will may take a while and it is recommended to run it in the b
 You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
-        - **[Video.js 7](https://github.com/videojs/video.js) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+        - **[Video.js 7](https://github.com/videojs/video.js) (Recommended) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
         - **[Plyr](https://github.com/sampotts/plyr)**
         - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
         - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
@@ -384,9 +391,12 @@ You can use these libraries to play your streams.
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
-As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So if you know any IOS player that supports DASH Stream and also works fine, please add it to the above list. 
+**NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
+**NOTE-2:** If you save the stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), content of the stream **MUST BE PUBLIC**. 
+
+**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
+
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
@@ -395,7 +405,7 @@ Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-str
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)**
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
 
-**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me (or submit the contact form on my website). Emails regarding these issues **will be ignored**.
+**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me (or **DO NOT** submit the contact form on my website). Emails regarding these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming)**

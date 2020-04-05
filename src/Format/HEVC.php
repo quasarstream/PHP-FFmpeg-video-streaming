@@ -11,8 +11,9 @@
 
 namespace Streaming\Format;
 
-final class HEVC extends Video
+final class HEVC extends StreamFormat
 {
+    private const MODULUS = 2;
 
     /**
      * HEVC constructor.
@@ -23,7 +24,7 @@ final class HEVC extends Video
     {
         $this->setVideoCodec($video_codec);
 
-        if($audio_codec){
+        if ($audio_codec) {
             $this->setAudioCodec($audio_codec);
         }
     }
@@ -35,7 +36,7 @@ final class HEVC extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return [''];
+        return ['aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac'];
     }
 
     public function getAvailableVideoCodecs(): array
@@ -48,7 +49,7 @@ final class HEVC extends Video
      */
     public function getModulus()
     {
-        return 2;
+        return static::MODULUS;
     }
 
     /**

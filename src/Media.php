@@ -12,6 +12,7 @@
 namespace Streaming;
 
 use FFMpeg\Media\MediaTypeInterface;
+use FFMpeg\Media\Video;
 
 
 /** @mixin  \FFMpeg\Media\Video */
@@ -23,15 +24,20 @@ class Media
     /** @var bool */
     private $is_tmp;
 
+    /** @var array */
+    private $input_options;
+
     /**
      * Media constructor.
      * @param MediaTypeInterface $media
      * @param bool $is_tmp
+     * @param array $input_options
      */
-    public function __construct(MediaTypeInterface $media, bool $is_tmp)
+    public function __construct(MediaTypeInterface $media, bool $is_tmp, array $input_options = [])
     {
         $this->media = $media;
         $this->is_tmp = $is_tmp;
+        $this->input_options = $input_options;
     }
 
     /**
@@ -67,6 +73,14 @@ class Media
     }
 
     /**
+     * @return Video | \FFMpeg\Media\Audio
+     */
+    public function baseMedia(): MediaTypeInterface
+    {
+        return $this->media;
+    }
+
+    /**
      * @param $argument
      * @return Media | \FFMpeg\Media\Video
      */
@@ -85,5 +99,13 @@ class Media
         return $this->isInstanceofArgument(
             call_user_func_array([$this->media, $method], $parameters)
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getInputOptions(): array
+    {
+        return $this->input_options;
     }
 }

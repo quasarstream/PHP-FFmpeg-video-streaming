@@ -74,6 +74,11 @@ class HLSFilter extends StreamFilter
         return $this->base_url ? ["-hls_base_url", $this->base_url] : [];
     }
 
+    private function flags(): array
+    {
+        return !empty($this->hls->getFlags()) ? ["-hls_flags", implode("+", $this->hls->getFlags())] : [];
+    }
+
     /**
      * @return array
      */
@@ -131,11 +136,13 @@ class HLSFilter extends StreamFilter
     {
         $this->filter = array_merge(
             $this->filter,
+            $this->getFormats(),
             $this->initArgs($rep),
             $this->getAudioBitrate($rep),
             $this->getBaseURL(),
+            $this->flags(),
             $this->getKeyInfo(),
-            $this->hls->getAdditionalParams(),
+            Utiles::arrayToFFmpegOpt($this->hls->getAdditionalParams()),
             ["-strict", $this->hls->getStrict()],
             $this->playlistPath($rep, $not_last)
         );
@@ -146,13 +153,13 @@ class HLSFilter extends StreamFilter
      */
     private function segmentPaths()
     {
-        if ($this->hls->getTsSubDirectory()) {
-            File::makeDir($this->dirname . "/" . $this->hls->getTsSubDirectory() . "/");
+        if ($this->hls->getSegSubDirectory()) {
+            File::makeDir($this->dirname . "/" . $this->hls->getSegSubDirectory() . "/");
         }
 
         $base = Utiles::appendSlash($this->hls->getHlsBaseUrl());
 
-        $this->seg_sub_dir = Utiles::appendSlash($this->hls->getTsSubDirectory());
+        $this->seg_sub_dir = Utiles::appendSlash($this->hls->getSegSubDirectory());
         $this->seg_filename = $this->dirname . "/" . $this->seg_sub_dir . $this->filename;
         $this->base_url = $base . $this->seg_sub_dir;
     }
@@ -175,14 +182,9 @@ class HLSFilter extends StreamFilter
     {
         $this->hls = $stream;
         $this->setPaths();
-
         $reps = $this->hls->getRepresentations();
 
         foreach ($reps as $key => $rep) {
-            if ($key) {
-                $this->filter = array_merge($this->filter, $this->getFormats());
-            }
-
             $this->getArgs($rep, $reps->end() !== $rep);
         }
     }

@@ -13,7 +13,7 @@ namespace Tests\FFMpegStreaming;
 
 use Streaming\DASH;
 use Streaming\Stream;
-use Streaming\Format\Video;
+use Streaming\Format\StreamFormat;
 use Streaming\Representation;
 
 class DASHTest extends TestCase
@@ -28,7 +28,7 @@ class DASHTest extends TestCase
         $dash = $this->getDASH();
         $dash->HEVC();
 
-        $this->assertInstanceOf(Video::class, $dash->getFormat());
+        $this->assertInstanceOf(StreamFormat::class, $dash->getFormat());
     }
 
     public function testAutoRepresentations()

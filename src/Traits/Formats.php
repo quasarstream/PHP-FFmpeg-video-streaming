@@ -11,16 +11,16 @@
 
 namespace Streaming\Traits;
 
+use FFMpeg\Format\VideoInterface;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Format\HEVC;
-use Streaming\Format\Video;
-use Streaming\Format\VideoInterface;
+use Streaming\Format\StreamFormat;
 use Streaming\Format\VP9;
 use Streaming\Format\X264;
 
 trait Formats
 {
-    /** @var VideoInterface */
+    /** @var VideoInterface | \FFMpeg\Format\Video\DefaultVideo */
     protected $format;
 
     /**
@@ -28,7 +28,7 @@ trait Formats
      * @param string|null $audio_codec
      * @return $this
      */
-    public function X264(string $video_codec = 'libx264', string $audio_codec = null)
+    public function x264(string $video_codec = 'libx264', string $audio_codec = null)
     {
         $this->setFormat(new X264($video_codec, $audio_codec));
         return $this;
@@ -39,7 +39,7 @@ trait Formats
      * @param string|null $audio_codec
      * @return $this
      */
-    public function HEVC(string $video_codec = 'libx265', string $audio_codec = null)
+    public function hevc(string $video_codec = 'libx265', string $audio_codec = null)
     {
         $this->setFormat(new HEVC($video_codec, $audio_codec));
         return $this;
@@ -50,7 +50,7 @@ trait Formats
      * @param string|null $audio_codec
      * @return $this
      */
-    public function WebM(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
+    public function vp9(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
     {
         $this->setFormat(new VP9($video_codec, $audio_codec));
         return $this;
@@ -71,8 +71,8 @@ trait Formats
      */
     public function setFormat($format)
     {
-        if (!$format instanceof Video) {
-            throw new InvalidArgumentException("Sorry! the format must be instance of 'Streaming\Format\Video' object");
+        if (!$format instanceof StreamFormat) {
+            throw new InvalidArgumentException("The format must be instance of 'Streaming\Format\StreamFormat'");
         }
 
         $this->format = $format;

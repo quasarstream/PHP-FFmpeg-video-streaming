@@ -14,13 +14,14 @@ namespace Streaming\Filters;
 
 
 use Streaming\StreamInterface;
-use Streaming\Format\X264;
 use Streaming\Representation;
+use Streaming\Utiles;
 
 class DASHFilter extends StreamFilter
 {
     /** @var \Streaming\DASH */
     private $dash;
+
     /**
      * @param StreamInterface $stream
      */
@@ -32,6 +33,7 @@ class DASHFilter extends StreamFilter
 
     /**
      * @return array
+     * @TODO: optimize this function
      */
     private function set()
     {
@@ -49,19 +51,22 @@ class DASHFilter extends StreamFilter
                 $this->filter[] = $representation->getResize();
             }
         }
+        $this->filter = array_merge($this->filter, $this->getFormats());
 
         if ($this->dash->getAdaption()) {
             $this->filter[] = "-adaptation_sets";
             $this->filter[] = $this->dash->getAdaption();
         }
-        $this->filter = array_merge($this->filter, $this->dash->getAdditionalParams());
-        $this->filter = array_merge($this->filter, ["-strict", $this->dash->getStrict()]);
+        $this->filter = array_merge(
+            $this->filter,
+            Utiles::arrayToFFmpegOpt($this->dash->getAdditionalParams()),
+            ["-strict", $this->dash->getStrict()]
+        );
 
         return $this->filter;
     }
 
     /**
-
      * @return array
      */
     private function getBaseFilters(): array
@@ -83,21 +88,20 @@ class DASHFilter extends StreamFilter
             "-f", "dash",
         ];
 
-        if ($this->dash->getFormat() instanceof X264) {
-            $this->filter[] = "-profile:v:0";
-            $this->filter[] = "main";
-
-            $count = count($this->dash->getRepresentations());
-
-            while ($count > 0) {
-                $this->filter[] = "-profile:v:" . $count;
-                $this->filter[] = "baseline";
-                $count--;
-            }
-        }
-
         return $this->filter;
     }
+
+    /**
+     * @return array
+     */
+    private function getFormats(): array
+    {
+        $format = ['-c:v', $this->dash->getFormat()->getVideoCodec()];
+        $audio_format = $this->dash->getFormat()->getAudioCodec();
+
+        return $audio_format ? array_merge($format, ['-c:a', $audio_format]) : $format;
+    }
+
 
     /**
      * @param Representation $rep

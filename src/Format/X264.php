@@ -11,39 +11,36 @@
 
 namespace Streaming\Format;
 
-final class X264 extends Video
+final class X264 extends StreamFormat
 {
+    private const MODULUS = 2;
 
     /**
      * X264 constructor.
      * @param string $video_codec
-     * @param string|null $audio_codec
+     * @param null $audio_codec
      */
-    public function __construct(string $video_codec = 'libx264', string $audio_codec = null)
+    public function __construct($video_codec = 'libx264', $audio_codec = null)
     {
         $this->setVideoCodec($video_codec);
 
-        if($audio_codec){
+        if ($audio_codec) {
             $this->setAudioCodec($audio_codec);
         }
     }
 
     /**
-     * Returns the list of available audio codecs for this format.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getAvailableAudioCodecs()
     {
-        return [''];
+        return ['aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac'];
     }
 
     /**
-     * Returns the list of available video codecs for this format.
-     *
-     * @return array
+     * {@inheritDoc}
      */
-    public function getAvailableVideoCodecs(): array
+    public function getAvailableVideoCodecs()
     {
         return ['libx264', 'h264', 'h264_afm'];
     }
@@ -53,7 +50,7 @@ final class X264 extends Video
      */
     public function getModulus()
     {
-        return 2;
+        return static::MODULUS;
     }
 
     /**

@@ -107,8 +107,8 @@ class Metadata
      */
     public function getStreamsMetadata(): array
     {
-        $dirname = $this->stream->PathInfo(PATHINFO_DIRNAME);
-        $basename = $this->stream->PathInfo(PATHINFO_BASENAME);
+        $dirname = $this->stream->pathInfo(PATHINFO_DIRNAME);
+        $basename = $this->stream->pathInfo(PATHINFO_BASENAME);
         $filename = $dirname . DIRECTORY_SEPARATOR . $basename;
 
         $technique = explode("\\", get_class($this->stream));
@@ -132,7 +132,7 @@ class Metadata
                     "hls_time" => (int)$this->stream->getHlsTime(),
                     "hls_cache" => (bool)$this->stream->isHlsAllowCache(),
                     "encrypted_hls" => (bool)$this->stream->getHlsKeyInfoFile(),
-                    "ts_sub_directory" => $this->stream->getTsSubDirectory(),
+                    "ts_sub_directory" => $this->stream->getSegSubDirectory(),
                     "base_url" => $this->stream->getHlsBaseUrl()
                 ]
             );

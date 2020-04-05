@@ -14,6 +14,7 @@ namespace Streaming;
 use FFMpeg\Exception\ExceptionInterface;
 use FFMpeg\FFMpeg as BFFMpeg;
 use FFMpeg\FFProbe;
+use FFMpeg\Media\Video;
 use Psr\Log\LoggerInterface;
 use Streaming\Clouds\Cloud;
 use Streaming\Exception\RuntimeException;
@@ -59,6 +60,29 @@ class FFMpeg
     public function openFromCloud(array $cloud, string $save_to = null): Media
     {
         return call_user_func_array([$this, 'open'], Cloud::download($cloud, $save_to));
+    }
+
+    /**
+     * @param string $video
+     * @param string|null $audio
+     * @param array $options
+     * @param bool $screen
+     * @return Media
+     */
+    public function capture(string $video, string $audio = null, array $options = [], $screen = false): Media
+    {
+        list($path, $option) = (new Capture($video, $audio, $screen))->getOptions();
+        return $this->customInput($path, array_merge($option, $options));
+    }
+
+    /**
+     * @param string $path
+     * @param array $options
+     * @return Media
+     */
+    public function customInput(string $path, array $options = []): Media
+    {
+        return new Media(new Video($path, $this->getFFMpegDriver(), $this->getFFProbe()), false, $options);
     }
 
     /**

@@ -118,10 +118,14 @@ abstract class Stream implements StreamInterface
      */
     private function run(): void
     {
+        $this->media->addFilter($this->getFilter());
+
+        $commands = (new CommandBuilder($this->media))->build($this->getFormat(), $this->getPath());
+        $pass = $this->format->getPasses();
+        $listeners = $this->format->createProgressListener($this->media->baseMedia(), $this->media->getFFProbe(), 1, $pass);
+
         try {
-            $this->media
-                ->addFilter($this->getFilter())
-                ->save($this->getFormat(), $this->getPath());
+            $this->media->getFFMpegDriver()->command($commands, false, $listeners);
         } catch (ExceptionInterface $e) {
             throw new RuntimeException("An error occurred while saving files: " . $e->getMessage(), $e->getCode(), $e);
         }

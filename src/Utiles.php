@@ -23,4 +23,47 @@ class Utiles
     {
         return $str ? rtrim($str, '/') . "/" : $str;
     }
+
+    /**
+     * @param array $array
+     * @param string $glue
+     */
+    public static function concatKeyValue(array &$array, string $glue = ""): void
+    {
+        array_walk($array, function (&$value, $key) use ($glue) {
+            $value = "$key$glue$value";
+        });
+    }
+
+    /**
+     * @param array $array
+     * @param string $start_with
+     * @return array
+     */
+    public static function arrayToFFmpegOpt(array $array, string $start_with = "-"): array
+    {
+        $new = [];
+        foreach ($array as $key => $value) {
+            array_push($new, $start_with . $key, $value);
+        }
+
+        return $new;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getOS(): string
+    {
+        switch (true) {
+            case stristr(PHP_OS, 'DAR'):
+                return "osX";
+            case stristr(PHP_OS, 'WIN'):
+                return "windows";
+            case stristr(PHP_OS, 'LINUX'):
+                return "linux";
+            default :
+                return "unknown";
+        }
+    }
 }

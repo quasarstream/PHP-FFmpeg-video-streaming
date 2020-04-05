@@ -14,8 +14,10 @@ namespace Streaming\Format;
 /**
  * The VP9 video format
  */
-final class VP9 extends Video
+final class VP9 extends StreamFormat
 {
+    private const MODULUS = 2;
+
     /**
      * VP9 constructor.
      * @param string $video_codec
@@ -25,7 +27,7 @@ final class VP9 extends Video
     {
         $this->setVideoCodec($video_codec);
 
-        if($audio_codec){
+        if ($audio_codec) {
             $this->setAudioCodec($audio_codec);
         }
     }
@@ -35,7 +37,7 @@ final class VP9 extends Video
      */
     public function getAvailableAudioCodecs()
     {
-        return [''];
+        return ['libvorbis'];
     }
 
     /**
@@ -51,7 +53,7 @@ final class VP9 extends Video
      */
     public function getModulus()
     {
-        return 2;
+        return static::MODULUS;
     }
 
     /**
