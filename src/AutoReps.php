@@ -13,9 +13,9 @@ namespace Streaming;
 
 use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Exception\ExceptionInterface;
+use FFMpeg\Format\VideoInterface;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
-use Streaming\Format\VideoInterface;
 
 
 class AutoReps implements \IteratorAggregate
@@ -147,12 +147,14 @@ class AutoReps implements \IteratorAggregate
     }
 
     /**
-     * @param int $height
+     * @param int $value
+     * @param string $side
      * @return int
      */
-    private function computeWidth(int $height): int
+    private function computeSide(int $value, string $side): int
     {
-        return $this->getDimensions()->getRatio()->calculateWidth($height, $this->format->getModulus());
+        $ratio = clone $this->getDimensions()->getRatio();
+        return call_user_func_array([$ratio, 'calculate' . $side], [$value, $this->format->getModulus()]);
     }
 
     /**
@@ -186,7 +188,7 @@ class AutoReps implements \IteratorAggregate
     {
         $reps = [];
         foreach ($this->sides as $key => $height) {
-            array_push($reps, $this->addRep($this->k_bitrate[$key], $this->computeWidth($height), $height));
+            array_push($reps, $this->addRep($this->k_bitrate[$key], $this->computeSide($height, 'Width'), $height));
         }
 
         if ($sort) {
@@ -202,7 +204,10 @@ class AutoReps implements \IteratorAggregate
     public function getOriginalRep(): Representation
     {
         $dimension = $this->getDimensions();
-        return $this->addRep($this->getKiloBitRate(), $dimension->getWidth(), $dimension->getHeight());
+        $width = $this->computeSide($dimension->getHeight(), 'Width');
+        $height = $this->computeSide($dimension->getWidth(), 'Height');
+
+        return $this->addRep($this->getKiloBitRate(), $width, $height);
     }
 
     /**
