@@ -34,8 +34,8 @@ class CommandBuilder
     public function __construct(Media $media)
     {
         $this->media = $media;
-        $this->filters = clone $this->media->getFiltersCollection();
-        $this->driver = clone $this->media->getFFMpegDriver();
+        $this->filters = $this->media->getFiltersCollection();
+        $this->driver = $this->media->getFFMpegDriver();
     }
 
     /**
@@ -47,15 +47,15 @@ class CommandBuilder
     public function build(VideoInterface $format, string $path): array
     {
         $commands = [];
-        $this->filters->add(new SimpleFilter($format->getExtraParams(), 10));
-
-        if ($this->driver->getConfiguration()->has('ffmpeg.threads')) {
-            $this->filters->add(new SimpleFilter(['-threads', $this->driver->getConfiguration()->get('ffmpeg.threads')]));
-        }
 
         foreach ($this->filters as $filter) {
             $commands = array_merge($this->getInputOptions(), $filter->apply($this->media->baseMedia(), $format));
         }
+
+        if ($this->driver->getConfiguration()->has('ffmpeg.threads')) {
+            $commands = array_merge($commands, ['-threads', $this->driver->getConfiguration()->get('ffmpeg.threads')]);
+        }
+
         array_push($commands, $path);
 
         return $commands;
