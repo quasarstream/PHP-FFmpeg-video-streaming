@@ -60,7 +60,7 @@
     },
     "require": {
         "php": "^7.2",
-        "php-ffmpeg/php-ffmpeg": "^0.14",
+        "php-ffmpeg/php-ffmpeg": "^0.15",
         "symfony/filesystem": "^4.3"
     },
     "suggest": {

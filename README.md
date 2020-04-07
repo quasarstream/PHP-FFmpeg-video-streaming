@@ -75,12 +75,12 @@ $ffmpeg = Streaming\FFMpeg::create($config, $log);
 ```
 
 ### Opening a Resource
-There are two ways to open a file:
+There are several ways to open a resource.
 
 #### 1. From a FFmpeg supported resource
 You can pass a local path of video(or a supported resource) to the `open` method:
 ``` php
-$video = $ffmpeg->open('/var/www/media/videos/video.mp4');
+$video = $ffmpeg->open('/var/media/video.mp4');
 ```
 
 See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, and etc.
@@ -135,7 +135,7 @@ $video->dash()
     ->hevc()
     ->addRepresentations([$r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k])
     ->setAdaption('id=0,streams=v id=1,streams=a')
-    ->save('/var/www/media/videos/dash-stream.mpd');
+    ->save('/var/media/dash-stream.mpd');
 ```
 See **[DASH section](https://video.aminyazdanpanah.com/start?r=dash#dash)** in the documentation, for more examples.
 
@@ -184,11 +184,11 @@ $video->hls()
     ->encryption($save_to, $url)
     ->x264()
     ->autoGenerateRepresentations([1080, 480, 240])
-    ->save('/var/www/media/videos/hls-stream.m3u8');
+    ->save('/var/media/hls-stream.m3u8');
 ```
 
 ##### Key Rotation
-An integer as a "key rotation period" can also be passed to the `encryption` method (i.e. `encryption($save_to, $url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. For example, if 10 segment files have been generated then it will generate a new key. This technique allows you to encrypt each segment file with a new encryption key. This can also improve security and allows for more flexibility. If you set this value to **`1`**, each segment file will be encrypted with a new encryption key.
+An integer as a "key rotation period" can also be passed to the `encryption` method (i.e. `encryption($save_to, $url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. For example, if 10 segment files have been generated then it will generate a new key. If you set this value to **`1`**, each segment file will be encrypted with a new encryption key. This can improve security and allows for more flexibility. 
 
 See **[the example](https://video.aminyazdanpanah.com/start?r=enc-hls#hls-encryption)** for more information.
 
@@ -218,7 +218,7 @@ $video->dash()
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
-There are two ways to save your files.
+There are several ways to save files.
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
@@ -228,7 +228,7 @@ $dash = $video->dash()
             ->autoGenerateRepresentations()
             ->setAdaption('id=0,streams=v id=1,streams=a');
             
-$dash->save('/var/www/media/videos/dash-stream.mpd');
+$dash->save('/var/media/dash-stream.mpd');
 ```
 It can also be null. The default path to save files is the input path.
 ``` php
@@ -248,7 +248,7 @@ $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_cus
 ``` 
 A path can also be passed to save a copy of files to your local machine.
 ``` php
-$hls->save('/var/www/media/videos/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
+$hls->save('/var/media/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
 Visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
@@ -259,7 +259,7 @@ Visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to se
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
-#### 3. TO a Server Instantly
+#### 3. To a Server Instantly
 You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
 
 If you want to save stream files to your local machine, use the `save` method.
@@ -298,7 +298,7 @@ $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/HLS-MANIFEST.M
 $stream->dash()
     ->x264()
     ->addRepresentations([$r_360p, $r_480p]) 
-    ->save('/var/www/media/dash-stream.mpd');
+    ->save('/var/media/dash-stream.mpd');
 ```
 
 #### 2. DASH To HLS
@@ -308,7 +308,7 @@ $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/DASH-MANIFEST.
 $stream->hls()
            ->x264()
            ->autoGenerateRepresentations([720, 360])
-           ->save('/var/www/media/hls-stream.m3u8');
+           ->save('/var/media/hls-stream.m3u8');
 ```
 
 #### 3. Stream(DASH or HLS) To File
@@ -320,7 +320,7 @@ $format->on('progress', function ($video, $format, $percentage){
 
 $stream->stream2file()
            ->setFormat($format)
-           ->save('/var/www/media/new-video.mp4');
+           ->save('/var/media/new-video.mp4');
 ```
 
 ### Other Advanced Features
@@ -334,7 +334,7 @@ $video = $$ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4'
 You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
 ``` php
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
-$frame->save('/var/www/media/videos/poster.jpg');
+$frame->save('/var/media/poster.jpg');
 ```
 **NOTE:** You can use the image as a video's poster.
 
@@ -346,7 +346,7 @@ You can save gif files using the FFMpeg\Media\Gif::save method.
 ``` php
 $video
     ->gif(FFMpeg\Coordinate\TimeCode::fromSeconds(2), new FFMpeg\Coordinate\Dimension(640, 480), 3)
-    ->save('/var/www/media/videos/animated_image.gif');
+    ->save('/var/media/animated_image.gif');
 ```
 This method has a third optional boolean parameter, which is the duration of the animation. If you don't set it, you will get a fixed gif image.
 
@@ -394,7 +394,7 @@ You can use these libraries to play your streams.
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE-2:** If you save the stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), content of the stream **MUST BE PUBLIC**. 
+**NOTE-2:** If you save your stream to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and also other content **MUST BE PUBLIC**. 
 
 **NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
 

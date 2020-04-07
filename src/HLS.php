@@ -62,12 +62,12 @@ class HLS extends Streaming
     }
 
     /**
-     * @param string $ts_sub_directory
+     * @param string $seg_sub_directory
      * @return HLS
      */
-    public function setSegSubDirectory(string $ts_sub_directory)
+    public function setSegSubDirectory(string $seg_sub_directory)
     {
-        $this->seg_sub_directory = $ts_sub_directory;
+        $this->seg_sub_directory = $seg_sub_directory;
         return $this;
     }
 
@@ -125,7 +125,7 @@ class HLS extends Streaming
      * @param int $length
      * @return HLS
      */
-    public function encryption(string $save_to, string $url, int $key_rotation_period = 0, $search = ".ts' for writing", int $length = 16): HLS
+    public function encryption(string $save_to, string $url, int $key_rotation_period = 0, string $search = ".ts' for writing", int $length = 16): HLS
     {
         $key_info = HLSKeyInfo::create($save_to, $url);
         $key_info->setLength($length);
@@ -249,7 +249,7 @@ class HLS extends Streaming
      */
     public function setFlags(array $flags): HLS
     {
-        $this->flags = $flags;
+        $this->flags = array_merge($this->flags, $flags);
         return $this;
     }
 
