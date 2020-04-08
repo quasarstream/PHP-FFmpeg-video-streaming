@@ -47,7 +47,10 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Streaming\\": "src"
+            "Streaming\\": "src",
+            "aws/aws-sdk-php": "^3.0@dev",
+            "google/cloud-storage": "dev-master",
+            "microsoft/azure-storage-blob": "dev-master"
         }
     },
     "require-dev": {
@@ -65,6 +68,9 @@
     },
     "suggest": {
         "aminyazdanpanah/php-shaka": "aminyazdanpanah/php-shaka is suggested for using DRM and encryption",
+        "aws/aws-sdk-php": "Allow sending stream content to AWS services like S3",
+        "google/cloud-storage": "Allow sending stream content to Google services like Google Storage",
+        "microsoft/azure-storage-blob": "Allow sending stream content to Google services like Google Storage",
         "aminyazdanpanah/handling-file-uploads": "aminyazdanpanah/handling-file-uploads is suggested for uploading and validating a new video."
     }
 }

@@ -96,7 +96,7 @@ You can open a file from a cloud by passing an array of cloud configuration to t
 ``` php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
-Visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
+Visit **[this page](https://video.aminyazdanpanah.com/start/clouds)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
 You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
@@ -251,7 +251,7 @@ A path can also be passed to save a copy of files to your local machine.
 $hls->save('/var/media/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
-Visit **[this page](https://video.aminyazdanpanah.com/start/open-clouds)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+Visit **[this page](https://video.aminyazdanpanah.com/start/clouds)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 **NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
