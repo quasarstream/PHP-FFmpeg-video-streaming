@@ -88,11 +88,12 @@ class HLSFilter extends StreamFilter
     }
 
     /**
+     * @param Representation $rep
      * @return string
      */
-    private function getInitFilename(): string
+    private function getInitFilename(Representation $rep): string
     {
-        return $this->seg_sub_dir . $this->filename . "_" . $this->hls->getHlsFmp4InitFilename();
+        return $this->seg_sub_dir . $this->filename . "_" . $rep->getHeight() ."p_". $this->hls->getHlsFmp4InitFilename();
     }
 
     /**
@@ -112,7 +113,7 @@ class HLSFilter extends StreamFilter
     private function initArgs(Representation $rep): array
     {
         return [
-            "-s:v", $rep->getResize(),
+            "-s:v", $rep->size2string(),
             "-crf", "20",
             "-sc_threshold", "0",
             "-g", "48",
@@ -123,7 +124,7 @@ class HLSFilter extends StreamFilter
             "-b:v", $rep->getKiloBitrate() . "k",
             "-maxrate", intval($rep->getKiloBitrate() * 1.2) . "k",
             "-hls_segment_type", $this->hls->getHlsSegmentType(),
-            "-hls_fmp4_init_filename", $this->getInitFilename(),
+            "-hls_fmp4_init_filename", $this->getInitFilename($rep),
             "-hls_segment_filename", $this->getSegmentFilename($rep)
         ];
     }
