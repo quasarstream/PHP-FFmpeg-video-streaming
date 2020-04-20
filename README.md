@@ -192,10 +192,12 @@ An integer as a "key rotation period" can also be passed to the `encryption` met
 
 See **[the example](https://video.aminyazdanpanah.com/start?r=enc-hls#hls-encryption)** for more information.
 
-**NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(**It is highly recommended**).    
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can check a token(using a Get or Post HTTP method) to access the key(s) on your website. You can also check a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
 ##### DRM
-However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full DRM solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
+However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
+
+**Besides [Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
@@ -355,14 +357,12 @@ This method has a third optional boolean parameter, which is the duration of the
 To see more examples, visit the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
 
 ## Asynchronous Task Execution
-Packaging process will may take a while and it is recommended to run it in the background(or in a cloud e.g. Google Cloud). There are some libraries that you can use.
+Packaging process might take a while and it is recommended to run it in the background(or in a cloud e.g. AWS). There are some libraries that you can use for this use case.
 - **[Symphony(The Console Component)](https://github.com/symfony/console):** You can use this library to create command-line commands. Your console commands can be used for any recurring task, such as cronjobs, imports, or other batch jobs. [Learn more](https://symfony.com/doc/current/components/console.html#learn-more)
 
-- **[Laravel(Queues)](https://github.com/illuminate/queue):** If you are using Laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/6.0/queues)
+- **[Laravel(Queues)](https://github.com/illuminate/queue):** If you are using Laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/7.x/queues)
 
-- **[Google Cloud Tasks](https://github.com/googleapis/google-cloud-php-tasks):** Google Cloud Tasks is a fully managed service that allows you to manage the execution, dispatch, and delivery of a large number of distributed tasks. You can asynchronously perform work outside of a user request. [Learn more](https://cloud.google.com/tasks/)
-
-**NOTE:** It is not necessary to use these libraries. It is just a suggestion. You can also create a script to create packaged video files and run a job in the cron job.  
+**NOTE:** You can also create a script to create packaged video files and create your own crontab file to run the script.  
 
 ## Several Open Source Players
 You can use these libraries to play your streams.

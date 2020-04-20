@@ -46,17 +46,17 @@ trait Representations
     /**
      * @param array|null $sides
      * @param array|null $k_bitrate
-     * @param string $sort
+     * @param bool $acceding_order
      * @return $this
      */
-    public function autoGenerateRepresentations(array $sides = null, array $k_bitrate = null, string $sort = "asc")
+    public function autoGenerateRepresentations(array $sides = null, array $k_bitrate = null, bool $acceding_order = true)
     {
         if (!$this->format) {
             throw new InvalidArgumentException('First you must set the format of the video');
         }
 
         $reps = new AutoReps($this->getMedia(), $this->getFormat(), $sides, $k_bitrate);
-        $reps->sort($sort);
+        $reps->sort($acceding_order);
 
         foreach ($reps as $rep) {
             $this->addRepresentation($rep);

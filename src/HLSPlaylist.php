@@ -44,7 +44,7 @@ class HLSPlaylist
         $params = array_merge(
             [
                 "BANDWIDTH" => $rep->getKiloBitrate() * 1024,
-                "RESOLUTION" => $rep->getResize(),
+                "RESOLUTION" => $rep->size2string(),
                 "NAME" => "\"" . $rep->getHeight() . "\""
             ],
             $rep->getHlsStreamInfo()

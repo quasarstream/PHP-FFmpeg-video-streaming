@@ -69,12 +69,8 @@ trait Formats
      * @return $this
      * @throws InvalidArgumentException
      */
-    public function setFormat($format)
+    public function setFormat(StreamFormat $format)
     {
-        if (!$format instanceof StreamFormat) {
-            throw new InvalidArgumentException("The format must be instance of 'Streaming\Format\StreamFormat'");
-        }
-
         $this->format = $format;
         return $this;
     }

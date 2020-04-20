@@ -83,7 +83,7 @@ class Metadata
     private function repToArray(Representation $rep): array
     {
         return [
-            "dimension" => strtoupper($rep->getResize()),
+            "dimension" => strtoupper($rep->size2string()),
             "video_kilo_bitrate" => $rep->getKiloBitrate(),
             "audio_kilo_bitrate" => $rep->getAudioKiloBitrate() ?? "Not specified"
         ];
@@ -153,6 +153,15 @@ class Metadata
     }
 
     /**
+     * @param null $opts
+     * @return string
+     */
+    public function getJson($opts = null): string
+    {
+        return json_encode($this->get(), $opts ?? JSON_PRETTY_PRINT);
+    }
+
+    /**
      * @param string $filename
      * @param int $opts
      * @return string
@@ -167,11 +176,7 @@ class Metadata
             $name = uniqid(($this->stream->pathInfo(PATHINFO_FILENAME) ?? "meta") . "-") . ".json";
             $filename = $this->stream->pathInfo(PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $name;
         }
-
-        file_put_contents(
-            $filename,
-            json_encode($this->get(), $opts ?? JSON_PRETTY_PRINT)
-        );
+        File::put($filename, $this->getJson($opts));
 
         return $filename;
     }

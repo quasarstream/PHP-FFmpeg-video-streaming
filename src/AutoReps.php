@@ -36,8 +36,8 @@ class AutoReps implements \IteratorAggregate
     /** @var array $k_bitrate */
     private $k_bitrate;
 
-    /** @var string */
-    private $sort = "asc";
+    /** @var bool */
+    private $sort = true;
 
     /** @const VideoInterface */
     private $format;
@@ -60,9 +60,9 @@ class AutoReps implements \IteratorAggregate
 
     /**
      * Set sort order for reps
-     * @param string $sort
+     * @param bool $sort
      */
-    public function sort(string $sort)
+    public function sort(bool $sort)
     {
         $this->sort = $sort;
     }
@@ -176,7 +176,7 @@ class AutoReps implements \IteratorAggregate
     {
         usort($reps, function (Representation $rep1, Representation $rep2) {
             $ascending = $rep1->getKiloBitrate() > $rep2->getKiloBitrate();
-            return $this->sort === "asc" ? $ascending : !$ascending;
+            return $this->sort ? $ascending : !$ascending;
         });
     }
 

@@ -20,6 +20,7 @@ class HLSKeyInfo
 {
     /** @var string */
     private $path;
+
     /** @var string */
     private $c_path;
 
@@ -35,14 +36,8 @@ class HLSKeyInfo
     /** @var string */
     private $suffix = "";
 
-    /** @var string */
-    private $search_for;
-
     /** @var int */
     private $length = 16;
-
-    /** @var int */
-    private $key_rotation_period;
 
     /** @var array */
     private $segments = [];
@@ -100,15 +95,12 @@ class HLSKeyInfo
 
     /**
      * @param FFMpegDriver $driver
-     * @param int $key_rotation_period
-     * @param string $search_for
+     * @param int $period
+     * @param string $needle
      */
-    public function rotateKey(FFMpegDriver $driver, int $key_rotation_period, string $search_for): void
+    public function rotateKey(FFMpegDriver $driver, int $period, string $needle): void
     {
-        $this->key_rotation_period = $key_rotation_period;
-        $this->search_for = $search_for;
-
-        call_user_func_array([$driver->listen(new FFMpegListener), 'on'], ['listen', $this->call()]);
+        call_user_func_array([$driver->listen(new FFMpegListener), 'on'], ['listen', $this->call($needle, $period)]);
     }
 
     /**
@@ -162,7 +154,7 @@ class HLSKeyInfo
     /**
      * update the suffix of paths
      */
-    private function updateSuffix()
+    public function updateSuffix(): void
     {
         $suffix = uniqid("_") . $this->suffix;
 
@@ -171,19 +163,37 @@ class HLSKeyInfo
     }
 
     /**
-     * check if the new segment is created or not
+     * check if a new segment is created or not
+     * @param string $needle
+     * @param int $period
      * @return callable
      */
-    private function call(): callable
+    private function call(string $needle, int $period): callable
     {
-        return function ($log) {
-            if (false !== strpos($log, $this->search_for) && !in_array($log, $this->segments)) {
-                array_push($this->segments, $log);
-                if ($this->key_rotation_period === 1 || (count($this->segments) % $this->key_rotation_period) === 0) {
+        return function ($line) use ($needle, $period) {
+            if (false !== strpos($line, $needle) && !in_array($line, $this->segments)) {
+                array_push($this->segments, $line);
+                if (0 === count($this->segments) % $period) {
                     $this->updateSuffix();
                     $this->generate();
                 }
             }
         };
+    }
+
+    /**
+     * @return array
+     */
+    public function getSegments(): array
+    {
+        return $this->segments;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeyInfoPath(): string
+    {
+        return $this->key_info_path;
     }
 }

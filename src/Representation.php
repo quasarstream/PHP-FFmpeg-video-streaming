@@ -11,6 +11,8 @@
 
 namespace Streaming;
 
+use FFMpeg\Coordinate\AspectRatio;
+use FFMpeg\Coordinate\Dimension;
 use Streaming\Exception\InvalidArgumentException;
 
 class Representation implements RepresentationInterface
@@ -21,24 +23,18 @@ class Representation implements RepresentationInterface
     /** @var int $audioKiloBitrate audio kilo bitrate */
     private $audioKiloBitrate;
 
-    /** @var string $resize WidthXHeight */
-    private $resize;
-
-    /** @var int $width video width */
-    private $width;
-
-    /** @var int $width video height */
-    private $height;
+    /** @var Dimension $size size of representation */
+    private $size;
 
     /** @var array $hls_stream_info hls stream info */
     private $hls_stream_info = [];
 
     /**
-     * @return string
+     * @return string | null
      */
-    public function getResize(): string
+    public function size2string(): ?string
     {
-        return $this->resize;
+        return !is_null($this->size) ? implode("x", [$this->getWidth(), $this->getHeight()]) : null;
     }
 
     /**
@@ -49,14 +45,7 @@ class Representation implements RepresentationInterface
      */
     public function setResize(int $width, int $height): Representation
     {
-        if ($width < 1 || $height < 1) {
-            throw new InvalidArgumentException('Invalid resize value');
-        }
-
-        $this->width = $width;
-        $this->height = $height;
-        $this->resize = $width . "x" . $height;
-
+        $this->setSize(new Dimension($width, $height));
         return $this;
     }
 
@@ -111,7 +100,7 @@ class Representation implements RepresentationInterface
      */
     public function getWidth(): int
     {
-        return $this->width;
+        return $this->size->getWidth();
     }
 
     /**
@@ -119,7 +108,15 @@ class Representation implements RepresentationInterface
      */
     public function getHeight(): int
     {
-        return $this->height;
+        return $this->size->getHeight();
+    }
+
+    /**
+     * @return AspectRatio
+     */
+    public function getRatio(): AspectRatio
+    {
+        return $this->size->getRatio();
     }
 
     /**
@@ -138,5 +135,23 @@ class Representation implements RepresentationInterface
     public function getHlsStreamInfo(): array
     {
         return $this->hls_stream_info;
+    }
+
+    /**
+     * @param Dimension $size
+     * @return Representation
+     */
+    public function setSize(Dimension $size): Representation
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @return Dimension
+     */
+    public function getSize(): Dimension
+    {
+        return $this->size;
     }
 }

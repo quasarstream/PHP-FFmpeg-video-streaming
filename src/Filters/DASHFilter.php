@@ -46,9 +46,9 @@ class DASHFilter extends StreamFilter
             $this->filter[] = $representation->getKiloBitrate() . "k";
             $this->filter = array_merge($this->filter, $this->getAudioBitrate($representation, $key));
 
-            if (null !== $representation->getResize()) {
+            if (null !== $representation->size2string()) {
                 $this->filter[] = "-s:v:" . $key;
-                $this->filter[] = $representation->getResize();
+                $this->filter[] = $representation->size2string();
             }
         }
         $this->filter = array_merge($this->filter, $this->getFormats());

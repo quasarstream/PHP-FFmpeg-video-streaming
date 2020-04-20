@@ -13,12 +13,15 @@
 namespace Streaming;
 
 
+use FFMpeg\Coordinate\AspectRatio;
+use FFMpeg\Coordinate\Dimension;
+
 interface RepresentationInterface
 {
     /**
      * @return string
      */
-    public function getResize(): string;
+    public function size2string(): ?string;
 
     /**
      * @param $width
@@ -73,4 +76,15 @@ interface RepresentationInterface
      * @return array
      */
     public function getHlsStreamInfo(): array;
+
+    /**
+     * @param Dimension $size
+     * @return Representation
+     */
+    public function setSize(Dimension $size): Representation;
+
+    /**
+     * @return AspectRatio
+     */
+    public function getRatio(): AspectRatio;
 }

@@ -13,7 +13,6 @@
 namespace Streaming;
 
 
-use FFMpeg\Filters\Audio\SimpleFilter;
 use FFMpeg\Format\VideoInterface;
 
 class CommandBuilder
