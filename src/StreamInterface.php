@@ -13,12 +13,19 @@
 namespace Streaming;
 
 
+use FFMpeg\Format\VideoInterface;
+
 interface StreamInterface
 {
     /**
      * @return Media
      */
     public function getMedia(): Media;
+
+    /**
+     * @return VideoInterface
+     */
+    public function getFormat(): VideoInterface;
 
     /**
      * @param int $option

@@ -13,7 +13,7 @@ namespace Streaming\Filters;
 
 use Streaming\StreamInterface;
 
-class HLSFilterV2 extends StreamFilter
+class HLSFilterV2 extends FormatFilter
 {
     /**
      * This is a new version of HLSFilter that the master playlist will be created by FFmpeg

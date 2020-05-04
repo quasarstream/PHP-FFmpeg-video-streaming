@@ -15,7 +15,7 @@ namespace Streaming\Filters;
 
 use Streaming\StreamInterface;
 
-class StreamToFileFilter extends StreamFilter
+class StreamToFileFilter extends FormatFilter
 {
 
     /**
@@ -24,6 +24,9 @@ class StreamToFileFilter extends StreamFilter
      */
     public function streamFilter(StreamInterface $media): void
     {
-        $this->filter = array_merge(['-c', 'copy'], $media->getParams());
+        $this->filter = array_merge(
+            $this->getFormatOptions($media->getFormat()),
+            $media->getParams()
+        );
     }
 }

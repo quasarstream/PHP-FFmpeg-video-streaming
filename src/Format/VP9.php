@@ -22,13 +22,20 @@ final class VP9 extends StreamFormat
      * VP9 constructor.
      * @param string $video_codec
      * @param string|null $audio_codec
+     * @param bool $default_init_opts
      */
-    public function __construct(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
+    public function __construct(string $video_codec = 'libvpx-vp9', string $audio_codec = 'aac', bool $default_init_opts = true)
     {
-        $this->setVideoCodec($video_codec);
+        $this
+            ->setVideoCodec($video_codec)
+            ->setAudioCodec($audio_codec);
 
-        if ($audio_codec) {
-            $this->setAudioCodec($audio_codec);
+        /**
+         * set the default value of h265 codec options
+         * see https://ffmpeg.org/ffmpeg-codecs.html#Options-26 for more information about options
+         */
+        if ($default_init_opts) {
+            //@TODO: add default vp9
         }
     }
 

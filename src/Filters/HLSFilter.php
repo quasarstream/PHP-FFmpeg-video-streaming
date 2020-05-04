@@ -16,7 +16,7 @@ use Streaming\File;
 use Streaming\Representation;
 use Streaming\Utiles;
 
-class HLSFilter extends StreamFilter
+class HLSFilter extends FormatFilter
 {
     /**  @var \Streaming\HLS */
     private $hls;
@@ -37,17 +37,6 @@ class HLSFilter extends StreamFilter
     private $seg_filename;
 
     /**
-     * @return array
-     */
-    private function getFormats(): array
-    {
-        $format = ['-c:v', $this->hls->getFormat()->getVideoCodec()];
-        $audio_format = $this->hls->getFormat()->getAudioCodec();
-
-        return $audio_format ? array_merge($format, ['-c:a', $audio_format]) : $format;
-    }
-
-    /**
      * @param Representation $rep
      * @param bool $not_last
      * @return array
@@ -63,7 +52,7 @@ class HLSFilter extends StreamFilter
      */
     private function getAudioBitrate(Representation $rep): array
     {
-        return $rep->getAudioKiloBitrate() ? ["-b:a", $rep->getAudioKiloBitrate() . "k"] : [];
+        return $rep->getAudioKiloBitrate() ? ["b:a" => $rep->getAudioKiloBitrate() . "k"] : [];
     }
 
     /**
@@ -71,12 +60,12 @@ class HLSFilter extends StreamFilter
      */
     private function getBaseURL(): array
     {
-        return $this->base_url ? ["-hls_base_url", $this->base_url] : [];
+        return $this->base_url ? ["hls_base_url" => $this->base_url] : [];
     }
 
     private function flags(): array
     {
-        return !empty($this->hls->getFlags()) ? ["-hls_flags", implode("+", $this->hls->getFlags())] : [];
+        return !empty($this->hls->getFlags()) ? ["hls_flags" => implode("+", $this->hls->getFlags())] : [];
     }
 
     /**
@@ -84,7 +73,7 @@ class HLSFilter extends StreamFilter
      */
     private function getKeyInfo(): array
     {
-        return $this->hls->getHlsKeyInfoFile() ? ["-hls_key_info_file", $this->hls->getHlsKeyInfoFile()] : [];
+        return $this->hls->getHlsKeyInfoFile() ? ["hls_key_info_file" => $this->hls->getHlsKeyInfoFile()] : [];
     }
 
     /**
@@ -112,21 +101,22 @@ class HLSFilter extends StreamFilter
      */
     private function initArgs(Representation $rep): array
     {
-        return [
-            "-s:v", $rep->size2string(),
-            "-crf", "20",
-            "-sc_threshold", "0",
-            "-g", "48",
-            "-keyint_min", "48",
-            "-hls_list_size", $this->hls->getHlsListSize(),
-            "-hls_time", $this->hls->getHlsTime(),
-            "-hls_allow_cache", (int)$this->hls->isHlsAllowCache(),
-            "-b:v", $rep->getKiloBitrate() . "k",
-            "-maxrate", intval($rep->getKiloBitrate() * 1.2) . "k",
-            "-hls_segment_type", $this->hls->getHlsSegmentType(),
-            "-hls_fmp4_init_filename", $this->getInitFilename($rep),
-            "-hls_segment_filename", $this->getSegmentFilename($rep)
+        $init = [
+            "hls_list_size"             => $this->hls->getHlsListSize(),
+            "hls_time"                  => $this->hls->getHlsTime(),
+            "hls_allow_cache"           => (int)$this->hls->isHlsAllowCache(),
+            "hls_segment_type"          => $this->hls->getHlsSegmentType(),
+            "hls_fmp4_init_filename"    => $this->getInitFilename($rep),
+            "hls_segment_filename"      => $this->getSegmentFilename($rep),
+            "s:v"                       => $rep->size2string(),
+            "b:v"                       => $rep->getKiloBitrate() . "k"
         ];
+
+        return array_merge($init,
+            $this->getAudioBitrate($rep),
+            $this->getBaseURL(),
+            $this->flags(),
+            $this->getKeyInfo());
     }
 
     /**
@@ -137,12 +127,8 @@ class HLSFilter extends StreamFilter
     {
         $this->filter = array_merge(
             $this->filter,
-            $this->getFormats(),
-            $this->initArgs($rep),
-            $this->getAudioBitrate($rep),
-            $this->getBaseURL(),
-            $this->flags(),
-            $this->getKeyInfo(),
+            $this->getFormatOptions($this->hls->getFormat()),
+            Utiles::arrayToFFmpegOpt($this->initArgs($rep)),
             Utiles::arrayToFFmpegOpt($this->hls->getAdditionalParams()),
             ["-strict", $this->hls->getStrict()],
             $this->playlistPath($rep, $not_last)

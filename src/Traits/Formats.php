@@ -26,33 +26,36 @@ trait Formats
     /**
      * @param string $video_codec
      * @param string|null $audio_codec
+     * @param bool $default_init_opts
      * @return $this
      */
-    public function x264(string $video_codec = 'libx264', string $audio_codec = null)
+    public function x264(string $video_codec = 'libx264', string $audio_codec = 'aac', bool $default_init_opts = true)
     {
-        $this->setFormat(new X264($video_codec, $audio_codec));
+        $this->setFormat(new X264($video_codec, $audio_codec, $default_init_opts));
         return $this;
     }
 
     /**
      * @param string $video_codec
      * @param string|null $audio_codec
+     * @param bool $default_init_opts
      * @return $this
      */
-    public function hevc(string $video_codec = 'libx265', string $audio_codec = null)
+    public function hevc(string $video_codec = 'libx265', string $audio_codec = 'aac', bool $default_init_opts = true)
     {
-        $this->setFormat(new HEVC($video_codec, $audio_codec));
+        $this->setFormat(new HEVC($video_codec, $audio_codec, $default_init_opts));
         return $this;
     }
 
     /**
      * @param string $video_codec
      * @param string|null $audio_codec
+     * @param bool $default_init_opts
      * @return $this
      */
-    public function vp9(string $video_codec = 'libvpx-vp9', string $audio_codec = null)
+    public function vp9(string $video_codec = 'libvpx-vp9', string $audio_codec = 'aac', bool $default_init_opts = true)
     {
-        $this->setFormat(new VP9($video_codec, $audio_codec));
+        $this->setFormat(new VP9($video_codec, $audio_codec, $default_init_opts));
         return $this;
     }
 

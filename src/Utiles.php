@@ -44,10 +44,15 @@ class Utiles
     {
         $new = [];
         foreach ($array as $key => $value) {
-            array_push($new, $start_with . $key, $value);
+            if(is_string($key)){
+                array_push($new, $start_with . $key, $value);
+            }else{
+                $new = null;
+                break;
+            }
         }
 
-        return $new;
+        return $new ?? $array;
     }
 
     /**

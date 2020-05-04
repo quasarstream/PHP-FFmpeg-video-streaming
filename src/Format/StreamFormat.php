@@ -35,13 +35,4 @@ abstract class StreamFormat extends DefaultVideo
     {
         throw new InvalidArgumentException("You can not set this option, use Representation instead");
     }
-
-    /**
-     * @param array $additionalParamaters
-     * @return DefaultVideo|void
-     */
-    public function setAdditionalParameters($additionalParamaters)
-    {
-        throw new InvalidArgumentException("You can not set this option");
-    }
 }

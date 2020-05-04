@@ -15,7 +15,7 @@ namespace Streaming\Filters;
 
 use Streaming\StreamInterface;
 
-class AudioHLSFilter extends StreamFilter
+class AudioHLSFilter extends FormatFilter
 {
 
     /**
