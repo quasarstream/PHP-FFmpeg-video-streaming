@@ -17,91 +17,10 @@ use Streaming\StreamInterface;
 use Streaming\Representation;
 use Streaming\Utiles;
 
-class DASHFilter extends StreamFilter
+class DASHFilter extends FormatFilter
 {
     /** @var \Streaming\DASH */
     private $dash;
-
-    /**
-     * @param StreamInterface $stream
-     */
-    public function streamFilter(StreamInterface $stream): void
-    {
-        $this->dash = $stream;
-        $this->set();
-    }
-
-    /**
-     * @return array
-     * @TODO: optimize this function
-     */
-    private function set()
-    {
-        $this->filter = $this->getBaseFilters();
-
-        foreach ($this->dash->getRepresentations() as $key => $representation) {
-            $this->filter[] = "-map";
-            $this->filter[] = "0";
-            $this->filter[] = "-b:v:" . $key;
-            $this->filter[] = $representation->getKiloBitrate() . "k";
-            $this->filter = array_merge($this->filter, $this->getAudioBitrate($representation, $key));
-
-            if (null !== $representation->size2string()) {
-                $this->filter[] = "-s:v:" . $key;
-                $this->filter[] = $representation->size2string();
-            }
-        }
-        $this->filter = array_merge($this->filter, $this->getFormats());
-
-        if ($this->dash->getAdaption()) {
-            $this->filter[] = "-adaptation_sets";
-            $this->filter[] = $this->dash->getAdaption();
-        }
-        $this->filter = array_merge(
-            $this->filter,
-            Utiles::arrayToFFmpegOpt($this->dash->getAdditionalParams()),
-            ["-strict", $this->dash->getStrict()]
-        );
-
-        return $this->filter;
-    }
-
-    /**
-     * @return array
-     */
-    private function getBaseFilters(): array
-    {
-        $filename = $this->dash->pathInfo(PATHINFO_FILENAME);
-
-        $this->filter = [
-            "-bf", "1",
-            "-keyint_min", "120",
-            "-g", "120",
-            "-sc_threshold", "0",
-            "-b_strategy", "0",
-            "-use_timeline", "1",
-            "-use_template", "1",
-            "-init_seg_name", ($filename . '_init_$RepresentationID$.$ext$'),
-            "-media_seg_name", ($filename . '_chunk_$RepresentationID$_$Number%05d$.$ext$'),
-            "-seg_duration", $this->dash->getSegDuration(),
-            "-hls_playlist", (int)$this->dash->isGenerateHlsPlaylist(),
-            "-f", "dash",
-        ];
-
-        return $this->filter;
-    }
-
-    /**
-     * @return array
-     */
-    private function getFormats(): array
-    {
-        $format = ['-c:v', $this->dash->getFormat()->getVideoCodec()];
-        $audio_format = $this->dash->getFormat()->getAudioCodec();
-
-        return $audio_format ? array_merge($format, ['-c:a', $audio_format]) : $format;
-    }
-
 
     /**
      * @param Representation $rep
@@ -111,5 +30,83 @@ class DASHFilter extends StreamFilter
     private function getAudioBitrate(Representation $rep, int $key): array
     {
         return $rep->getAudioKiloBitrate() ? ["-b:a:" . $key, $rep->getAudioKiloBitrate() . "k"] : [];
+    }
+
+    /**
+     * @return array
+     */
+    private function streams(): array
+    {
+        $streams = [];
+        foreach ($this->dash->getRepresentations() as $key => $rep) {
+            $streams = array_merge(
+                $streams,
+                Utiles::arrayToFFmpegOpt([
+                    'map'       => 0,
+                    "s:v:$key"  => $rep->size2string(),
+                    "b:v:$key"  => $rep->getKiloBitrate() . "k"
+                ]),
+                $this->getAudioBitrate($rep, $key)
+            );
+        }
+
+        return $streams;
+    }
+
+    /**
+     * @return array
+     */
+    private function getAdaptions(): array
+    {
+        return $this->dash->getAdaption() ? ['-adaptation_sets', $this->dash->getAdaption()] : [];
+    }
+
+    /**
+     * @return array
+     */
+    private function init(): array
+    {
+        $name = $this->dash->pathInfo(PATHINFO_FILENAME);
+
+        $init = [
+            "use_timeline"      => 1,
+            "use_template"      => 1,
+            "init_seg_name"     => $name . '_init_$RepresentationID$.$ext$',
+            "media_seg_name"    => $name . '_chunk_$RepresentationID$_$Number%05d$.$ext$',
+            "seg_duration"      => $this->dash->getSegDuration(),
+            "hls_playlist"      => (int)$this->dash->isGenerateHlsPlaylist(),
+            "f"                 => "dash",
+        ];
+
+        return array_merge(
+            Utiles::arrayToFFmpegOpt($init),
+            $this->getAdaptions(),
+            Utiles::arrayToFFmpegOpt($this->dash->getAdditionalParams())
+        );
+    }
+
+    /**
+     * @return array
+     */
+    private function getArgs(): array
+    {
+        return array_merge(
+            $this->init(),
+            $this->streams(),
+            ['-strict', $this->dash->getStrict()]
+        );
+    }
+
+    /**
+     * @param StreamInterface $dash
+     */
+    public function streamFilter(StreamInterface $dash): void
+    {
+        $this->dash = $dash;
+
+        $this->filter = array_merge(
+            $this->getFormatOptions($dash->getFormat()),
+            $this->getArgs()
+        );
     }
 }

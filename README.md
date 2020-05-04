@@ -108,14 +108,13 @@ To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](
  
  
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
- 
+**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
+
 Create DASH files:
 ``` php
 $video->dash()
-    ->hevc() // Format of the video. Alternatives: x264() and vp9()
+    ->x264() // Format of the video. Alternatives: hevc() and vp9()
     ->autoGenerateRepresentations() // Auto generate representations
-    ->setAdaption('id=0,streams=v id=1,streams=a') // Set the adaption.
     ->save(); // It can be passed a path to the method or it can be null
 ```
 Generate representations manually:
@@ -132,16 +131,15 @@ $r_2k    = (new Representation)->setKiloBitrate(6144)->setResize(2560, 1440);
 $r_4k    = (new Representation)->setKiloBitrate(17408)->setResize(3840, 2160);
 
 $video->dash()
-    ->hevc()
+    ->x264()
     ->addRepresentations([$r_144p, $r_240p, $r_360p, $r_480p, $r_720p, $r_1080p, $r_2k, $r_4k])
-    ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save('/var/media/dash-stream.mpd');
 ```
 See **[DASH section](https://video.aminyazdanpanah.com/start?r=dash#dash)** in the documentation, for more examples.
 
 ### HLS
-**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
- 
+**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox, and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
+
 Create HLS files:
 ``` php
 $video->hls()
@@ -173,12 +171,12 @@ You must specify a path to save a random key to your local machine and also a UR
 The following code generates a key for all segment files.
 
 ``` php
-//A path you want to save a random key to your server
-$save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key';
+//A path you want to save a random key to your local machine
+$save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
 
 //A URL (or a path) to access the key on your website
-$url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key';
-// or $url = '/PATH TO THE KEY DIRECTORY/key';
+$url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key'
+// or $url = '/"PATH TO THE KEY DIRECTORY"/key';
 
 $video->hls()
     ->encryption($save_to, $url)
@@ -192,17 +190,17 @@ An integer as a "key rotation period" can also be passed to the `encryption` met
 
 See **[the example](https://video.aminyazdanpanah.com/start?r=enc-hls#hls-encryption)** for more information.
 
-**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can check a token(using a Get or Post HTTP method) to access the key(s) on your website. You can also check a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get or Post HTTP method) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
-**Besides [Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
+**Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
 ``` php
-$format = new Streaming\Format\hevc();
+$format = new Streaming\Format\X264();
 $format->on('progress', function ($video, $format, $percentage){
     // You can update a field in your database or can log it to a file
     // You can also create a socket connection and show a progress bar to users
@@ -212,7 +210,6 @@ $format->on('progress', function ($video, $format, $percentage){
 $video->dash()
     ->setFormat($format)
     ->autoGenerateRepresentations()
-    ->setAdaption('id=0,streams=v id=1,streams=a')
     ->save();
 ```
 
@@ -226,9 +223,8 @@ There are several ways to save files.
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
 ``` php
 $dash = $video->dash()
-            ->hevc()
+            ->x264()
             ->autoGenerateRepresentations()
-            ->setAdaption('id=0,streams=v id=1,streams=a');
             
 $dash->save('/var/media/dash-stream.mpd');
 ```
@@ -262,9 +258,7 @@ Visit **[this page](https://video.aminyazdanpanah.com/start/clouds?r=save)** to 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
 #### 3. To a Server Instantly
-You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
-
-If you want to save stream files to your local machine, use the `save` method.
+You can pass a URL(or a supported resource like `FTP`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method and update the manifest files every refresh times.
 
 ``` php
 // DASH
@@ -357,12 +351,12 @@ This method has a third optional boolean parameter, which is the duration of the
 To see more examples, visit the **[PHP-FFMpeg Documentation](https://github.com/PHP-FFMpeg/PHP-FFMpeg)**  page.
 
 ## Asynchronous Task Execution
-Packaging process might take a while and it is recommended to run it in the background(or in a cloud e.g. AWS). There are some libraries that you can use for this use case.
+The packaging process might take a while and it is recommended to run it in the background(or in a cloud e.g. AWS). There are some libraries that you can use for this use case.
 - **[Symphony(The Console Component)](https://github.com/symfony/console):** You can use this library to create command-line commands. Your console commands can be used for any recurring task, such as cronjobs, imports, or other batch jobs. [Learn more](https://symfony.com/doc/current/components/console.html#learn-more)
 
 - **[Laravel(Queues)](https://github.com/illuminate/queue):** If you are using Laravel for development, Laravel Queues is a wonderful tool for this use case. It allows you to create a job and dispatch it. [Learn more](https://laravel.com/docs/7.x/queues)
 
-**NOTE:** You can also create a script to create packaged video files and create your own crontab file to run the script.  
+**NOTE:** You can also create a script and run it in your cronjob.  
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
@@ -394,9 +388,9 @@ You can use these libraries to play your streams.
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE-2:** If you save your stream to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and also other content **MUST BE PUBLIC**. 
+**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and other content **MUST BE PUBLIC**. 
 
-**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
+**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 
 
 ## Contributing and Reporting Bugs
