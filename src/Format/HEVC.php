@@ -52,7 +52,7 @@ final class HEVC extends StreamFormat
 
     public function getAvailableVideoCodecs(): array
     {
-        return ['libx265', 'h265'];
+        return ['libx265', 'h265', 'hevc_nvenc'];
     }
 
     /**
