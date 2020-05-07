@@ -77,13 +77,13 @@ $ffmpeg = Streaming\FFMpeg::create($config, $log);
 ### Opening a Resource
 There are several ways to open a resource.
 
-#### 1. From a FFmpeg supported resource
+#### 1. From an FFmpeg supported resource
 You can pass a local path of video(or a supported resource) to the `open` method:
 ``` php
 $video = $ffmpeg->open('/var/media/video.mp4');
 ```
 
-See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, and etc.
+See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as HTTP, FTP, and etc.
 
 **For example:** 
 ``` php
@@ -99,7 +99,7 @@ $video = $ffmpeg->openFromCloud($from_google_cloud);
 Visit **[this page](https://video.aminyazdanpanah.com/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
-You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
+You can pass the name of a supported, connected capture device(i.e. the name of a webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
 
  ``` php
  $capture = $ffmpeg->capture("CAMERA NAME OR SCREEN NAME");
@@ -375,15 +375,19 @@ You can use these libraries to play your streams.
         - **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
     - DASH and HLS: 
-        - **[ExoPlayer](https://github.com/google/ExoPlayer)**
+        - **[ExoPlayer](https://github.com/google/ExoPlayer) (Recommended)**
+        - **[VLC for Android](https://github.com/videolan/vlc-android)**
 - **IOS**
     - DASH: 
         - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
     - HLS: 
         - **[Player](https://github.com/piemonte/Player)**
+- **Android and IOS**
+    - DASH and HLS:
+        - **[ijkplayer](https://github.com/bilibili/ijkplayer)**
 - **Windows, Linux, and macOS**
     - DASH and HLS:
-        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
+        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg) (Recommended)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
