@@ -47,6 +47,8 @@ class MicrosoftAzure implements CloudInterface
             throw new InvalidArgumentException("You should set the container in the array");
         }
 
+        unset($options['filename']);
+
         try {
             foreach (scandir($dir) as $filename) {
                 $path = $dir . DIRECTORY_SEPARATOR . $filename;

@@ -45,7 +45,7 @@ class S3 implements CloudInterface
             throw new InvalidArgumentException("You should set the dest in the array");
         }
         $dest = $options['dest'];
-        unset($options['dest']);
+        unset($options['dest'], $options['filename']);
 
         try {
             (new \Aws\S3\Transfer($this->s3, $dir, $dest, $options))->transfer();

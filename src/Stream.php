@@ -139,7 +139,7 @@ abstract class Stream implements StreamInterface
     {
         if (!empty($clouds)) {
             $this->tmp_dir = File::tmpDir();
-            $this->path = $this->tmp_dir . basename($path ?? $this->path);
+            $this->path = $this->tmp_dir . basename($clouds['options']['filename'] ?? $path ?? $this->path);
         } elseif (!is_null($path)) {
             if (strlen($path) > PHP_MAXPATHLEN) {
                 throw new InvalidArgumentException("The path is too long");

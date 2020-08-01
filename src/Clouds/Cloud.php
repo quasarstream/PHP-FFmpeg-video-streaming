@@ -40,7 +40,8 @@ class Cloud
      */
     public static function download(array $cloud, string $save_to = null): array
     {
-        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [File::tmp(), true];
+        $prefix = $cloud['options']['Key'] ?? $cloud['options']['object_name'] ?? $cloud['options']['blob'] ?? uniqid('stream_', true);
+        list($save_to, $is_tmp) = $save_to ? [$save_to, false] : [File::tmp($prefix), true];
         static::transfer($cloud, __FUNCTION__, $save_to);
 
         return [$save_to, $is_tmp];

@@ -41,14 +41,20 @@ class GoogleCloudStorage implements CloudInterface
     public function uploadDirectory(string $dir, array $options): void
     {
         $bucket = $this->getBucket($options);
-        unset($options['bucket'], $options['user_project']);
+        $cloud_filename = dirname($options['filename'] ?? '');
+
+        unset($options['bucket'], $options['user_project'], $options['filename']);
 
         try {
-            foreach (scandir($dir) as $filename) {
-                $path = $dir . DIRECTORY_SEPARATOR . $filename;
+            foreach (scandir($dir) as $file) {
+                $path = $dir . DIRECTORY_SEPARATOR . $file;
+                $name = $cloud_filename ? implode('/', [$cloud_filename, $file]) : $file;
+                var_dump($name);
+//                die;
+                $options = array_merge($options, ['name' => $name]);
 
                 if (is_file($path)) {
-                    $bucket->upload(fopen($path, 'r'), $options);
+                    $bucket->upload($path, $options);
                 }
             }
         } catch (\Exception $e) {

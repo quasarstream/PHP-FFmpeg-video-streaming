@@ -70,11 +70,25 @@ class File
     }
 
     /**
+     * @param string $prefix
      * @return string
      */
-    public static function tmp(): string
+    public static function tmp($prefix = 'pfvs.file_'): string
     {
-        return tempnam(static::tmpDirPath(), 'stream');
+        for ($i = 0; $i < 10; ++$i) {
+            $tmpFile = static::tmpDirPath() . '/' . basename($prefix) . uniqid(mt_rand());
+            $handle = @fopen($tmpFile, 'x+');
+
+            if (false === $handle) {
+                continue;
+            }
+
+            @fclose($handle);
+
+            return $tmpFile;
+        }
+
+        throw new RuntimeException("A temporary file could not be created.");
     }
 
     /**
@@ -124,11 +138,12 @@ class File
     /**
      * @param string $method
      * @param array $params
+     * @return mixed
      */
-    private static function filesystem(string $method, array $params): void
+    private static function filesystem(string $method, array $params)
     {
         try {
-            \call_user_func_array([new Filesystem, $method], $params);
+            return \call_user_func_array([new Filesystem, $method], $params);
         } catch (IOExceptionInterface $e) {
             throw new RuntimeException("Failed action" . $e->getPath(), $e->getCode(), $e);
         }
