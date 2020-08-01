@@ -324,7 +324,7 @@ $stream->stream2file()
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
 ``` php
 $ffmpeg = Streaming\FFMpeg::create()
-$video = $ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4');
+$video = $ffmpeg->openFromCloud($from_cloud, '/var/media/new/video.mp4');
 ```
 
 #### Extracting image
