@@ -11,7 +11,6 @@
 
 namespace Streaming;
 
-use phpDocumentor\Reflection\Types\Self_;
 
 class HLSPlaylist
 {
