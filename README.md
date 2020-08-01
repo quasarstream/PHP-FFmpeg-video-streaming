@@ -27,6 +27,7 @@ This library is a wrapper around **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PH
   - [Other Advanced Features](#other-advanced-features)
 - [Asynchronous Task Execution](#asynchronous-task-execution)
 - [Several Open Source Players](#several-open-source-players)
+- [FAQs](#faqs)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
 - [License](#license)
@@ -323,7 +324,7 @@ $stream->stream2file()
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
 ``` php
 $ffmpeg = Streaming\FFMpeg::create()
-$video = $$ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4');
+$video = $ffmpeg->openFromCloud($from_cloud, '/var/wwww/media/my/new/video.mp4');
 ```
 
 #### Extracting image
@@ -390,12 +391,21 @@ You can use these libraries to play your streams.
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg) (Recommended)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
-**NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
+## FAQs
+**I created stream files and now what should I pass to a player?**
+You must pass a **master playlist(manifest) URL**(e.x. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to a player. 
+See the demo page of these players for more information(**[hls.js Demo](https://hls-js.netlify.app/demo/)**, **[dash.js Demo](https://reference.dashif.org/dash.js/v3.1.2/samples/dash-if-reference-player/index.html)**, **[videojs](https://videojs.com/advanced?video=elephantsdream)** and etc).  
 
-**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and other content **MUST BE PUBLIC**. 
+**My player does not show quality selector to change the quality of video?**
+Some Players does not have embedded quality selector to change this option and you should install(or add) the plugin for this use case. For example if your are using Videojs to play your stream, you can install **[videojs-hls-quality-selector](https://github.com/chrisboustead/videojs-hls-quality-selector)** to show the quality selector. For adding a plugin to other players, you can easily Google it!
 
-**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
+**I uploaded my stream files to a cloud but it does not play on my website?**
+If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), make sure your contents are **PUBLIC**. If they are not, you must change the access control. 
 
+**Does [IOS](https://www.apple.com/ios) support DASH stream?**
+No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
+
+See [this page](https://video.aminyazdanpanah.com/start?r=faq#faq) for more FAQs.
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification. Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.
