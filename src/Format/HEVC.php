@@ -32,7 +32,7 @@ final class HEVC extends StreamFormat
          * see https://ffmpeg.org/ffmpeg-codecs.html#Options-29 for more information about options
          */
         if ($default_init_opts) {
-            $this->setInitialParameters([
+            $this->setAdditionalParameters([
                 'keyint_min' => 25,
                 'g' => 250,
                 'sc_threshold' => 40

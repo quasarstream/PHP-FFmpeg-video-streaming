@@ -26,15 +26,20 @@ class CommandBuilder
     /** @var \FFMpeg\Driver\FFMpegDriver */
     private $driver;
 
+    /** @var VideoInterface */
+    private $format;
+
     /**
      * CommandBuilder constructor.
      * @param Media $media
+     * @param VideoInterface $format
      */
-    public function __construct(Media $media)
+    public function __construct(Media $media, VideoInterface $format)
     {
         $this->media = $media;
         $this->filters = $this->media->getFiltersCollection();
         $this->driver = $this->media->getFFMpegDriver();
+        $this->format = $format;
     }
 
     /**
@@ -68,6 +73,6 @@ class CommandBuilder
         $path = $this->media->getPathfile();
         $input_options = Utiles::arrayToFFmpegOpt($this->media->getInputOptions());
 
-        return array_merge($input_options, ['-y', '-i', $path]);
+        return array_merge($input_options, $this->format->getInitialParameters() ?? [], ['-y', '-i', $path]);
     }
 }

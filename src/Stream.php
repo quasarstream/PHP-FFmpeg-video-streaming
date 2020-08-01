@@ -120,7 +120,7 @@ abstract class Stream implements StreamInterface
     {
         $this->media->addFilter($this->getFilter());
 
-        $commands = (new CommandBuilder($this->media))->build($this->getFormat(), $this->getPath());
+        $commands = (new CommandBuilder($this->media, $this->getFormat()))->build($this->getFormat(), $this->getPath());
         $pass = $this->format->getPasses();
         $listeners = $this->format->createProgressListener($this->media->baseMedia(), $this->media->getFFProbe(), 1, $pass);
 

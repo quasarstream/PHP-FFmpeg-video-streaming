@@ -33,7 +33,7 @@ final class X264 extends StreamFormat
          * return array
          */
         if ($default_init_opts) {
-            $this->setInitialParameters([
+            $this->setAdditionalParameters([
                 'bf' => 1,
                 'keyint_min' => 25,
                 'g' => 250,

@@ -21,7 +21,7 @@ abstract class FormatFilter extends StreamFilter
         ]);
 
         $options = Utiles::arrayToFFmpegOpt(
-            array_merge($format->getInitialParameters() ?? [], $format->getAdditionalParameters() ?? [])
+            array_merge($format->getAdditionalParameters() ?? [])
         );
 
         return array_merge($basic, $options);
