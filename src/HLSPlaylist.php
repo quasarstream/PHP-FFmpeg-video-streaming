@@ -11,10 +11,14 @@
 
 namespace Streaming;
 
+use phpDocumentor\Reflection\Types\Self_;
+
 class HLSPlaylist
 {
     /** @var HLS */
     private $hls;
+
+    private const DEFAULT_AUDIO_BITRATE = 131072;
 
     /**
      * HLSPlaylist constructor.
@@ -43,7 +47,7 @@ class HLSPlaylist
         $tag = '#EXT-X-STREAM-INF:';
         $params = array_merge(
             [
-                "BANDWIDTH" => $rep->getKiloBitrate() * 1024,
+                "BANDWIDTH" => $rep->getKiloBitrate() * 1024 + $this->getAudioBitrate($rep),
                 "RESOLUTION" => $rep->size2string(),
                 "NAME" => "\"" . $rep->getHeight() . "\""
             ],
@@ -85,5 +89,27 @@ class HLSPlaylist
     public function save(string $filename, array $description): void
     {
         File::put($filename, $this->contents(($description)));
+    }
+
+    /**
+     * @param Representation $rep
+     * @return int
+     */
+    private function getAudioBitrate(Representation $rep): int
+    {
+        return $rep->getAudioKiloBitrate() ? $rep->getAudioKiloBitrate() * 1024 : $this->getOriginalAudioBitrate();
+    }
+
+    /**
+     * @return int
+     */
+    private function getOriginalAudioBitrate(): int
+    {
+        return $this->hls
+            ->getMedia()
+            ->getStreams()
+            ->audios()
+            ->first()
+            ->get('bit_rate', static::DEFAULT_AUDIO_BITRATE);
     }
 }
