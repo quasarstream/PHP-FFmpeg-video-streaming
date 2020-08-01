@@ -49,8 +49,6 @@ class GoogleCloudStorage implements CloudInterface
             foreach (scandir($dir) as $file) {
                 $path = $dir . DIRECTORY_SEPARATOR . $file;
                 $name = $cloud_filename ? implode('/', [$cloud_filename, $file]) : $file;
-                var_dump($name);
-//                die;
                 $options = array_merge($options, ['name' => $name]);
 
                 if (is_file($path)) {
