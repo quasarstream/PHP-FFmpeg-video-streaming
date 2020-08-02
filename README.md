@@ -51,14 +51,14 @@ Alternatively, add the dependency directly to your `composer.json` file:
 
 ## Quickstart
 First of all, you need to include the package in your code:
-``` php
+```php
 require 'vendor/autoload.php'; // path to the autoload file
 ```
 
 ### Configuration
 This package will autodetect FFmpeg and FFprobe binaries. If you want to give binary paths explicitly, you can pass an array as configuration. A Psr\Logger\LoggerInterface can also be passed to log binary executions.
 
-``` php
+```php
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -80,21 +80,21 @@ There are several ways to open a resource.
 
 #### 1. From an FFmpeg supported resource
 You can pass a local path of video(or a supported resource) to the `open` method:
-``` php
+```php
 $video = $ffmpeg->open('/var/media/video.mp4');
 ```
 
 See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as HTTP, FTP, and etc.
 
 **For example:** 
-``` php
-$video = $ffmpeg->open(https://www.aminyazdanpanah.com/?"PATH TO A VIDEO FILE" or "PATH TO A LIVE HTTP STREAM");
+```php
+$video = $ffmpeg->open('https://www.aminyazdanpanah.com/?"PATH TO A VIDEO FILE" or "PATH TO A LIVE HTTP STREAM"');
 ```
 
 #### 2. From Clouds
 You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
-``` php
+```php
 $video = $ffmpeg->openFromCloud($from_google_cloud);
 ```
 Visit **[this page](https://video.aminyazdanpanah.com/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
@@ -102,7 +102,7 @@ Visit **[this page](https://video.aminyazdanpanah.com/start/clouds?r=open)** to 
 #### 3. Capture Webcam or Screen (Live Streaming)
 You can pass the name of a supported, connected capture device(i.e. the name of a webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
 
- ``` php
+ ```php
  $capture = $ffmpeg->capture("CAMERA NAME OR SCREEN NAME");
  ```
 To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](https://trac.ffmpeg.org/wiki/Capture/Webcam)** and **[FFmpeg Capture Desktop](https://trac.ffmpeg.org/wiki/Capture/Desktop)**.
@@ -112,14 +112,14 @@ To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
 
 Create DASH files:
-``` php
+```php
 $video->dash()
     ->x264() // Format of the video. Alternatives: hevc() and vp9()
     ->autoGenerateRepresentations() // Auto generate representations
     ->save(); // It can be passed a path to the method or it can be null
 ```
 Generate representations manually:
-``` php
+```php
 use Streaming\Representation;
 
 $r_144p  = (new Representation)->setKiloBitrate(95)->setResize(256, 144);
@@ -142,14 +142,14 @@ See **[DASH section](https://video.aminyazdanpanah.com/start?r=dash#dash)** in t
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox, and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
 
 Create HLS files:
-``` php
+```php
 $video->hls()
     ->x264()
     ->autoGenerateRepresentations([720, 360]) // You can limit the number of representatons
     ->save();
 ```
 Generate representations manually:
-``` php
+```php
 use Streaming\Representation;
 
 $r_360p  = (new Representation)->setKiloBitrate(276)->setResize(640, 360);
@@ -171,7 +171,7 @@ You must specify a path to save a random key to your local machine and also a UR
 ##### Single Key
 The following code generates a key for all segment files.
 
-``` php
+```php
 //A path you want to save a random key to your local machine
 $save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
 
@@ -200,7 +200,7 @@ However FFmpeg supports AES encryption for HLS packaging, which you can encrypt 
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 
-``` php
+```php
 $format = new Streaming\Format\X264();
 $format->on('progress', function ($video, $format, $percentage){
     // You can update a field in your database or can log it to a file
@@ -222,7 +222,7 @@ There are several ways to save files.
 
 #### 1. To a Local Path
 You can pass a local path to the `save` method. If there was no directory in the path, then the package auto makes the directory.
-``` php
+```php
 $dash = $video->dash()
             ->x264()
             ->autoGenerateRepresentations()
@@ -230,7 +230,7 @@ $dash = $video->dash()
 $dash->save('/var/media/dash-stream.mpd');
 ```
 It can also be null. The default path to save files is the input path.
-``` php
+```php
 $hls = $video->hls()
             ->x264()
             ->autoGenerateRepresentations();
@@ -242,11 +242,11 @@ $hls->save();
 #### 2. To Clouds
 You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
-``` php
+```php
 $dash->save(null, [$to_aws_cloud, $to_google_cloud, $to_microsoft_azure, $to_custom_cloud]);
 ``` 
 A path can also be passed to save a copy of files to your local machine.
-``` php
+```php
 $hls->save('/var/media/hls-stream.m3u8', [$to_google_cloud, $to_custom_cloud]);
 ```
 
@@ -261,7 +261,7 @@ Visit **[this page](https://video.aminyazdanpanah.com/start/clouds?r=save)** to 
 #### 3. To a Server Instantly
 You can pass a URL(or a supported resource like `FTP`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method and update the manifest files every refresh times.
 
-``` php
+```php
 // DASH
 $dash->live('http://YOUR-WEBSITE.COM/live-stream/out.mpd');
 
@@ -276,7 +276,7 @@ See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)
 
 ### Metadata
 You can get information from multimedia streams and the video file using the following code.
-``` php
+```php
 $hls = $hls->save();
 $metadata = $hls->metadata()->export();
 
@@ -289,7 +289,7 @@ See **[the example](https://video.aminyazdanpanah.com/start?r=metadata#metadata)
 You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `open` method:
 
 #### 1. HLS To DASH
-``` php
+```php
 $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/HLS-MANIFEST.M3U8');
 
 $stream->dash()
@@ -299,7 +299,7 @@ $stream->dash()
 ```
 
 #### 2. DASH To HLS
-``` php
+```php
 $stream = $ffmpeg->open('https://www.aminyazdanpanah.com/?PATH/TO/DASH-MANIFEST.MPD');
 
 $stream->hls()
@@ -309,7 +309,7 @@ $stream->hls()
 ```
 
 #### 3. Stream(DASH or HLS) To File
-``` php
+```php
 $format = new Streaming\Format\x264();
 $format->on('progress', function ($video, $format, $percentage){
     echo sprintf("\rTranscoding...(%s%%) [%s%s]", $percentage, str_repeat('#', $percentage), str_repeat('-', (100 - $percentage)));
@@ -322,14 +322,14 @@ $stream->stream2file()
 
 ### Other Advanced Features
 You can easily use other advanced features in the **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)** library. In fact, when you open a file with the `open` method(or `openFromCloud`), it holds the Media object that belongs to the PHP-FFMpeg.
-``` php
-$ffmpeg = Streaming\FFMpeg::create()
+```php
+$ffmpeg = Streaming\FFMpeg::create();
 $video = $ffmpeg->openFromCloud($from_cloud, '/var/media/new/video.mp4');
 ```
 
 #### Extracting image
 You can extract a frame at any timecode using the `FFMpeg\Media\Video::frame` method.
-``` php
+```php
 $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(42));
 $frame->save('/var/media/poster.jpg');
 ```
@@ -340,7 +340,7 @@ A gif is an animated image extracted from a sequence of the video.
 
 You can save gif files using the FFMpeg\Media\Gif::save method.
 
-``` php
+```php
 $video
     ->gif(FFMpeg\Coordinate\TimeCode::fromSeconds(2), new FFMpeg\Coordinate\Dimension(640, 480), 3)
     ->save('/var/media/animated_image.gif');
@@ -394,15 +394,15 @@ You can use these libraries to play your streams.
 ## FAQs
 **I created stream files and now what should I pass to a player?**
 You must pass a **master playlist(manifest) URL**(e.x. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to a player. 
-See the demo page of these players for more information(**[hls.js Demo](https://hls-js.netlify.app/demo/)**, **[dash.js Demo](https://reference.dashif.org/dash.js/v3.1.2/samples/dash-if-reference-player/index.html)**, **[videojs](https://videojs.com/advanced?video=elephantsdream)** and etc).  
+See the demo page of these players for more information(**[hls.js Demo](https://hls-js.netlify.app/demo/)**, **[dash.js Demo](https://reference.dashif.org/dash.js/v3.1.2/samples/dash-if-reference-player/index.html)**, **[videojs Demo](https://videojs.com/advanced?video=elephantsdream)** and etc).  
 
-**My player does not show quality selector to change the quality of video?**
-Some Players does not have embedded quality selector to change this option and you should install(or add) the plugin for this use case. For example if your are using Videojs to play your stream, you can install **[videojs-hls-quality-selector](https://github.com/chrisboustead/videojs-hls-quality-selector)** to show the quality selector. For adding a plugin to other players, you can easily Google it!
+**My player does not show the quality selector button to change the video quality?**
+Some Players do not have an embedded quality selector button to change this option and you should install(or add) the plugin for this use case. For example, if you are using Videojs to play your stream, you can install **[videojs-hls-quality-selector](https://github.com/chrisboustead/videojs-hls-quality-selector)** to show the quality selector. For adding a plugin to other players, you can easily Google it!
 
 **I uploaded my stream files to a cloud but it does not play on my website?**
 If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), make sure your contents are **PUBLIC**. If they are not, you must change the access control. 
 
-**Does [IOS](https://www.apple.com/ios) support DASH stream?**
+**Does [IOS](https://www.apple.com/ios) support the DASH stream?**
 No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 
 See [this page](https://video.aminyazdanpanah.com/start?r=faq#faq) for more FAQs.
