@@ -52,7 +52,7 @@ class GoogleCloudStorage implements CloudInterface
                 $options = array_merge($options, ['name' => $name]);
 
                 if (is_file($path)) {
-                    $bucket->upload($path, $options);
+                    $bucket->upload(fopen($path, 'r'), $options);
                 }
             }
         } catch (\Exception $e) {
