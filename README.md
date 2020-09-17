@@ -166,17 +166,17 @@ See **[HLS section](https://video.aminyazdanpanah.com/start?r=hls#hls)** in the 
 #### Encryption(DRM)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
+You must specify a path to save a random key to your local machine and also specify an URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ##### Single Key
 The following code generates a key for all segment files.
 
 ```php
 //A path you want to save a random key to your local machine
-$save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
+$save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key';
 
-//A URL (or a path) to access the key on your website
-$url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key'
+//An URL (or a path) to access the key on your website
+$url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key';
 // or $url = '/"PATH TO THE KEY DIRECTORY"/key';
 
 $video->hls()
@@ -197,6 +197,26 @@ See **[the example](https://video.aminyazdanpanah.com/start?r=enc-hls#hls-encryp
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 **Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
+
+#### Subtitles
+You can add subtitles to a HLS stream using `subtitle` method.
+```php
+use Streaming\HLSSubtitle;
+
+$persian = new HLSSubtitle('/var/subtitles/subtitles_fa.vtt', 'فارسی', 'fa');
+$persian->default();
+$english = new HLSSubtitle('/var/subtitles/subtitles_en.vtt', 'english', 'en');
+$german  = new HLSSubtitle('/var/subtitles/subtitles_de.vtt', 'Deutsch', 'de');
+$chinese = new HLSSubtitle('/var/subtitles/subtitles_zh.vtt', '中文', 'zh');
+$spanish = new HLSSubtitle('/var/subtitles/subtitles_es.vtt', 'Español', 'es');
+
+$video->hls()
+    ->subtitles([$persian, $english, $german, $chinese, $spanish])
+    ->x264()
+    ->autoGenerateRepresentations([1080, 720])
+    ->save('/var/media/hls-stream.m3u8');
+```
+**NOTE:** All m3u8 files will be generated using rules based on **[RFC 8216](https://tools.ietf.org/html/rfc8216#section-3.5)**. Only **[WebVTT](https://www.w3.org/TR/webvtt1/)** files are acceptable for now. 
 
 ### Transcoding
 A format can also extend `FFMpeg\Format\ProgressableInterface` to get realtime information about the transcoding. 

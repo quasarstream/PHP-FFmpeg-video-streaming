@@ -12,12 +12,14 @@
 namespace Streaming;
 
 
+use FFMpeg\Exception\ExceptionInterface;
+
 class HLSPlaylist
 {
     /** @var HLS */
     private $hls;
 
-    private const DEFAULT_AUDIO_BITRATE = 131072;
+    private const DEFAULT_AUDIO_BITRATE = 0; //131072;
 
     /**
      * HLSPlaylist constructor.
@@ -104,11 +106,15 @@ class HLSPlaylist
      */
     private function getOriginalAudioBitrate(): int
     {
-        return $this->hls
-            ->getMedia()
-            ->getStreams()
-            ->audios()
-            ->first()
-            ->get('bit_rate', static::DEFAULT_AUDIO_BITRATE);
+        try {
+            return $this->hls
+                ->getMedia()
+                ->getStreams()
+                ->audios()
+                ->first()
+                ->get('bit_rate', static::DEFAULT_AUDIO_BITRATE);
+        } catch (ExceptionInterface $e) {
+            return static::DEFAULT_AUDIO_BITRATE;
+        }
     }
 }

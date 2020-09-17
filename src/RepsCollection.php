@@ -80,6 +80,14 @@ class RepsCollection implements \Countable, \IteratorAggregate
     }
 
     /**
+     * @param callable $func
+     */
+    public function map(callable $func)
+    {
+        $this->representations = array_map($func, $this->representations);
+    }
+
+    /**
      * count of representations
      */
     public function count(): int

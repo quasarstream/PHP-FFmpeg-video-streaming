@@ -53,6 +53,9 @@ class HLS extends Streaming
     /** @var array */
     private $flags = [];
 
+    /** @var array */
+    private $subtitles = [];
+
     /**
      * @return string
      */
@@ -138,6 +141,22 @@ class HLS extends Streaming
         $this->setHlsKeyInfoFile((string)$key_info);
         $this->tmp_key_info_file = true;
 
+        return $this;
+    }
+
+    public function subtitle(HLSSubtitle $subtitle)
+    {
+        array_push($this->subtitles, $subtitle);
+        return $this;
+    }
+
+    /**
+     * @param array $subtitles
+     * @return HLS
+     */
+    public function subtitles(array $subtitles): HLS
+    {
+        array_walk($subtitles, [$this, 'subtitle']);
         return $this;
     }
 
@@ -277,6 +296,10 @@ class HLS extends Streaming
         $path = $this->getFilePath();
         $reps = $this->getRepresentations();
 
+        if(!empty($this->subtitles)){
+            $this->generateSubs($path);
+        }
+
         $this->savePlaylist($path . ".m3u8");
 
         return $path . "_" . $reps->end()->getHeight() . "p.m3u8";
@@ -289,6 +312,34 @@ class HLS extends Streaming
     {
         $mater_playlist = new HLSPlaylist($this);
         $mater_playlist->save($this->master_playlist ?? $path, $this->stream_des);
+    }
+
+    /**
+     * @param string $path
+     */
+    private function generateSubs(string $path)
+    {
+        $this->stream_des = array_merge($this->stream_des, [PHP_EOL]);
+
+        foreach ($this->subtitles as $subtitle) {
+            if($subtitle instanceof HLSSubtitle){
+                $subtitle->generateM3U8File("{$path}_subtitles_{$subtitle->getLanguageCode()}.m3u8", $this->getDuration());
+                array_push($this->stream_des, (string)$subtitle);
+            }
+        }
+        array_push($this->stream_des, PHP_EOL);
+
+        $this->getRepresentations()->map(function (Representation $rep){
+            return $rep->setHlsStreamInfo(["SUBTITLES" => "\"" . $this->subtitles[0]->getGroupId() . "\""]);
+        });
+    }
+
+    /**
+     * @return float
+     */
+    private function getDuration():float
+    {
+        return $this->getMedia()->getFormat()->get("duration", 0);
     }
 
     /**

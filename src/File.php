@@ -128,6 +128,16 @@ class File
     }
 
     /**
+     * @param string $src
+     * @param string $dst
+     * @param bool $force
+     */
+    public static function copy(string $src, string $dst, bool $force = true): void
+    {
+        static::filesystem('copy', [$src, $dst, $force]);
+    }
+
+    /**
      * @param $dir
      */
     public static function remove(string $dir): void

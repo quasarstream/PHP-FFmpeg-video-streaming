@@ -71,4 +71,13 @@ class Utiles
                 return "unknown";
         }
     }
+
+    /**
+     * @param bool $isAutoSelect
+     * @return string
+     */
+    public static function convertBooleanToYesNo(bool $isAutoSelect): string
+    {
+        return $isAutoSelect ? "YES" : "NO";
+    }
 }
