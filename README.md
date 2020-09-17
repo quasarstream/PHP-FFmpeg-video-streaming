@@ -20,6 +20,7 @@ This library is a wrapper around **[PHP-FFMpeg](https://github.com/PHP-FFMpeg/PH
   - [DASH](#dash)
   - [HLS](#hls)
     - [Encryption(DRM)](#encryptiondrm)
+    - [Subtitles](#subtitles)
   - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
   - [Metadata](#metadata)
