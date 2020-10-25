@@ -98,6 +98,7 @@ class AutoReps implements \IteratorAggregate
 
     /**
      * @param array|null $k_bitrate_values
+     * @TODO: fix #79
      */
     private function kiloBitrate(?array $k_bitrate_values): void
     {
