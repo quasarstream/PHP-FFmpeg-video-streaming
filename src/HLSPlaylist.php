@@ -107,12 +107,13 @@ class HLSPlaylist
     private function getOriginalAudioBitrate(): int
     {
         try {
-            return $this->hls
-                ->getMedia()
-                ->getStreams()
-                ->audios()
-                ->first()
-                ->get('bit_rate', static::DEFAULT_AUDIO_BITRATE);
+            $audios = $this->hls->getMedia()->getStreams()->audios();
+
+            if (!$audios->count()){
+                return static::DEFAULT_AUDIO_BITRATE;
+            }
+
+            return $audios->first()->get('bit_rate', static::DEFAULT_AUDIO_BITRATE);
         } catch (ExceptionInterface $e) {
             return static::DEFAULT_AUDIO_BITRATE;
         }
