@@ -16,7 +16,7 @@ environment:
     COMPOSER_NO_INTERACTION: 1
     ANSICON: 121x90 (121x90) # Console colors
 
-  ffmpeg_download: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-4.3.2-2021-02-27-essentials_build.zip
+  ffmpeg_download: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-4.3.2-essentials_build.zip
 
   matrix:
     - PHP_VERSION: Latest_Version
@@ -29,7 +29,7 @@ install:
   - ps: cinst php --params '""/InstallDir:C:\tools\php""' --ignore-checksums
   - ps: Start-FileDownload $env:ffmpeg_download
 
-  - 7z x ffmpeg-4.3.2-2021-02-27-essentials_build.zip
+  - 7z x ffmpeg-4.3.2-essentials_build.zip
   - PATH=%PATH%;%cd%\ffmpeg-4.3.2-2021-02-27-essentials_build\bin
   - cd c:\tools\php
   - copy php.ini-production php.ini /Y
