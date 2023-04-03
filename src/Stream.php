@@ -189,7 +189,7 @@ abstract class Stream implements StreamInterface
     public function __destruct()
     {
         // make sure that FFmpeg process has benn terminated
-        sleep(.5);
+        sleep(1);
         File::remove($this->tmp_dir);
 
         if ($this->media->isTmp()) {
