@@ -94,7 +94,7 @@ class AutoReps implements \IteratorAggregate
             return intval(($this->original_format->get('bit_rate') / 1024) * .9);
         }
 
-        return (int)$this->video->get('bit_rate') / 1024;
+        return intval($this->video->get('bit_rate') / 1024);
     }
 
     /**
