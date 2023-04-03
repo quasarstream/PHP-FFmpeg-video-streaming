@@ -98,7 +98,7 @@ class RepsCollection implements \Countable, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->representations);
     }
