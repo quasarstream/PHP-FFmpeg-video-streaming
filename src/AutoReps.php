@@ -16,6 +16,7 @@ use FFMpeg\Exception\ExceptionInterface;
 use FFMpeg\Format\VideoInterface;
 use Streaming\Exception\InvalidArgumentException;
 use Streaming\Exception\RuntimeException;
+use Traversable;
 
 
 class AutoReps implements \IteratorAggregate
@@ -93,7 +94,7 @@ class AutoReps implements \IteratorAggregate
             return intval(($this->original_format->get('bit_rate') / 1024) * .9);
         }
 
-        return (int)$this->video->get('bit_rate') / 1024;
+        return intval($this->video->get('bit_rate') / 1024);
     }
 
     /**
@@ -231,7 +232,7 @@ class AutoReps implements \IteratorAggregate
      * Retrieve an external iterator reps
      * @return \Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         $reps = $this->getCalculatedReps();
         array_push($reps, $this->getOriginalRep());
