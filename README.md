@@ -117,27 +117,27 @@ Our platform empowers businesses to expand their reach globally by delivering ex
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Cloud-based CDN<strong>: Accelerates content delivery worldwide through integration with major cloud storage providers such as Amazon S3, Google Cloud Storage, and Microsoft Azure.</td>
+            <td><strong>Cloud-based CDN</strong>: Accelerates content delivery worldwide through integration with major cloud storage providers such as Amazon S3, Google Cloud Storage, and Microsoft Azure.</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Tailored features<strong>: We can integrate any specific functionality you require into your platform.</td>
+            <td><strong>Tailored features</strong>: We can integrate any specific functionality you require into your platform.</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Support<strong></td>
+            <td><strong>Support</strong></td>
             <td align="center">3 Months</td>
             <td align="center">Customizable</td>
         </tr>
         <tr>
-            <td><strong>Online Demo<strong></td>
+            <td><strong>Online Demo</strong></td>
             <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/vs-demo?s=php&u=php-ffmpeg"> See Online Demo</a></strong> </td>
             <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/book-demo?u=php-ffmpeg"> Book Free Demo</a></strong> </td>
         </tr>
         <tr>
-            <td><strong>Get<strong></td>
+            <td><strong>Get</strong></td>
             <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?s=php&u=php-ffmpeg"> GET </a></strong> </td>
             <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=php-ffmpeg"> CONTACT US</a></strong> </td>
         </tr>
