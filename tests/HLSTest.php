@@ -51,6 +51,22 @@ class HLSTest extends TestCase
         $this->assertEquals(207, $representations[2]->getKiloBitrate());
     }
 
+    public function testAutoRepresentationsWithBitrates()
+    {
+        $hls = $this->getHLS();
+        $hls->X264()
+            ->autoGenerateRepresentations([640, 480, 240], [500, 300, 150]);
+
+        $representations = $hls->getRepresentations()->all();
+
+        $this->assertIsArray($representations);
+        $this->assertInstanceOf(Representation::class, current($representations));
+
+        $this->assertEquals('426x240', $representations[0]->size2string());
+
+        $this->assertEquals(150, $representations[0]->getKiloBitrate());
+    }
+
     public function testSetHlsTime()
     {
         $hls = $this->getHLS();
