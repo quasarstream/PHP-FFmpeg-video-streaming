@@ -74,7 +74,13 @@ class AutoReps implements \IteratorAggregate
     private function getDimensions(): Dimension
     {
         try {
-            return $this->video->getDimensions();
+            $rotation = (int) ($this->video->get('tags')['rotate'] ?? 0);
+            $dimensions = $this->video->getDimensions();
+
+            return ($rotation % 180 == 0)
+                ? $dimensions
+                : new Dimension($dimensions->getHeight(), $dimensions->getWidth());
+
         } catch (ExceptionInterface $e) {
             throw new RuntimeException("Unable to extract dimensions.: " . $e->getMessage(), $e->getCode(), $e);
         }
