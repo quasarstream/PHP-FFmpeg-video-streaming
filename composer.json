@@ -34,7 +34,7 @@
     "authors": [
         {
             "name": "Amin Yazdanpanah",
-            "email": "contact@aminyazdanpanah.com",
+            "email": "github@aminyazdanpanah.com",
             "homepage": "https://www.aminyazdanpanah.com"
         }
     ],
@@ -63,14 +63,7 @@
     },
     "require": {
         "php": "^7.2 || ^8.0 || ^8.1 || ^8.2 || ^8.3 || ^8.4",
-        "php-ffmpeg/php-ffmpeg": "^0.15 || 0.16 || 0.17 || 0.18 || 0.19 || ^1.0  || ^1.1 || ^1.2",
-        "symfony/filesystem": "^4.0 || ^5.0 || ^6.0"
-    },
-    "suggest": {
-        "aminyazdanpanah/php-shaka": "aminyazdanpanah/php-shaka is suggested for using DRM and encryption",
-        "aws/aws-sdk-php": "Allow sending stream content to AWS services like S3",
-        "google/cloud-storage": "Allow sending stream content to Google services like Google Storage",
-        "microsoft/azure-storage-blob": "Allow sending stream content to Google services like Google Storage",
-        "aminyazdanpanah/handling-file-uploads": "aminyazdanpanah/handling-file-uploads is suggested for uploading and validating a new video."
+        "php-ffmpeg/php-ffmpeg": "^0.15 || 0.16 || 0.17 || 0.18 || 0.19 || ^1.0  || ^1.1 || ^1.2 || ^1.3",
+        "symfony/filesystem": "4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0"
     }
 }
