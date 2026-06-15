@@ -99,7 +99,6 @@ class AutoReps implements \IteratorAggregate
 
     /**
      * @param array|null $k_bitrate_values
-     * @TODO: fix #79
      */
     private function kiloBitrate(?array $k_bitrate_values): void
     {
@@ -139,13 +138,29 @@ class AutoReps implements \IteratorAggregate
      * @param array|null $sides
      * @param array|null $k_bitrate
      */
-    private function sides(?array $sides, ?array $k_bitrate): void
+    private function sides(?array $sides, ?array &$k_bitrate): void
     {
-        if (!is_null($sides) && is_null($k_bitrate)) {
+        if (! is_null($sides) && is_null($k_bitrate)) {
             sort($sides);
         }
 
-        $this->sides = array_values(array_filter($sides ?? $this->sides, [$this, 'sideFilter']));
+        $filtered = [];
+
+        foreach ($sides ?? $this->sides as $i => $side) {
+            if ($this->sideFilter($side)) {
+                $filtered[] = $side;
+            } elseif ($k_bitrate !== null) {
+                // Remove bitrate for filtered side
+                unset($k_bitrate[$i]);
+            }
+        }
+
+        $this->sides = $filtered;
+
+        if ($k_bitrate !== null) {
+            // Reindex
+            $k_bitrate = array_values($k_bitrate);
+        }
     }
 
     /**
